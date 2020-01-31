@@ -28,16 +28,26 @@ def probe(data):
         c=x[2]
         t=np.arange(len(data))
         return sum(((a*2.0**(b*t/(1.0+c*t))-data)/data)**2)
+
+    def model2(x):
+        a=x[0]
+        b=x[1]
+        c=x[2]
+        t=np.arange(len(data))
+        return sum(((a*2.0**(b*t/(2.0**(c*t)))-data)/data)**2)
         
     x0=np.array([data[0],1.0])
     r0=scipy.optimize.minimize(model0,x0,method='nelder-mead')
 
     x1=np.array([data[0],1.0,0.0])
     r1=scipy.optimize.minimize(model1,x1,method='nelder-mead')
-    
-    return r0.x,r1.x
 
-k0,k1=probe(china+other)
+    x2=np.array([data[0],1.0,1.0])
+    r2=scipy.optimize.minimize(model2,x2,method='nelder-mead')
+
+    return r0.x,r1.x,r2.x
+
+k0,k1,k2=probe(china+other)
 
 plt.plot(np.arange(len(china)),china,label='Observed (mainland China plus other locations)')
 
@@ -48,6 +58,9 @@ plt.plot(t,k0[0]*2.0**(t*k0[1]),label=label0)
 
 label1='$a.2^\\frac{b.t}{1+c.t}$ least-squares fit'+(' $a={:.1f},b={:.1f},c={:.3f}$'.format(k1[0],k1[1],k1[2]))
 plt.plot(t,k1[0]*2.0**(t*k1[1]/(1.0+k1[2]*t)),label=label1)
+
+label2='$a.2^\\frac{b.t}{2^{c.t}}$ least-squares fit'+(' $a={:.1f},b={:.1f},c={:.3f}$'.format(k2[0],k2[1],k2[2]))
+plt.plot(t,k2[0]*2.0**(t*k2[1]/(2.0**(k2[2]*t))),label=label2)
 
 plt.yscale('symlog')
 plt.ylabel('Confirmed cases')
