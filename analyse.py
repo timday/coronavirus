@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 # Data from https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
 # Use inspect element on graph to get precise numbers
 # Starts 2020-01-20:
-china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658],dtype=np.float64)
-other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118],dtype=np.float64)
+china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221],dtype=np.float64)
+other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153],dtype=np.float64)
 
 # Straight exponential growth
 # DSolve[x'[t] == k*x[t], x[t], t]
@@ -39,13 +39,13 @@ def model2(x,t):
     return (C/c)*np.exp(-(k/a)*np.exp(-a*t))
 
 # Logistic equation
-# DSolve[x'[t] == r*x*(1-x/K), x[t], t]
+# DSolve[x'[t] == k*x*(1-x/P), x[t], t]
 # Wolfram Alpha doesn't solve, but is sigmoid
 def model3(x,t):
     a=x[0]
-    r=x[1]
-    K=x[2]
-    return K/((1.0+(1.0/a-1.0))*np.exp(-r*t))
+    k=x[1]
+    P=x[2]
+    return P/(1.0+(1.0/a-1.0)*np.exp(-k*t))
 
 def probe(data,K):
 
@@ -72,7 +72,7 @@ def probe(data,K):
     x2=np.array([data[0],1.0,0.1])
     r2=scipy.optimize.minimize(error2,x2,method='nelder-mead')
 
-    x3=np.array([data[0]/K,1.0,K])
+    x3=np.array([data[0]/P,1.0,P])
     r3=scipy.optimize.minimize(error3,x3,method='nelder-mead')
 
     return r0.x,r1.x,r2.x,r3.x
@@ -93,29 +93,29 @@ for p in [1,2,3]:
         2: 'Total'
         }[p]
 
-    K={
+    P={
         1: 1.4e9,
         3: 7.7e9-1.4e9,
         2: 7.7e9
         }[p]
     
-    k0,k1,k2,k3=probe(data,K)
+    k0,k1,k2,k3=probe(data,P)
 
     plt.plot(np.arange(len(data)),data,linewidth=2,color='red',label='Observed')
     
-    t=np.arange(30)
+    t=np.arange(30+len(data))
     
-    label0='$\\frac{dx}{dt}=k.x$'+(' ; $x_0={:.1f}, k={:.3f}$'.format(k0[0],k0[1]))
-    plt.plot(t,model0(k0,t),color='green',label=label0,zorder=3)
+    label0='$\\frac{dx}{dt}=k.x$'+(' ; $x_0={:.1f}, k={:.2f}$'.format(k0[0],k0[1]))
+    plt.plot(t,model0(k0,t),color='green',label=label0,zorder=4)
     
-    label1='$\\frac{dx}{dt}=\\frac{k}{1+a.t}.x$'+(' ; $x_0={:.1f}, k={:.3f}, a={:.3f}$'.format(k1[0],k1[1],k1[2]))
-    plt.plot(t,model1(k1,t),color='black',label=label1,zorder=2)
+    label1='$\\frac{dx}{dt}=\\frac{k}{1+a.t}.x$'+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k1[0],k1[1],k1[2]))
+    plt.plot(t,model1(k1,t),color='black',label=label1,zorder=3)
     
-    label2='$\\frac{dx}{dt}=\\frac{k}{e^{a.t}}.x$ '+(' ; $x_0={:.1f}, k={:.3f}, a={:.3f}$'.format(k2[0],k2[1],k2[2]))
-    plt.plot(t,model2(k2,t),color='blue',label=label2,zorder=1)
+    label2='$\\frac{dx}{dt}=\\frac{k}{e^{a.t}}.x$ '+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k2[0],k2[1],k2[2]))
+    plt.plot(t,model2(k2,t),color='blue',label=label2,zorder=2)
     
-    label3='$\\frac{dx}{dt}=r.x.(1-\\frac{x}{K})$'+(' ; $x_{{0}}={:.1f}, r={:.1f}, K={:.3g}$'.format(k3[0]*k3[1],k3[1],k3[2]))
-    plt.plot(t,model3(k3,t),color='orange',label=label3,zorder=0)
+    label3='$\\frac{dx}{dt}=k.x.(1-\\frac{x}{P})$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, P={:.2g}$'.format(k3[0]*k3[2],k3[1],k3[2]))
+    plt.plot(t,model3(k3,t),color='orange',label=label3,zorder=1)
     
     plt.yscale('symlog')
     plt.ylabel('Confirmed cases')
