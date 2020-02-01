@@ -39,10 +39,12 @@ def model2(x,t):
     return (C/c)*np.exp(-(k/a)*np.exp(-a*t))
 
 # Logistic equation
+# DSolve[x'[t] == r*x*(1-x/K), x[t], t]
+# Wolfram Alpha doesn't solve, but is sigmoid
 def model3(x,t):
     a=x[0]
-    K=x[1]
-    r=x[2]
+    r=x[1]
+    K=x[2]
     return K/((1.0+(1.0/a-1.0))*np.exp(-r*t))
 
 def probe(data,K):
@@ -70,7 +72,7 @@ def probe(data,K):
     x2=np.array([data[0],1.0,0.1])
     r2=scipy.optimize.minimize(error2,x2,method='nelder-mead')
 
-    x3=np.array([data[0]/K,K,1.0])
+    x3=np.array([data[0]/K,1.0,K])
     r3=scipy.optimize.minimize(error3,x3,method='nelder-mead')
 
     return r0.x,r1.x,r2.x,r3.x
@@ -103,16 +105,16 @@ for p in [1,2,3]:
     
     t=np.arange(30)
     
-    label0='$\\frac{dx}{dt}=k.x$'+(' ; $x_0={:.1f},k={:.3f}$'.format(k0[0],k0[1]))
+    label0='$\\frac{dx}{dt}=k.x$'+(' ; $x_0={:.1f}, k={:.3f}$'.format(k0[0],k0[1]))
     plt.plot(t,model0(k0,t),color='green',label=label0,zorder=3)
     
-    label1='$\\frac{dx}{dt}=\\frac{k}{1+a.t}.x$'+(' ; $x_0={:.1f},k={:.3f},a={:.3f}$'.format(k1[0],k1[1],k1[2]))
+    label1='$\\frac{dx}{dt}=\\frac{k}{1+a.t}.x$'+(' ; $x_0={:.1f}, k={:.3f}, a={:.3f}$'.format(k1[0],k1[1],k1[2]))
     plt.plot(t,model1(k1,t),color='black',label=label1,zorder=2)
     
-    label2='$\\frac{dx}{dt}=\\frac{k}{e^{a.t}}.x$'+(' ; $x_0={:.1f},k={:.3f},a={:.3f}$'.format(k2[0],k2[1],k2[2]))
+    label2='$\\frac{dx}{dt}=\\frac{k}{e^{a.t}}.x$ '+(' ; $x_0={:.1f}, k={:.3f}, a={:.3f}$'.format(k2[0],k2[1],k2[2]))
     plt.plot(t,model2(k2,t),color='blue',label=label2,zorder=1)
     
-    label3='Logistic '+(' ; $K.x_{{0}}={:.1f},K={:.3g},r={:.1f}$'.format(k3[0]*k3[1],k3[1],k3[2]))
+    label3='$\\frac{dx}{dt}=r.x.(1-\\frac{x}{K})$'+(' ; $x_{{0}}={:.1f}, r={:.1f}, K={:.3g}$'.format(k3[0]*k3[1],k3[1],k3[2]))
     plt.plot(t,model3(k3,t),color='orange',label=label3,zorder=0)
     
     plt.yscale('symlog')
@@ -123,6 +125,3 @@ for p in [1,2,3]:
 
 plt.suptitle('Least-squares fits to confirmed cases')
 plt.show()
-
-
-
