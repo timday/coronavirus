@@ -65,15 +65,19 @@ def probe(data,K):
 
     x0=np.array([data[0],1.0])
     r0=scipy.optimize.minimize(error0,x0,method='nelder-mead')
+    print '  Model 0 score {:.3f}'.format(r0.fun)
 
     x1=np.array([data[0],1.0,0.1])
     r1=scipy.optimize.minimize(error1,x1,method='nelder-mead')
+    print '  Model 1 score {:.3f}'.format(r1.fun)
 
     x2=np.array([data[0],1.0,0.1])
     r2=scipy.optimize.minimize(error2,x2,method='nelder-mead')
+    print '  Model 2 score {:.3f}'.format(r2.fun)
 
     x3=np.array([data[0]/P,1.0,P])
     r3=scipy.optimize.minimize(error3,x3,method='nelder-mead')
+    print '  Model 3 score {:.3f}'.format(r3.fun)
 
     return r0.x,r1.x,r2.x,r3.x
 
@@ -98,6 +102,8 @@ for p in [1,2,3]:
         3: 7.7e9-1.4e9,
         2: 7.7e9
         }[p]
+
+    print '{}:'.format(where)
     
     k0,k1,k2,k3=probe(data,P)
 
