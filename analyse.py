@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 # Data from https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
 # Use inspect element on graph to get precise numbers
 # Starts 2020-01-20:
-china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,11860],dtype=np.float64)
-other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  164],dtype=np.float64)
+china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341],dtype=np.float64)
+other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173],dtype=np.float64)
 
 # Straight exponential growth
 # DSolve[x'[t] == k*x[t], x[t], t]
@@ -94,7 +94,7 @@ def probe(data,P):
     print '  Model 2 score {:.3f}'.format(r2.fun)
 
     x3=np.array([data[0],0.5,P])
-    r3=scipy.optimize.minimize(error3,x3,method='BFGS')  #'nelder-mead')  # BFGS and COBYLA comes up with less silly results for P
+    r3=scipy.optimize.minimize(error3,x3,method='COBYLA')  #'nelder-mead')  # BFGS and COBYLA comes up with less silly results for P.  COBYLA would take constraint on P.
     print '  Model 3 score {:.3f} (success {})'.format(r3.fun,r3.success)
 
     return r0.x,r1.x,r2.x,r3.x,r3.success
@@ -148,16 +148,24 @@ for p in [1,2,3]:
     plt.legend(loc='upper left',framealpha=0.9)
     plt.title(where)
 
-china_gain=china[1:]/china[:-1]-1.0
-other_gain=other[1:]/other[:-1]-1.0
+china_gain_daily=(china[1:]/china[:-1])-1.0
+other_gain_daily=(other[1:]/other[:-1])-1.0
 
-plt.subplot(2,2,4)
-plt.plot(np.arange(len(china_gain))+1.0,china_gain,color='red',label='Mainland China')
-plt.plot(np.arange(len(other_gain))+1.0,other_gain,color='blue',label='Other locations')
-plt.ylabel('Daily gain rate')
+china_gain_weekly=np.array([(china[i]/china[i-7])**(1.0/7.0)-1.0 for i in xrange(7,len(china))])
+other_gain_weekly=np.array([(other[i]/other[i-7])**(1.0/7.0)-1.0 for i in xrange(7,len(other))])
+
+ax=plt.subplot(2,2,4)
+plt.scatter(np.arange(len(china_gain_daily))+1.0,china_gain_daily,color='red',label='Mainland China (day change)')
+plt.scatter(np.arange(len(other_gain_daily))+1.0,other_gain_daily,color='blue',label='Other locations (day change)')
+plt.plot(np.arange(len(china_gain_weekly))+7.0,china_gain_weekly,color='red',label='Mainland China (week change)',linewidth=2)
+plt.plot(np.arange(len(other_gain_weekly))+7.0,other_gain_weekly,color='blue',label='Other locations (week change)',linewidth=2)
+plt.ylabel('Daily % increase')
 plt.xlabel('Days from 2020-01-20')
 plt.legend(loc='upper right',framealpha=0.9)
-plt.title('Daily gains')
+plt.title('Daily % increase')
+
+vals = ax.get_yticks()
+ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
 
 plt.suptitle('Least-squares fits to confirmed cases')
 plt.show()
