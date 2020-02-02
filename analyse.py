@@ -19,7 +19,7 @@ def model0(x,t):
     k=x[1]
     return C*np.exp(k*t)
 
-# Linearly slowing growth
+# Reciprocal linearly slowing growth
 # DSolve[x'[t] == (k/(1+a*t))*x[t], x[t], t]
 # x[t] = C*(1+c*t)^(k/c)
 def model1(x,t):
@@ -64,6 +64,15 @@ def model3(x,t):
 # Check:
 # Clearly tends to P as t->oo.
 # At t=0, sympy.simplify(((P*C2)/(C2+1)).subs(C1,P*C2).subs(C2,x0/(P-x0))) is x0 as expected.
+
+# TODO:
+# What about a model with a floor on growth rate?
+
+# DSolve[x'[t] == (k+j/(1+a*t))*x[t], x[t], t]
+# Yes: solution C*exp((k+a*k*t+j*Log(1+a*t))/a)
+
+# DSolve[x'[t] == (k+j/exp(a*t))*x[t], x[t], t]
+# Yes: solution C*exp(k*t-j*exp(-a*t)/a)
 
 def probe(data,P):
 
