@@ -148,5 +148,16 @@ for p in [1,2,3]:
     plt.legend(loc='upper left',framealpha=0.9)
     plt.title(where)
 
+china_gain=china[1:]/china[:-1]-1.0
+other_gain=other[1:]/other[:-1]-1.0
+
+plt.subplot(2,2,4)
+plt.plot(np.arange(len(china_gain))+1.0,china_gain,color='red',label='Mainland China')
+plt.plot(np.arange(len(other_gain))+1.0,other_gain,color='blue',label='Other locations')
+plt.ylabel('Daily gain rate')
+plt.xlabel('Days from 2020-01-20')
+plt.legend(loc='upper right',framealpha=0.9)
+plt.title('Daily gains')
+
 plt.suptitle('Least-squares fits to confirmed cases')
 plt.show()
