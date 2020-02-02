@@ -35,7 +35,7 @@ def model2(x,t):
     C=x[0]
     k=x[1]
     a=x[2]
-    c=math.exp(-(k/a))
+    c=np.exp(-(k/a))
     return (C/c)*np.exp(-(k/a)*np.exp(-a*t))
 
 # Logistic equation
@@ -79,7 +79,14 @@ def model4(x,t):
 
 # DSolve[x'[t] == (k+j/exp(a*t))*x[t], x[t], t]
 # Yes: solution C*exp(k*t-j*exp(-a*t)/a)
-
+def model5(x,t):
+    C=x[0]
+    k=x[1]
+    j=x[2]
+    a=x[3]
+    c=np.exp(-(j/a))
+    return (C/c)*np.exp(k*t-j*np.exp(-a*t)/a)
+    
 def probe(data,P):
 
     def error(v):
@@ -97,28 +104,37 @@ def probe(data,P):
         return error(model3(x,t))
     def error4(x):
         return error(model4(x,t))
+    def error5(x):
+        return error(model5(x,t))
 
+    # 'nelder-mead' works good for the first three.
+    # BFGS and COBYLA also seem useful/relatively stable (may not take bounds though).  SLSQP seems to be default when there are bounds.
+    
     x0=np.array([data[0],0.5])
-    r0=scipy.optimize.minimize(error0,x0,method='nelder-mead')
+    r0=scipy.optimize.minimize(error0,x0,method='SLSQP')
     print '  Model 0 score {:.3f}'.format(r0.fun)
 
     x1=np.array([data[0],0.5,0.1])
-    r1=scipy.optimize.minimize(error1,x1,method='nelder-mead')
+    r1=scipy.optimize.minimize(error1,x1,method='SLSQP')
     print '  Model 1 score {:.3f}'.format(r1.fun)
 
     x2=np.array([data[0],0.5,0.1])
-    r2=scipy.optimize.minimize(error2,x2,method='nelder-mead')
+    r2=scipy.optimize.minimize(error2,x2,method='SLSQP')  
     print '  Model 2 score {:.3f}'.format(r2.fun)
 
     x3=np.array([data[0],0.5,P])
-    r3=scipy.optimize.minimize(error3,x3,method='COBYLA')  #'nelder-mead')  # BFGS and COBYLA comes up with less silly results for P.  COBYLA would take constraint on P.
+    r3=scipy.optimize.minimize(error3,x3,method='SLSQP',bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,P)])
     print '  Model 3 score {:.3f} (success {})'.format(r3.fun,r3.success)
 
     x4=np.array([data[0],0.25,0.25,0.1])
-    r4=scipy.optimize.minimize(error4,x4,method='COBYLA',options={'maxiter':10000})
+    r4=scipy.optimize.minimize(error4,x4,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)])
     print '  Model 4 score {:.3f} (success {})'.format(r4.fun,r4.success)
 
-    return r0.x,r1.x,r2.x,r3.x,r3.success,r4.x,r4.success
+    x5=np.array([data[0],0.25,0.25,0.1])
+    r5=scipy.optimize.minimize(error5,x5,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)])
+    print '  Model 5 score {:.3f} (success {})'.format(r5.fun,r5.success)
+
+    return r0.x,r1.x,r2.x,r3.x,r3.success,r4.x,r4.success,r5.x,r5.success
 
 for p in [1,2,3]:
 
@@ -144,7 +160,7 @@ for p in [1,2,3]:
 
     print '{}:'.format(where)
     
-    k0,k1,k2,k3,ok3,k4,ok4=probe(data,P)
+    k0,k1,k2,k3,ok3,k4,ok4,k5,ok5=probe(data,P)
 
     plt.plot(np.arange(len(data)),data,linewidth=4,color='red',label='Observed')
     
@@ -156,17 +172,21 @@ for p in [1,2,3]:
     label1='$\\frac{dx}{dt} = \\frac{k}{1+a.t}.x$'+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k1[0],k1[1],k1[2]))
     plt.plot(t,model1(k1,t),color='black',label=label1,zorder=3,linewidth=2)
 
-    if ok4:
+    if ok4 and math.fabs(k4[1])>0.01:
         label4='$\\frac{dx}{dt} = (k+\\frac{j}{1+a.t}).x$'+(' ; $x_0={:.1f}, k={:.2f}, j={:.2f}, a={:.2f}$'.format(k4[0],k4[1],k4[2],k4[3]))
         plt.plot(t,model4(k4,t),color='grey',label=label4,zorder=3,linewidth=2)
     
     label2='$\\frac{dx}{dt} = \\frac{k}{e^{a.t}}.x$ '+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k2[0],k2[1],k2[2]))
     plt.plot(t,model2(k2,t),color='blue',label=label2,zorder=2,linewidth=2)
 
+    if ok5 and math.fabs(k5[1])>0.01:
+        label5='$\\frac{dx}{dt} = (k+\\frac{j}{e^{a.t}}).x$'+(' ; $x_0={:.1f}, k={:.2f}, j={:.2f}, a={:.2f}$'.format(k5[0],k5[1],k5[2],k5[3]))
+        plt.plot(t,model5(k5,t),color='skyblue',label=label5,zorder=2,linewidth=2)
+
     if ok3:
         label3='$\\frac{dx}{dt} = k.x.(1-\\frac{x}{P})$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, P={:.2g}$'.format(k3[0],k3[1],k3[2]))
         plt.plot(t,model3(k3,t),color='orange',label=label3,zorder=1,linewidth=2)
-    
+
     plt.yscale('symlog')
     plt.ylabel('Confirmed cases')
     plt.xlabel('Days from 2020-01-20')
