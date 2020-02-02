@@ -70,6 +70,12 @@ def model3(x,t):
 
 # DSolve[x'[t] == (k+j/(1+a*t))*x[t], x[t], t]
 # Yes: solution C*exp((k+a*k*t+j*Log(1+a*t))/a)
+def model4(x,t):
+    C=x[0]
+    k=x[1]
+    j=x[2]
+    a=x[3]
+    return C*np.exp((k+a*k*t+j*np.log(1.0+a*t))/a)
 
 # DSolve[x'[t] == (k+j/exp(a*t))*x[t], x[t], t]
 # Yes: solution C*exp(k*t-j*exp(-a*t)/a)
@@ -89,6 +95,8 @@ def probe(data,P):
         return error(model2(x,t))
     def error3(x):
         return error(model3(x,t))
+    def error4(x):
+        return error(model4(x,t))
 
     x0=np.array([data[0],0.5])
     r0=scipy.optimize.minimize(error0,x0,method='nelder-mead')
@@ -106,7 +114,11 @@ def probe(data,P):
     r3=scipy.optimize.minimize(error3,x3,method='COBYLA')  #'nelder-mead')  # BFGS and COBYLA comes up with less silly results for P.  COBYLA would take constraint on P.
     print '  Model 3 score {:.3f} (success {})'.format(r3.fun,r3.success)
 
-    return r0.x,r1.x,r2.x,r3.x,r3.success
+    x4=np.array([data[0],0.25,0.25,0.1])
+    r4=scipy.optimize.minimize(error4,x4,method='COBYLA',options={'maxiter':10000})
+    print '  Model 4 score {:.3f} (success {})'.format(r4.fun,r4.success)
+
+    return r0.x,r1.x,r2.x,r3.x,r3.success,r4.x,r4.success
 
 for p in [1,2,3]:
 
@@ -132,24 +144,28 @@ for p in [1,2,3]:
 
     print '{}:'.format(where)
     
-    k0,k1,k2,k3,ok3=probe(data,P)
+    k0,k1,k2,k3,ok3,k4,ok4=probe(data,P)
 
-    plt.plot(np.arange(len(data)),data,linewidth=2,color='red',label='Observed')
+    plt.plot(np.arange(len(data)),data,linewidth=4,color='red',label='Observed')
     
     t=np.arange(30+len(data))
     
     label0='$\\frac{dx}{dt} = k.x$'+(' ; $x_0={:.1f}, k={:.2f}$'.format(k0[0],k0[1]))
-    plt.plot(t,model0(k0,t),color='green',label=label0,zorder=4)
+    plt.plot(t,model0(k0,t),color='green',label=label0,zorder=4,linewidth=2)
     
     label1='$\\frac{dx}{dt} = \\frac{k}{1+a.t}.x$'+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k1[0],k1[1],k1[2]))
-    plt.plot(t,model1(k1,t),color='black',label=label1,zorder=3)
+    plt.plot(t,model1(k1,t),color='black',label=label1,zorder=3,linewidth=2)
+
+    if ok4:
+        label4='$\\frac{dx}{dt} = (k+\\frac{j}{1+a.t}).x$'+(' ; $x_0={:.1f}, k={:.2f}, j={:.2f}, a={:.2f}$'.format(k4[0],k4[1],k4[2],k4[3]))
+        plt.plot(t,model4(k4,t),color='grey',label=label4,zorder=3,linewidth=2)
     
     label2='$\\frac{dx}{dt} = \\frac{k}{e^{a.t}}.x$ '+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k2[0],k2[1],k2[2]))
-    plt.plot(t,model2(k2,t),color='blue',label=label2,zorder=2)
+    plt.plot(t,model2(k2,t),color='blue',label=label2,zorder=2,linewidth=2)
 
     if ok3:
         label3='$\\frac{dx}{dt} = k.x.(1-\\frac{x}{P})$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, P={:.2g}$'.format(k3[0],k3[1],k3[2]))
-        plt.plot(t,model3(k3,t),color='orange',label=label3,zorder=1)
+        plt.plot(t,model3(k3,t),color='orange',label=label3,zorder=1,linewidth=2)
     
     plt.yscale('symlog')
     plt.ylabel('Confirmed cases')
