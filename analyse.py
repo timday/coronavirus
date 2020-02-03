@@ -8,8 +8,8 @@ import matplotlib.pyplot as plt
 # Data from https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
 # Use inspect element on graph to get precise numbers
 # Starts 2020-01-20:
-china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,16643],dtype=np.float64)
-other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  180],dtype=np.float64)
+china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187],dtype=np.float64)
+other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183],dtype=np.float64)
 
 # Straight exponential growth
 # DSolve[x'[t] == k*x[t], x[t], t]
@@ -65,8 +65,7 @@ def model3(x,t):
 # Clearly tends to P as t->oo.
 # At t=0, sympy.simplify(((P*C2)/(C2+1)).subs(C1,P*C2).subs(C2,x0/(P-x0))) is x0 as expected.
 
-# TODO:
-# What about a model with a floor on growth rate?
+# What about learning models with a floor on growth rate?
 
 # DSolve[x'[t] == (k+j/(1+a*t))*x[t], x[t], t]
 # Yes: solution C*exp((k+a*k*t+j*Log(1+a*t))/a)
@@ -86,7 +85,16 @@ def model5(x,t):
     a=x[3]
     c=np.exp(-(j/a))
     return (C/c)*np.exp(k*t-j*np.exp(-a*t)/a)
-    
+
+# What about a model where the rate falls off linearly until some time T (model invalid after that point)
+# DSolve[x'[t] == k*(1-t/T)*x[t],x[t],t]
+# Solution C*exp(kt*(1-t/(2*T)))
+def model6(x,t):
+    C=x[0]
+    k=x[1]
+    T=x[2]
+    return C*np.exp(k*np.minimum(t,T)*(1.0-np.minimum(t,T)/(2.0*T)))
+
 def probe(data,P):
 
     def error(v):
@@ -106,35 +114,41 @@ def probe(data,P):
         return error(model4(x,t))
     def error5(x):
         return error(model5(x,t))
+    def error6(x):
+        return error(model6(x,t))
 
     # 'nelder-mead' works good for the first three.
     # BFGS and COBYLA also seem useful/relatively stable (may not take bounds though).  SLSQP seems to be default when there are bounds.
     
-    x0=np.array([data[0],0.5])
+    x0=np.array([data[0],0.25])
     r0=scipy.optimize.minimize(error0,x0,method='SLSQP')
     print '  Model 0 score {:.3f}'.format(r0.fun)
 
-    x1=np.array([data[0],0.5,0.1])
+    x1=np.array([data[0],0.25,0.1])
     r1=scipy.optimize.minimize(error1,x1,method='SLSQP')
     print '  Model 1 score {:.3f}'.format(r1.fun)
 
-    x2=np.array([data[0],0.5,0.1])
+    x2=np.array([data[0],0.25,0.1])
     r2=scipy.optimize.minimize(error2,x2,method='SLSQP')  
     print '  Model 2 score {:.3f}'.format(r2.fun)
 
-    x3=np.array([data[0],0.5,P])
+    x3=np.array([data[0],0.25,P])
     r3=scipy.optimize.minimize(error3,x3,method='SLSQP',bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,P)])
     print '  Model 3 score {:.3f} (success {})'.format(r3.fun,r3.success)
 
-    x4=np.array([data[0],0.25,0.25,0.1])
+    x4=np.array([data[0],0.0,0.25,0.1])
     r4=scipy.optimize.minimize(error4,x4,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)])
     print '  Model 4 score {:.3f} (success {})'.format(r4.fun,r4.success)
 
-    x5=np.array([data[0],0.25,0.25,0.1])
+    x5=np.array([data[0],0.0,0.25,0.1])
     r5=scipy.optimize.minimize(error5,x5,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)])
     print '  Model 5 score {:.3f} (success {})'.format(r5.fun,r5.success)
 
-    return r0.x,r1.x,r2.x,r3.x,r3.success,r4.x,r4.success,r5.x,r5.success
+    x6=np.array([data[0],0.25,30.0])
+    r6=scipy.optimize.minimize(error6,x6,method='SLSQP')  
+    print '  Model 6 score {:.3f} (success {})'.format(r6.fun,r6.success)
+    
+    return r0.x,r1.x,r2.x,r3.x,r3.success,r4.x,r4.success,r5.x,r5.success,r6.x,r6.success
 
 for p in [1,2,3]:
 
@@ -160,7 +174,7 @@ for p in [1,2,3]:
 
     print '{}:'.format(where)
     
-    k0,k1,k2,k3,ok3,k4,ok4,k5,ok5=probe(data,P)
+    k0,k1,k2,k3,ok3,k4,ok4,k5,ok5,k6,ok6=probe(data,P)
 
     plt.plot(np.arange(len(data)),data,linewidth=4,color='red',label='Observed')
     
@@ -187,6 +201,10 @@ for p in [1,2,3]:
         label3='$\\frac{dx}{dt} = k.x.(1-\\frac{x}{P})$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, P={:.2g}$'.format(k3[0],k3[1],k3[2]))
         plt.plot(t,model3(k3,t),color='orange',label=label3,zorder=1,linewidth=2)
 
+    if ok6:
+        label6='$\\frac{dx}{dt} = k.x.(1-\\frac{t}{T})$ for $t \\leq T$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, T={:.1f}$'.format(k6[0],k6[1],k6[2]))
+        plt.plot(t,model6(k6,t),color='purple',label=label6,zorder=1,linewidth=2)
+        
     plt.yscale('symlog')
     plt.ylabel('Confirmed cases')
     plt.xlabel('Days from 2020-01-20')
