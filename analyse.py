@@ -106,8 +106,10 @@ def model7(x,t):
     j=x[2]
     T=x[3]
     s=np.minimum(t,T)
-    return C*np.exp(k*s+j*s*(1.0-s/(2.0*T)))
-    
+    return C*np.exp(k*t+j*s*(1.0-s/(2.0*T)))  # NB Continues to evolve at rate k once j influence reaches limit
+
+# TODO: Consider models with two variables... an infected but not yet contagious population.
+
 def probe(data,P):
 
     def error(v):
@@ -134,38 +136,55 @@ def probe(data,P):
 
     # 'nelder-mead' works good for the first three.
     # BFGS and COBYLA also seem useful/relatively stable (may not take bounds though).  SLSQP seems to be default when there are bounds.
+
+    # Initial values to guess for k and a
+    k=1.0/3.0
+    a=0.1
+    T=len(data)
     
-    x0=np.array([data[0],0.25])
-    r0=scipy.optimize.minimize(error0,x0,method='SLSQP')
-    print '  Model 0 score {:.3f}'.format(r0.fun)
+    x0=np.array([data[0],k])
+    r0=scipy.optimize.minimize(error0,x0,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf)])
 
-    x1=np.array([data[0],0.25,0.1])
-    r1=scipy.optimize.minimize(error1,x1,method='SLSQP')
-    print '  Model 1 score {:.3f}'.format(r1.fun)
+    x1=np.array([data[0],k,a])
+    r1=scipy.optimize.minimize(error1,x1,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)])
 
-    x2=np.array([data[0],0.25,0.1])
-    r2=scipy.optimize.minimize(error2,x2,method='SLSQP')  
-    print '  Model 2 score {:.3f}'.format(r2.fun)
+    x2=np.array([data[0],k,a])
+    r2=scipy.optimize.minimize(error2,x2,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)])  
 
-    x3=np.array([data[0],0.25,P])
-    r3=scipy.optimize.minimize(error3,x3,method='SLSQP',bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,P)])
-    print '  Model 3 score {:.3f} (success {})'.format(r3.fun,r3.success)
+    x3=np.array([data[0],k,P])
+    r3=scipy.optimize.minimize(error3,x3,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,P)])
 
-    x4=np.array([data[0],0.0,0.25,0.1])
+    x4=np.array([data[0],0.0,k,a])
     r4=scipy.optimize.minimize(error4,x4,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)])
-    print '  Model 4 score {:.3f} (success {})'.format(r4.fun,r4.success)
 
-    x5=np.array([data[0],0.0,0.25,0.1])
+    x5=np.array([data[0],0.0,k,a])
     r5=scipy.optimize.minimize(error5,x5,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)])
-    print '  Model 5 score {:.3f} (success {})'.format(r5.fun,r5.success)
 
-    x6=np.array([data[0],0.25,30.0])
-    r6=scipy.optimize.minimize(error6,x6,method='SLSQP')  
-    print '  Model 6 score {:.3f} (success {})'.format(r6.fun,r6.success)
+#    r6=sorted(
+#        [
+#            scipy.optimize.minimize(error6,x6,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)])
+#            for x6 in [np.array([data[0],k,t]) for t in (T/2.0,T,2.0*T)]
+#        ],
+#        key=lambda r: r.fun,
+#        reverse=True
+#    )
+#    print r6
+#    r6=r6[0]
 
-    x7=np.array([data[0],0.0,0.25,30.0])
-    r7=scipy.optimize.minimize(error7,x7,method='SLSQP',bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)])
-    print '  Model 7 score {:.3f} (success {})'.format(r7.fun,r7.success)
+    x6=np.array([data[0],k,T])
+    r6=scipy.optimize.minimize(error6,x6,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)])
+
+    x7=np.array([data[0],0.0,k,T])
+    r7=scipy.optimize.minimize(error7,x7,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)])
+
+    print '  Model 0 score {:.3f} (success {}) {}'.format(r0.fun,r0.success,r0.x)
+    print '  Model 1 score {:.3f} (success {}) {}'.format(r1.fun,r1.success,r1.x)
+    print '  Model 2 score {:.3f} (success {}) {}'.format(r2.fun,r2.success,r2.x)
+    print '  Model 3 score {:.3f} (success {}) {}'.format(r3.fun,r3.success,r3.x)
+    print '  Model 4 score {:.3f} (success {}) {}'.format(r4.fun,r4.success,r4.x)
+    print '  Model 5 score {:.3f} (success {}) {}'.format(r5.fun,r5.success,r5.x)
+    print '  Model 6 score {:.3f} (success {}) {}'.format(r6.fun,r6.success,r6.x)
+    print '  Model 7 score {:.3f} (success {}) {}'.format(r7.fun,r7.success,r7.x)
 
     return r0.x,r1.x,r2.x,r3.x,r3.success,r4.x,r4.success,r5.x,r5.success,r6.x,r6.success,r7.x,r7.success
 
@@ -221,11 +240,11 @@ for p in [1,2,3]:
         plt.plot(t,model3(k3,t),color='orange',label=label3,zorder=4,linewidth=2)
 
     if ok6:
-        label6='$\\frac{dx}{dt} = k.(1-\\frac{t}{T}).x$ for $t \\leq T$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, T={:.1f}$'.format(k6[0],k6[1],k6[2]))
+        label6='$\\frac{dx}{dt} = k.(1-\\frac{t}{T}).x$ for $t \\leq T$, else $0$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, T={:.1f}$'.format(k6[0],k6[1],k6[2]))
         plt.plot(t,model6(k6,t),color='purple',label=label6,zorder=3,linewidth=2)
 
     if ok7 and math.fabs(k7[1])>0.01:
-        label7='$\\frac{dx}{dt} = (k+j.(1-\\frac{t}{T})).x$ for $t \\leq T$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, j={:.2f}, T={:.1f}$'.format(k7[0],k7[1],k7[2],k7[3]))
+        label7='$\\frac{dx}{dt} = (k+j.(1-\\frac{t}{T})).x$ for $t \\leq T$, else $k.x$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, j={:.2f}, T={:.1f}$'.format(k7[0],k7[1],k7[2],k7[3]))
         plt.plot(t,model7(k7,t),color='pink',label=label7,zorder=2,linewidth=2)
         
     plt.yscale('symlog')
