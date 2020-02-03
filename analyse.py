@@ -115,24 +115,24 @@ def probe(data,P):
     def error(v):
         return np.sum((np.log(v)-np.log(data))**2)
     
-    t=np.arange(len(data))
+    days=np.arange(len(data))
 
     def error0(x):
-        return error(model0(x,t))
+        return error(model0(x,days))
     def error1(x):
-        return error(model1(x,t))
+        return error(model1(x,days))
     def error2(x):
-        return error(model2(x,t))
+        return error(model2(x,days))
     def error3(x):
-        return error(model3(x,t))
+        return error(model3(x,days))
     def error4(x):
-        return error(model4(x,t))
+        return error(model4(x,days))
     def error5(x):
-        return error(model5(x,t))
+        return error(model5(x,days))
     def error6(x):
-        return error(model6(x,t))
+        return error(model6(x,days))
     def error7(x):
-        return error(model7(x,t))
+        return error(model7(x,days))
 
     # 'nelder-mead' works good for the first three.
     # BFGS and COBYLA also seem useful/relatively stable (may not take bounds though).  SLSQP seems to be default when there are bounds.
@@ -160,31 +160,22 @@ def probe(data,P):
     x5=np.array([data[0],0.0,k,a])
     r5=scipy.optimize.minimize(error5,x5,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)])
 
-#    r6=sorted(
-#        [
-#            scipy.optimize.minimize(error6,x6,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)])
-#            for x6 in [np.array([data[0],k,t]) for t in (T/2.0,T,2.0*T)]
-#        ],
-#        key=lambda r: r.fun,
-#        reverse=True
-#    )
-#    print r6
-#    r6=r6[0]
-
-    x6=np.array([data[0],k,T])
-    r6=scipy.optimize.minimize(error6,x6,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)])
-
-    x7=np.array([data[0],0.0,k,T])
-    r7=scipy.optimize.minimize(error7,x7,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)])
-
-    print '  Model 0 score {:.3f} (success {}) {}'.format(r0.fun,r0.success,r0.x)
-    print '  Model 1 score {:.3f} (success {}) {}'.format(r1.fun,r1.success,r1.x)
-    print '  Model 2 score {:.3f} (success {}) {}'.format(r2.fun,r2.success,r2.x)
-    print '  Model 3 score {:.3f} (success {}) {}'.format(r3.fun,r3.success,r3.x)
-    print '  Model 4 score {:.3f} (success {}) {}'.format(r4.fun,r4.success,r4.x)
-    print '  Model 5 score {:.3f} (success {}) {}'.format(r5.fun,r5.success,r5.x)
-    print '  Model 6 score {:.3f} (success {}) {}'.format(r6.fun,r6.success,r6.x)
-    print '  Model 7 score {:.3f} (success {}) {}'.format(r7.fun,r7.success,r7.x)
+    x6s=[np.array([data[0],k,t]) for t in [0.5*T,T,2.0*T]]
+    r6s=map(lambda x6: scipy.optimize.minimize(error6,x6,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x6s)
+    r6=min(r6s,key=lambda r: r.fun)
+    
+    x7s=[np.array([data[0],0.0,k,t]) for t in [0.5*T,T,2.0*T]]
+    r7s=map(lambda x7: scipy.optimize.minimize(error7,x7,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x7s)
+    r7=min(r7s,key=lambda r: r.fun)
+    
+    print '  Model 0 score {:.4f} (success {}) {}'.format(r0.fun,r0.success,r0.x)
+    print '  Model 1 score {:.4f} (success {}) {}'.format(r1.fun,r1.success,r1.x)
+    print '  Model 2 score {:.4f} (success {}) {}'.format(r2.fun,r2.success,r2.x)
+    print '  Model 3 score {:.4f} (success {}) {}'.format(r3.fun,r3.success,r3.x)
+    print '  Model 4 score {:.4f} (success {}) {}'.format(r4.fun,r4.success,r4.x)
+    print '  Model 5 score {:.4f} (success {}) {}'.format(r5.fun,r5.success,r5.x)
+    print '  Model 6 score {:.4f} (success {}) {}'.format(r6.fun,r6.success,r6.x)
+    print '  Model 7 score {:.4f} (success {}) {}'.format(r7.fun,r7.success,r7.x)
 
     return r0.x,r1.x,r2.x,r3.x,r3.success,r4.x,r4.success,r5.x,r5.success,r6.x,r6.success,r7.x,r7.success
 
@@ -224,20 +215,20 @@ for p in [1,2,3]:
     label1='$\\frac{dx}{dt} = \\frac{k}{1+a.t}.x$'+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k1[0],k1[1],k1[2]))
     plt.plot(t,model1(k1,t),color='black',label=label1,zorder=8,linewidth=2)
 
-    if ok4 and math.fabs(k4[1])>0.01:
-        label4='$\\frac{dx}{dt} = (k+\\frac{j}{1+a.t}).x$'+(' ; $x_0={:.1f}, k={:.2f}, j={:.2f}, a={:.2f}$'.format(k4[0],k4[1],k4[2],k4[3]))
-        plt.plot(t,model4(k4,t),color='grey',label=label4,zorder=7,linewidth=2)
-    
     label2='$\\frac{dx}{dt} = \\frac{k}{e^{a.t}}.x$ '+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k2[0],k2[1],k2[2]))
-    plt.plot(t,model2(k2,t),color='blue',label=label2,zorder=6,linewidth=2)
-
-    if ok5 and math.fabs(k5[1])>0.01:
-        label5='$\\frac{dx}{dt} = (k+\\frac{j}{e^{a.t}}).x$'+(' ; $x_0={:.1f}, k={:.2f}, j={:.2f}, a={:.2f}$'.format(k5[0],k5[1],k5[2],k5[3]))
-        plt.plot(t,model5(k5,t),color='skyblue',label=label5,zorder=5,linewidth=2)
+    plt.plot(t,model2(k2,t),color='blue',label=label2,zorder=7,linewidth=2)
 
     if ok3:
         label3='$\\frac{dx}{dt} = k.x.(1-\\frac{x}{P})$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, P={:.2g}$'.format(k3[0],k3[1],k3[2]))
-        plt.plot(t,model3(k3,t),color='orange',label=label3,zorder=4,linewidth=2)
+        plt.plot(t,model3(k3,t),color='orange',label=label3,zorder=6,linewidth=2)
+
+    if ok4 and math.fabs(k4[1])>0.01:
+        label4='$\\frac{dx}{dt} = (k+\\frac{j}{1+a.t}).x$'+(' ; $x_0={:.1f}, k={:.2f}, j={:.2f}, a={:.2f}$'.format(k4[0],k4[1],k4[2],k4[3]))
+        plt.plot(t,model4(k4,t),color='grey',label=label4,zorder=5,linewidth=2)
+    
+    if ok5 and math.fabs(k5[1])>0.01:
+        label5='$\\frac{dx}{dt} = (k+\\frac{j}{e^{a.t}}).x$'+(' ; $x_0={:.1f}, k={:.2f}, j={:.2f}, a={:.2f}$'.format(k5[0],k5[1],k5[2],k5[3]))
+        plt.plot(t,model5(k5,t),color='skyblue',label=label5,zorder=4,linewidth=2)
 
     if ok6:
         label6='$\\frac{dx}{dt} = k.(1-\\frac{t}{T}).x$ for $t \\leq T$, else $0$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, T={:.1f}$'.format(k6[0],k6[1],k6[2]))
