@@ -3,6 +3,7 @@
 import math
 import numpy as np
 import scipy.optimize
+import scipy.special
 import matplotlib.pyplot as plt
 
 # Data from https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
@@ -93,8 +94,20 @@ def model6(x,t):
     C=x[0]
     k=x[1]
     T=x[2]
-    return C*np.exp(k*np.minimum(t,T)*(1.0-np.minimum(t,T)/(2.0*T)))
+    s=np.minimum(t,T)
+    return C*np.exp(k*s*(1.0-s/(2.0*T)))
 
+# And again a variant with a constant floor?
+# DSolve[x'[t] == (k+j*(1-t/T))*x[t],x[t],t]
+# Solution C*exp(kt+jt*(1-t/(2*T)))
+def model7(x,t):
+    C=x[0]
+    k=x[1]
+    j=x[2]
+    T=x[3]
+    s=np.minimum(t,T)
+    return C*np.exp(k*s+j*s*(1.0-s/(2.0*T)))
+    
 def probe(data,P):
 
     def error(v):
@@ -116,6 +129,8 @@ def probe(data,P):
         return error(model5(x,t))
     def error6(x):
         return error(model6(x,t))
+    def error7(x):
+        return error(model7(x,t))
 
     # 'nelder-mead' works good for the first three.
     # BFGS and COBYLA also seem useful/relatively stable (may not take bounds though).  SLSQP seems to be default when there are bounds.
@@ -147,8 +162,12 @@ def probe(data,P):
     x6=np.array([data[0],0.25,30.0])
     r6=scipy.optimize.minimize(error6,x6,method='SLSQP')  
     print '  Model 6 score {:.3f} (success {})'.format(r6.fun,r6.success)
-    
-    return r0.x,r1.x,r2.x,r3.x,r3.success,r4.x,r4.success,r5.x,r5.success,r6.x,r6.success
+
+    x7=np.array([data[0],0.0,0.25,30.0])
+    r7=scipy.optimize.minimize(error7,x7,method='SLSQP',bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)])
+    print '  Model 7 score {:.3f} (success {})'.format(r7.fun,r7.success)
+
+    return r0.x,r1.x,r2.x,r3.x,r3.success,r4.x,r4.success,r5.x,r5.success,r6.x,r6.success,r7.x,r7.success
 
 for p in [1,2,3]:
 
@@ -174,36 +193,40 @@ for p in [1,2,3]:
 
     print '{}:'.format(where)
     
-    k0,k1,k2,k3,ok3,k4,ok4,k5,ok5,k6,ok6=probe(data,P)
+    k0,k1,k2,k3,ok3,k4,ok4,k5,ok5,k6,ok6,k7,ok7=probe(data,P)
 
-    plt.plot(np.arange(len(data)),data,linewidth=4,color='red',label='Observed')
+    plt.plot(np.arange(len(data)),data,linewidth=4,color='red',label='Observed',zorder=10)
     
     t=np.arange(30+len(data))
     
     label0='$\\frac{dx}{dt} = k.x$'+(' ; $x_0={:.1f}, k={:.2f}$'.format(k0[0],k0[1]))
-    plt.plot(t,model0(k0,t),color='green',label=label0,zorder=4,linewidth=2)
+    plt.plot(t,model0(k0,t),color='green',label=label0,zorder=9,linewidth=2)
     
     label1='$\\frac{dx}{dt} = \\frac{k}{1+a.t}.x$'+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k1[0],k1[1],k1[2]))
-    plt.plot(t,model1(k1,t),color='black',label=label1,zorder=3,linewidth=2)
+    plt.plot(t,model1(k1,t),color='black',label=label1,zorder=8,linewidth=2)
 
     if ok4 and math.fabs(k4[1])>0.01:
         label4='$\\frac{dx}{dt} = (k+\\frac{j}{1+a.t}).x$'+(' ; $x_0={:.1f}, k={:.2f}, j={:.2f}, a={:.2f}$'.format(k4[0],k4[1],k4[2],k4[3]))
-        plt.plot(t,model4(k4,t),color='grey',label=label4,zorder=3,linewidth=2)
+        plt.plot(t,model4(k4,t),color='grey',label=label4,zorder=7,linewidth=2)
     
     label2='$\\frac{dx}{dt} = \\frac{k}{e^{a.t}}.x$ '+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k2[0],k2[1],k2[2]))
-    plt.plot(t,model2(k2,t),color='blue',label=label2,zorder=2,linewidth=2)
+    plt.plot(t,model2(k2,t),color='blue',label=label2,zorder=6,linewidth=2)
 
     if ok5 and math.fabs(k5[1])>0.01:
         label5='$\\frac{dx}{dt} = (k+\\frac{j}{e^{a.t}}).x$'+(' ; $x_0={:.1f}, k={:.2f}, j={:.2f}, a={:.2f}$'.format(k5[0],k5[1],k5[2],k5[3]))
-        plt.plot(t,model5(k5,t),color='skyblue',label=label5,zorder=2,linewidth=2)
+        plt.plot(t,model5(k5,t),color='skyblue',label=label5,zorder=5,linewidth=2)
 
     if ok3:
         label3='$\\frac{dx}{dt} = k.x.(1-\\frac{x}{P})$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, P={:.2g}$'.format(k3[0],k3[1],k3[2]))
-        plt.plot(t,model3(k3,t),color='orange',label=label3,zorder=1,linewidth=2)
+        plt.plot(t,model3(k3,t),color='orange',label=label3,zorder=4,linewidth=2)
 
     if ok6:
-        label6='$\\frac{dx}{dt} = k.x.(1-\\frac{t}{T})$ for $t \\leq T$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, T={:.1f}$'.format(k6[0],k6[1],k6[2]))
-        plt.plot(t,model6(k6,t),color='purple',label=label6,zorder=1,linewidth=2)
+        label6='$\\frac{dx}{dt} = k.(1-\\frac{t}{T}).x$ for $t \\leq T$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, T={:.1f}$'.format(k6[0],k6[1],k6[2]))
+        plt.plot(t,model6(k6,t),color='purple',label=label6,zorder=3,linewidth=2)
+
+    if ok7 and math.fabs(k7[1])>0.01:
+        label7='$\\frac{dx}{dt} = (k+j.(1-\\frac{t}{T})).x$ for $t \\leq T$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, j={:.2f}, T={:.1f}$'.format(k7[0],k7[1],k7[2],k7[3]))
+        plt.plot(t,model7(k7,t),color='pink',label=label7,zorder=2,linewidth=2)
         
     plt.yscale('symlog')
     plt.ylabel('Confirmed cases')
