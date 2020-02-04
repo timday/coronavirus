@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 # Data from https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
 # Use inspect element on graph to get precise numbers
 # Starts 2020-01-20:
-china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187],dtype=np.float64)
-other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183],dtype=np.float64)
+china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693],dtype=np.float64)
+other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188],dtype=np.float64)
 
 # Straight exponential growth
 # DSolve[x'[t] == k*x[t], x[t], t]
@@ -170,14 +170,14 @@ def probe(data,P):
     r7s=map(lambda x7: scipy.optimize.minimize(error7,x7,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x7s)
     r7=min(r7s,key=lambda r: r.fun)
     
-    print '  Model 0 score {:.4f} (success {}) {}'.format(r0.fun,r0.success,r0.x)
-    print '  Model 1 score {:.4f} (success {}) {}'.format(r1.fun,r1.success,r1.x)
-    print '  Model 2 score {:.4f} (success {}) {}'.format(r2.fun,r2.success,r2.x)
-    print '  Model 3 score {:.4f} (success {}) {}'.format(r3.fun,r3.success,r3.x)
-    print '  Model 4 score {:.4f} (success {}) {}'.format(r4.fun,r4.success,r4.x)
-    print '  Model 5 score {:.4f} (success {}) {}'.format(r5.fun,r5.success,r5.x)
-    print '  Model 6 score {:.4f} (success {}) {}'.format(r6.fun,r6.success,r6.x)
-    print '  Model 7 score {:.4f} (success {}) {}'.format(r7.fun,r7.success,r7.x)
+    print '  Model 0 score {:.6f} (success {}) {}'.format(r0.fun,r0.success,r0.x)
+    print '  Model 1 score {:.6f} (success {}) {}'.format(r1.fun,r1.success,r1.x)
+    print '  Model 2 score {:.6f} (success {}) {}'.format(r2.fun,r2.success,r2.x)
+    print '  Model 3 score {:.6f} (success {}) {}'.format(r3.fun,r3.success,r3.x)
+    print '  Model 4 score {:.6f} (success {}) {}'.format(r4.fun,r4.success,r4.x)
+    print '  Model 5 score {:.6f} (success {}) {}'.format(r5.fun,r5.success,r5.x)
+    print '  Model 6 score {:.6f} (success {}) {}'.format(r6.fun,r6.success,r6.x)
+    print '  Model 7 score {:.6f} (success {}) {}'.format(r7.fun,r7.success,r7.x)
 
     return r0.x,r1.x,r2.x,r3.x,r3.success,r4.x,r4.success,r5.x,r5.success,r6.x,r6.success,r7.x,r7.success
 
@@ -244,7 +244,7 @@ for p in [1,2,3]:
     plt.ylabel('Confirmed cases')
     plt.xlabel('Days from 2020-01-20')
     plt.legend(loc='upper left',framealpha=0.9)
-    plt.title(where)
+    plt.title(where+' - best fit models')
 
 china_gain_daily=(china[1:]/china[:-1])-1.0
 other_gain_daily=(other[1:]/other[:-1])-1.0
@@ -253,17 +253,20 @@ china_gain_weekly=np.array([(china[i]/china[i-7])**(1.0/7.0)-1.0 for i in xrange
 other_gain_weekly=np.array([(other[i]/other[i-7])**(1.0/7.0)-1.0 for i in xrange(7,len(other))])
 
 ax=plt.subplot(2,2,4)
-plt.scatter(np.arange(len(china_gain_daily))+1.0,china_gain_daily,color='red',label='Mainland China (day change)')
-plt.scatter(np.arange(len(other_gain_daily))+1.0,other_gain_daily,color='blue',label='Other locations (day change)')
-plt.plot(np.arange(len(china_gain_weekly))+7.0,china_gain_weekly,color='red',label='Mainland China (week change)',linewidth=2)
-plt.plot(np.arange(len(other_gain_weekly))+7.0,other_gain_weekly,color='blue',label='Other locations (week change)',linewidth=2)
-plt.ylabel('Daily % increase')
+plt.scatter(np.arange(len(china_gain_daily))+1.0,china_gain_daily,color='red',label='Mainland China (daily change)')
+plt.scatter(np.arange(len(other_gain_daily))+1.0,other_gain_daily,color='blue',label='Other locations (daily change)')
+plt.plot(np.arange(len(china_gain_weekly))+7.0,china_gain_weekly,color='red',label='Mainland China (prior week change)',linewidth=2)
+plt.plot(np.arange(len(other_gain_weekly))+7.0,other_gain_weekly,color='blue',label='Other locations (prior week change)',linewidth=2)
+plt.ylabel('Daily & weekly % increase')
 plt.xlabel('Days from 2020-01-20')
 plt.legend(loc='upper right',framealpha=0.9)
-plt.title('Daily % increase')
+plt.title('% increase')
 
 vals = ax.get_yticks()
 ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
 
-plt.suptitle('Least-squares fits to confirmed cases')
+plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
+
+#plt.suptitle('Least-squares fits to confirmed cases')  # Just eats space, not very useful
+
 plt.show()
