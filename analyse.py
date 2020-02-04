@@ -109,6 +109,7 @@ def model7(x,t):
     return C*np.exp(k*t+j*s*(1.0-s/(2.0*T)))  # NB Continues to evolve at rate k once j influence reaches limit
 
 # TODO: Consider models with two variables... an infected but not yet contagious population.
+# DSolve[{x'[t]=k*y[t],y'[t]=k*y[t]-j*y[t]},...) ... but that's daft, just growth at (k-j) rate.
 
 def probe(data,P):
 
@@ -243,7 +244,7 @@ for p in [1,2,3]:
     plt.yscale('symlog')
     plt.ylabel('Confirmed cases')
     plt.xlabel('Days from 2020-01-20')
-    plt.legend(loc='upper left',framealpha=0.9)
+    plt.legend(loc='upper left',framealpha=0.9).set_zorder(11)
     plt.title(where+' - best fit models')
 
 china_gain_daily=(china[1:]/china[:-1])-1.0
@@ -255,12 +256,13 @@ other_gain_weekly=np.array([(other[i]/other[i-7])**(1.0/7.0)-1.0 for i in xrange
 ax=plt.subplot(2,2,4)
 plt.scatter(np.arange(len(china_gain_daily))+1.0,china_gain_daily,color='red',label='Mainland China (daily change)')
 plt.scatter(np.arange(len(other_gain_daily))+1.0,other_gain_daily,color='blue',label='Other locations (daily change)')
-plt.plot(np.arange(len(china_gain_weekly))+7.0,china_gain_weekly,color='red',label='Mainland China (prior week change)',linewidth=2)
-plt.plot(np.arange(len(other_gain_weekly))+7.0,other_gain_weekly,color='blue',label='Other locations (prior week change)',linewidth=2)
-plt.ylabel('Daily & weekly % increase')
+plt.plot(np.arange(len(china_gain_weekly))+7.0/2.0,china_gain_weekly,color='red',label='Mainland China (1-week window)',linewidth=2)
+plt.plot(np.arange(len(other_gain_weekly))+7.0/2.0,other_gain_weekly,color='blue',label='Other locations (1-week window)',linewidth=2)
+plt.ylim(bottom=0.0)
+plt.ylabel('Daily % increase rate')
 plt.xlabel('Days from 2020-01-20')
-plt.legend(loc='upper right',framealpha=0.9)
-plt.title('% increase')
+plt.legend(loc='upper right',framealpha=0.9).set_zorder(11)
+plt.title('Daily % increase rate')
 
 vals = ax.get_yticks()
 ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
