@@ -111,6 +111,10 @@ def model7(x,t):
 # TODO: Consider models with two variables... an infected but not yet contagious population.
 # DSolve[{x'[t]=k*y[t],y'[t]=k*y[t]-j*y[t]},...) ... but that's daft, just growth at (k-j) rate.
 
+# Try this anyway:
+# DSolve[{x'[t]=k*y[t],y'[t]=j*y[t]},{x[t],y[t]},t]
+# Is just a linear function of an exponential in jt anyway.
+
 def probe(data,P):
 
     def error(v):
