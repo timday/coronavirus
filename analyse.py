@@ -154,17 +154,19 @@ def probe(data,P):
     x3=np.array([data[0],k,P])
     r3=scipy.optimize.minimize(error3,x3,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,P)])
 
-    x4=np.array([data[0],0.0,k,a])
-    r4=scipy.optimize.minimize(error4,x4,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)])
+    x4s=[np.array([data[0],jkv[0],jkv[1],a]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)]]
+    r4s=map(lambda x4: scipy.optimize.minimize(error4,x4,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)]),x4s)
+    r4=min(r4s,key=lambda r: r.fun)
 
-    x5=np.array([data[0],0.0,k,a])
-    r5=scipy.optimize.minimize(error5,x5,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)])
+    x5s=[np.array([data[0],jkv[0],jkv[1],a]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)]]
+    r5s=map(lambda x5: scipy.optimize.minimize(error5,x5,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)]),x5s)
+    r5=min(r5s,key=lambda r: r.fun)    
 
-    x6s=[np.array([data[0],k,t]) for t in [0.5*T,T,2.0*T]]
+    x6s=[np.array([data[0],k,tv]) for tv in [0.5*T,T,2.0*T]]
     r6s=map(lambda x6: scipy.optimize.minimize(error6,x6,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x6s)
     r6=min(r6s,key=lambda r: r.fun)
     
-    x7s=[np.array([data[0],0.0,k,t]) for t in [0.5*T,T,2.0*T]]
+    x7s=[np.array([data[0],jkv[0],jkv[1],tv]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)] for tv in [0.5*T,T,2.0*T]]
     r7s=map(lambda x7: scipy.optimize.minimize(error7,x7,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x7s)
     r7=min(r7s,key=lambda r: r.fun)
     
