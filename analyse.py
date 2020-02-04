@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 # Data from https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
 # Use inspect element on graph to get precise numbers
 # Starts 2020-01-20:
-china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693],dtype=np.float64)
-other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188],dtype=np.float64)
+china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23658],dtype=np.float64)
+other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212],dtype=np.float64)
 
 # Straight exponential growth
 # DSolve[x'[t] == k*x[t], x[t], t]
@@ -114,6 +114,25 @@ def model7(x,t):
 # Try this anyway:
 # DSolve[{x'[t]=k*y[t],y'[t]=j*y[t]},{x[t],y[t]},t]
 # Is just a linear function of an exponential in jt anyway.
+# Implies can't infer k & j from the observations, which is interesting.
+
+# How about time delay?  Contagious now increases with what was contagious 7 days ago.
+# DSolve[{x'[t]=k*y[t],y'[t]=u*y[t-7]-v*y[t]},{x[t],y[t]},t]
+# or just
+# DSolve[y'[t]=u*y[t-7]-v*y[t],y[t],t]
+# but neither soluble.
+
+# How about simulation?
+# Pools of fresh, incubating, infectious, immune, confirmed cases
+# Variables:
+#  population (initial value of fresh)
+#  rate of conversion from fresh to incubating, proportional to infectious
+#  rate of conversion from incubating to infectiouns
+#  rate of conversion from infectious to immune
+#  rate of detection (infectious cases only)
+#  time at which we have infectious=1
+# Simplify: don't bother with incubating?  Assume all cases confirmed?
+# Just ends up with similar exponential to previous.
 
 def probe(data,P):
 
@@ -156,8 +175,9 @@ def probe(data,P):
     x2=np.array([data[0],k,a])
     r2=scipy.optimize.minimize(error2,x2,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)])  
 
-    x3=np.array([data[0],k,P])
-    r3=scipy.optimize.minimize(error3,x3,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,P)])
+    x3s=[np.array([data[0],k,pv]) for pv in [0.000000001*P,0.00000001*P,0.0000001*P,0.000001*P,0.00001*P,0.0001*P,0.001*P,0.01*P,0.1*P,P]]
+    r3s=map(lambda x3: scipy.optimize.minimize(error3,x3,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,P)]),x3s)
+    r3=min(r3s,key=lambda r: r.fun)
 
     x4s=[np.array([data[0],jkv[0],jkv[1],a]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)]]
     r4s=map(lambda x4: scipy.optimize.minimize(error4,x4,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)]),x4s)
@@ -167,11 +187,11 @@ def probe(data,P):
     r5s=map(lambda x5: scipy.optimize.minimize(error5,x5,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)]),x5s)
     r5=min(r5s,key=lambda r: r.fun)    
 
-    x6s=[np.array([data[0],k,tv]) for tv in [0.5*T,T,2.0*T]]
+    x6s=[np.array([data[0],k,tv]) for tv in [0.5*T,0.75*T,T,1.5*T,2.0*T]]
     r6s=map(lambda x6: scipy.optimize.minimize(error6,x6,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x6s)
     r6=min(r6s,key=lambda r: r.fun)
     
-    x7s=[np.array([data[0],jkv[0],jkv[1],tv]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)] for tv in [0.5*T,T,2.0*T]]
+    x7s=[np.array([data[0],jkv[0],jkv[1],tv]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)] for tv in [0.5*T,0.75*T,T,1.5*T,2.0*T]]
     r7s=map(lambda x7: scipy.optimize.minimize(error7,x7,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x7s)
     r7=min(r7s,key=lambda r: r.fun)
     
