@@ -9,7 +9,7 @@ import matplotlib.pyplot as plt
 # Data from https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
 # Use inspect element on graph to get precise numbers
 # Starts 2020-01-20:
-china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23658],dtype=np.float64)
+china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680],dtype=np.float64)
 other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212],dtype=np.float64)
 
 # Straight exponential growth
@@ -137,8 +137,37 @@ def model7(x,t):
 # Actually do day-by-day queue.  Discrete.
 # State is [fresh,infectious[...queue],immune]  Make infectious queue size a fixed constant and run it for all of 1-14 days and see which fits best.
 
+class model8c:
+    def __init__(self,t0,ti,tc):
+        self._t0=t0
+        self._ti=ti
+        self._tc=tc
+    def __call__(self,x,t):
+        k=x[0]
+        P=x[1]
 
-def probe(data,P):
+        cases=0.0
+        record=[]
+        p=P
+        pi=np.zeros(self._ti) # Incubating
+        pc=np.zeros(self._tc) # Contagious
+        pc[0]=1.0
+
+        tv=-self._t0
+        while tv<=t[-1]:
+            cases=cases+np.sum(pc)/len(pc)  # Assume detect all contagious at some point (does not remove/isolate though!)
+            if tv>=t[0]:
+                record.append(cases)
+            i=min(p,k*np.sum(pc)*(p/P))     # New incubation starts
+            p=p-i                           # Reduce uninfected population
+            pc=np.insert(pc,0,pi[-1])[:-1]  # Slide contagious cases
+            pi=np.insert(pi,0,i)[:-1]       # Slide incubating cases
+            tv=tv+1
+
+        assert len(record)==len(t)
+        return record
+
+def probe(data,P,where):
 
     def error(v):
         return np.sum((np.log(v)-np.log(data))**2)
@@ -198,7 +227,35 @@ def probe(data,P):
     x7s=[np.array([data[0],jkv[0],jkv[1],tv]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)] for tv in [0.5*T,0.75*T,T,1.5*T,2.0*T]]
     r7s=map(lambda x7: scipy.optimize.minimize(error7,x7,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x7s)
     r7=min(r7s,key=lambda r: r.fun)
+
+    model8fast=True
     
+    r8best=None
+    model8best=None
+    if where=='Other locations':
+        model8T0range={False: range(14,28+1),True: range(35,36)}[model8fast]
+    else:
+        model8T0range={False: range(28,42+1),True: range(16,17)}[model8fast]
+
+    model8T1range={False: range(7,21+1),True: range(14,15)}[model8fast]
+    model8T2range={False: range(7,21+1),True: range(14,15)}[model8fast]
+    for T0 in model8T0range:
+        print where,T0
+        for T1 in model8T1range:
+            for T2 in model8T2range:
+                model8=model8c(T0,T1,T2)
+                    
+                def error8(x):
+                    return error(model8(x,days))
+
+                x8=np.array([1.0,P])
+                r8=scipy.optimize.minimize(error8,x8,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,P)])
+                if r8.success and (r8best==None or r8.fun<r8best.fun):
+                    r8best=r8
+                    model8best=model8
+    r8=r8best
+    model8=model8best
+
     print '  Model 0 score {:.6f} (success {}) {}'.format(r0.fun,r0.success,r0.x)
     print '  Model 1 score {:.6f} (success {}) {}'.format(r1.fun,r1.success,r1.x)
     print '  Model 2 score {:.6f} (success {}) {}'.format(r2.fun,r2.success,r2.x)
@@ -207,8 +264,9 @@ def probe(data,P):
     print '  Model 5 score {:.6f} (success {}) {}'.format(r5.fun,r5.success,r5.x)
     print '  Model 6 score {:.6f} (success {}) {}'.format(r6.fun,r6.success,r6.x)
     print '  Model 7 score {:.6f} (success {}) {}'.format(r7.fun,r7.success,r7.x)
+    print '  Model 8 score {:.6f} (success {}) {}'.format(r8.fun,r8.success,r8.x)
 
-    return r0.x,r1.x,r2.x,r3.x,r3.success,r4.x,r4.success,r5.x,r5.success,r6.x,r6.success,r7.x,r7.success
+    return [r0,r1,r2,r3,r4,r5,r6,r7,r8],model8
 
 for p in [1,2,3]:
 
@@ -234,52 +292,71 @@ for p in [1,2,3]:
 
     print '{}:'.format(where)
     
-    k0,k1,k2,k3,ok3,k4,ok4,k5,ok5,k6,ok6,k7,ok7=probe(data,P)
-
     plt.plot(np.arange(len(data)),data,linewidth=4,color='red',label='Observed',zorder=10)
-    
+
+    results,model8=probe(data,P,where)
+    k=map(lambda r: r.x,results)
+    ok=map(lambda r: r.success,results)
+
+    # Squash models with redundant findings
+    ok[4]=ok[4] and math.fabs(k[4][1])>=0.005
+    ok[5]=ok[5] and math.fabs(k[5][1])>=0.005
+    ok[7]=ok[7] and math.fabs(k[7][1])>=0.005
+
+    scores=sorted([(i,results[i].fun) for i in range(len(results)) if ok[i]],key=lambda x: x[1])
+    def tickmarks(i):
+        n=0
+        if scores[0][0]==i: n=3
+        elif scores[1][0]==i: n=2
+        elif scores[2][0]==i: n=1
+        return n*u'\u2714'
+        
     t=np.arange(30+len(data))
     
-    label0='$\\frac{dx}{dt} = k.x$'+(' ; $x_0={:.1f}, k={:.2f}$'.format(k0[0],k0[1]))
-    plt.plot(t,model0(k0,t),color='green',label=label0,zorder=9,linewidth=2)
+    label0='$\\frac{dx}{dt} = k.x$'+(' ; $x_0={:.1f}, k={:.2f}$'.format(k[0][0],k[0][1]))+tickmarks(0)
+    plt.plot(t,model0(k[0],t),color='green',label=label0,zorder=9,linewidth=2)
     
-    label1='$\\frac{dx}{dt} = \\frac{k}{1+a.t}.x$'+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k1[0],k1[1],k1[2]))
-    plt.plot(t,model1(k1,t),color='black',label=label1,zorder=8,linewidth=2)
+    label1='$\\frac{dx}{dt} = \\frac{k}{1+a.t}.x$'+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k[1][0],k[1][1],k[1][2]))+tickmarks(1)
+    plt.plot(t,model1(k[1],t),color='black',label=label1,zorder=8,linewidth=2)
 
-    label2='$\\frac{dx}{dt} = \\frac{k}{e^{a.t}}.x$ '+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k2[0],k2[1],k2[2]))
-    plt.plot(t,model2(k2,t),color='blue',label=label2,zorder=7,linewidth=2)
+    label2='$\\frac{dx}{dt} = \\frac{k}{e^{a.t}}.x$ '+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k[2][0],k[2][1],k[2][2]))+tickmarks(2)
+    plt.plot(t,model2(k[2],t),color='blue',label=label2,zorder=7,linewidth=2)
 
-    if ok3:
-        label3='$\\frac{dx}{dt} = k.x.(1-\\frac{x}{P})$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, P={:.2g}$'.format(k3[0],k3[1],k3[2]))
-        plt.plot(t,model3(k3,t),color='orange',label=label3,zorder=6,linewidth=2)
+    if ok[3]:
+        label3='$\\frac{dx}{dt} = k.x.(1-\\frac{x}{P})$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, P={:.2g}$'.format(k[3][0],k[3][1],k[3][2]))+tickmarks(3)
+        plt.plot(t,model3(k[3],t),color='orange',label=label3,zorder=6,linewidth=2)
 
-    if ok4 and math.fabs(k4[1])>0.01:
-        label4='$\\frac{dx}{dt} = (k+\\frac{j}{1+a.t}).x$'+(' ; $x_0={:.1f}, k={:.2f}, j={:.2f}, a={:.2f}$'.format(k4[0],k4[1],k4[2],k4[3]))
-        plt.plot(t,model4(k4,t),color='grey',label=label4,zorder=5,linewidth=2)
+    if ok[4]:
+        label4='$\\frac{dx}{dt} = (k+\\frac{j}{1+a.t}).x$'+(' ; $x_0={:.1f}, k={:.2f}, j={:.2f}, a={:.2f}$'.format(k[4][0],k[4][1],k[4][2],k[4][3]))+tickmarks(4)
+        plt.plot(t,model4(k[4],t),color='grey',label=label4,zorder=5,linewidth=2)
     
-    if ok5 and math.fabs(k5[1])>0.01:
-        label5='$\\frac{dx}{dt} = (k+\\frac{j}{e^{a.t}}).x$'+(' ; $x_0={:.1f}, k={:.2f}, j={:.2f}, a={:.2f}$'.format(k5[0],k5[1],k5[2],k5[3]))
-        plt.plot(t,model5(k5,t),color='skyblue',label=label5,zorder=4,linewidth=2)
+    if ok[5]:
+        label5='$\\frac{dx}{dt} = (k+\\frac{j}{e^{a.t}}).x$'+(' ; $x_0={:.1f}, k={:.2f}, j={:.2f}, a={:.2f}$'.format(k[5][0],k[5][1],k[5][2],k[5][3]))+tickmarks(5)
+        plt.plot(t,model5(k[5],t),color='skyblue',label=label5,zorder=4,linewidth=2)
 
-    if ok6:
-        label6='$\\frac{dx}{dt} = k.(1-\\frac{t}{T}).x$ for $t \\leq T$, else $0$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, T={:.1f}$'.format(k6[0],k6[1],k6[2]))
-        plt.plot(t,model6(k6,t),color='purple',label=label6,zorder=3,linewidth=2)
+    if ok[6]:
+        label6='$\\frac{dx}{dt} = k.(1-\\frac{t}{T}).x$ for $t \\leq T$, else $0$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, T={:.1f}$'.format(k[6][0],k[6][1],k[6][2]))+tickmarks(6)
+        plt.plot(t,model6(k[6],t),color='purple',label=label6,zorder=3,linewidth=2)
 
-    if ok7 and math.fabs(k7[1])>0.01:
-        label7='$\\frac{dx}{dt} = (k+j.(1-\\frac{t}{T})).x$ for $t \\leq T$, else $k.x$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, j={:.2f}, T={:.1f}$'.format(k7[0],k7[1],k7[2],k7[3]))
-        plt.plot(t,model7(k7,t),color='pink',label=label7,zorder=2,linewidth=2)
+    if ok[7]:
+        label7='$\\frac{dx}{dt} = (k+j.(1-\\frac{t}{T})).x$ for $t \\leq T$, else $k.x$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, j={:.2f}, T={:.1f}$'.format(k[7][0],k[7][1],k[7][2],k[7][3]))+tickmarks(7)
+        plt.plot(t,model7(k[7],t),color='pink',label=label7,zorder=2,linewidth=2)
+
+    if ok[8]:
+        label8='Sim'+(' ; $t_0={}, t_i={}, t_c={}, k={:.2f}, P={:.2g}$'.format(-model8._t0,model8._ti,model8._tc,k[8][0],k[8][1]))+tickmarks(8)
+        plt.plot(t,model8(k[8],t),color='lawngreen',label=label8,zorder=1,linewidth=2)
         
     plt.yscale('symlog')
     plt.ylabel('Confirmed cases')
     plt.xlabel('Days from 2020-01-20')
-    plt.legend(loc='upper left',framealpha=0.9).set_zorder(11)
+    plt.legend(loc='upper left',framealpha=0.9,fontsize='small').set_zorder(11)
     plt.title(where+' - best fit models')
 
-china_gain_daily=(china[1:]/china[:-1])-1.0
-other_gain_daily=(other[1:]/other[:-1])-1.0
+china_gain_daily=((china[1:]/china[:-1])-1.0)*100.0
+other_gain_daily=((other[1:]/other[:-1])-1.0)*100.0
 
-china_gain_weekly=np.array([(china[i]/china[i-7])**(1.0/7.0)-1.0 for i in xrange(7,len(china))])
-other_gain_weekly=np.array([(other[i]/other[i-7])**(1.0/7.0)-1.0 for i in xrange(7,len(other))])
+china_gain_weekly=(np.array([(china[i]/china[i-7])**(1.0/7.0)-1.0 for i in xrange(7,len(china))]))*100.0
+other_gain_weekly=(np.array([(other[i]/other[i-7])**(1.0/7.0)-1.0 for i in xrange(7,len(other))]))*100.0
 
 ax=plt.subplot(2,2,4)
 plt.scatter(np.arange(len(china_gain_daily))+1.0,china_gain_daily,color='red',label='Mainland China (daily change)')
@@ -289,11 +366,12 @@ plt.plot(np.arange(len(other_gain_weekly))+7.0/2.0,other_gain_weekly,color='blue
 plt.ylim(bottom=0.0)
 plt.ylabel('Daily % increase rate')
 plt.xlabel('Days from 2020-01-20')
-plt.legend(loc='upper right',framealpha=0.9).set_zorder(11)
+plt.legend(loc='upper right',framealpha=0.9,fontsize='small').set_zorder(11)
 plt.title('Daily % increase rate')
+#plt.yscale('symlog') # Not yet
 
 vals = ax.get_yticks()
-ax.set_yticklabels(['{:,.2%}'.format(x) for x in vals])
+ax.set_yticklabels(['{:,.1f}%'.format(x) for x in vals])
 
 plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
 
