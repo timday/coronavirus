@@ -134,6 +134,10 @@ def model7(x,t):
 # Simplify: don't bother with incubating?  Assume all cases confirmed?
 # Just ends up with similar exponential to previous.
 
+# Actually do day-by-day queue.  Discrete.
+# State is [fresh,infectious[...queue],immune]  Make infectious queue size a fixed constant and run it for all of 1-14 days and see which fits best.
+
+
 def probe(data,P):
 
     def error(v):
@@ -185,7 +189,7 @@ def probe(data,P):
 
     x5s=[np.array([data[0],jkv[0],jkv[1],a]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)]]
     r5s=map(lambda x5: scipy.optimize.minimize(error5,x5,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)]),x5s)
-    r5=min(r5s,key=lambda r: r.fun)    
+    r5=min(r5s,key=lambda r: r.fun)
 
     x6s=[np.array([data[0],k,tv]) for tv in [0.5*T,0.75*T,T,1.5*T,2.0*T]]
     r6s=map(lambda x6: scipy.optimize.minimize(error6,x6,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x6s)
