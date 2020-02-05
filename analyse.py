@@ -228,7 +228,7 @@ def probe(data,P,where):
     r7s=map(lambda x7: scipy.optimize.minimize(error7,x7,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x7s)
     r7=min(r7s,key=lambda r: r.fun)
 
-    model8fast=True
+    model8fast=False
     
     r8best=None
     model8best=None
@@ -248,7 +248,7 @@ def probe(data,P,where):
                 def error8(x):
                     return error(model8(x,days))
 
-                x8=np.array([1.0,P])
+                x8=np.array([20.0,P])
                 r8=scipy.optimize.minimize(error8,x8,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,P)])
                 if r8.success and (r8best==None or r8.fun<r8best.fun):
                     r8best=r8
