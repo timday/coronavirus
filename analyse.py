@@ -232,7 +232,7 @@ def probe(data,P,where):
     r7s=map(lambda x7: scipy.optimize.minimize(error7,x7,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x7s)
     r7=min(r7s,key=lambda r: r.fun)
 
-    model8fast=false
+    model8fast=True
     
     r8best=None
     model8best=None
