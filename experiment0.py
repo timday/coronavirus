@@ -17,19 +17,24 @@ eq=[
     Eq(Derivative(y(t),t),v*z(t)-w*y(t)),
     Eq(Derivative(x(t),t),k*(v*z(t)-w*y(t)))
 ]
-s=dsolve(eq,ics={x(0):n0,y(T):1,z(T):0})
+s=dsolve(eq,ics={x(T):0,y(T):1,z(T):0})
 
 print s
 print
 print s[2]
 print
 
-fns=map(lambda f: f.subs(u,0.5).subs(v,0.1).subs(w,0.1).subs(n0,200).subs(T,-30).subs(k,0.1).rhs,s)
+fns=map(lambda f: f.subs(u,0.8).subs(v,0.1).subs(w,0.1).subs(T,-60).rhs,s)
 print s[0].lhs,fns[0]
 print s[1].lhs,fns[1]
+
+kv=(n0/fns[1]).subs(t,0).subs(n0,300)  # Scale factor to get right observed number at t=0
+print kv
+fns[2]=fns[2].subs(k,kv)
+
 print s[2].lhs,fns[2]
 
-tr=np.arange(-30,60)
+tr=np.arange(-60,60)
 plt.plot(tr,[fns[0].evalf(subs={t:tv}) for tv in tr],label='Infected',color='blue')
 plt.plot(tr,[fns[1].evalf(subs={t:tv}) for tv in tr],label='Contagious',color='green')
 plt.plot(tr,[fns[2].evalf(subs={t:tv}) for tv in tr],label='Observed',color='red')
