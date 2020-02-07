@@ -9,8 +9,8 @@ import matplotlib.pyplot as plt
 # Data from https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
 # Use inspect element on graph to get precise numbers
 # Starts 2020-01-20:
-china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409],dtype=np.float64)
-other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212,  227],dtype=np.float64)
+china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409,30553],dtype=np.float64)
+other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212,  227,  265],dtype=np.float64)
 
 assert len(china)==len(other)
 
@@ -408,11 +408,11 @@ for p in [1,2,3]:
         plt.plot(t,model7(k[7],t),color='pink',label=label7,zorder=8,linewidth=2)
 
     if ok[8]:
-        label8='Sim'+(' ; $t_0={}, t_i={}, t_c={}, n_0={:.1f}, k={:.2f}, P={:.2g}$'.format(-model8._t0,model8._ti,model8._tc,k[8][0],k[8][1],k[8][2]))+' '+tickmarks(8)
+        label8='$S_0$'+(' ; $t_0={}, t_i={}, t_c={}, n_0={:.1f}, k={:.2f}, P={:.2g}$'.format(-model8._t0,model8._ti,model8._tc,k[8][0],k[8][1],k[8][2]))+' '+tickmarks(8)
         plt.plot(t,model8(k[8],t),color='lawngreen',label=label8,zorder=9,linewidth=2)
 
     if ok[9]:
-        label9='Sim'+(' ; $t_0={}, t_i={}, t_c={}, k={:.2f}$'.format(-model9._t0,model9._ti,model9._tc,k[9][0]))+' '+tickmarks(9)
+        label9='$S_1$'+(' ; $t_0={}, t_i={}, t_c={}, k={:.2f}$'.format(-model9._t0,model9._ti,model9._tc,k[9][0]))+' '+tickmarks(9)
         plt.plot(t,model9(k[9],t),color='cyan',label=label9,zorder=10,linewidth=2)
         
     plt.yscale('symlog')
