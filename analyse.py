@@ -273,12 +273,12 @@ def probe(data,P,where):
     r8best=None
     model8best=None
     if where=='Other locations':
-        model8T0range={False: range(1,100),True: range(13,16)}[model8fast]
+        model8T0range={False: range(1,100),True: range(12,17)}[model8fast]
     else:
-        model8T0range={False: range(1,100),True: range(13,16)}[model8fast]
+        model8T0range={False: range(1,100),True: range(12,17)}[model8fast]
 
-    model8T1range={False: range(1,28),True: range(13,16)}[model8fast]
-    model8T2range={False: range(1,28),True: range(10,19)}[model8fast]
+    model8T1range={False: range(1,28),True: range(12,17)}[model8fast]
+    model8T2range={False: range(1,28),True: range(9,20)}[model8fast]
     for T0 in model8T0range:
         print 'Model8',where,T0
         for T1 in model8T1range:
@@ -298,7 +298,7 @@ def probe(data,P,where):
 
     r9best=None
     model9best=None
-    model9T0range=range(1,201,5)
+    model9T0range=range(1,101,5)
     model9T1range=range(1,16,1)
     model9T2range=range(1,16,1)
     for T0 in model9T0range:
