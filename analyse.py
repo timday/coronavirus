@@ -6,10 +6,14 @@ import scipy.optimize
 import scipy.special
 import matplotlib.pyplot as plt
 
+def frequency(s):
+    c=np.array([len([n for n in s if str(int(n))[0]==str(m)]) for m in range(1,10)],dtype=np.float64)
+    return c/np.sum(c)
+
 # Data from https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
 # Use inspect element on graph to get precise numbers
 # Starts 2020-01-20:
-china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409,30553,34075,36778,39772],dtype=np.float64)
+china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409,30553,34075,36778,39790],dtype=np.float64)
 other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212,  227,  265,  317,  343,  361],dtype=np.float64)
 
 assert len(china)==len(other)
@@ -268,17 +272,17 @@ def probe(data,P,where):
     r7s=map(lambda x7: scipy.optimize.minimize(error7,x7,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x7s)
     r7=min(r7s,key=lambda r: r.fun)
 
-    model8fast=True
+    modelSlow=False
     
     r8best=None
     model8best=None
     if where=='Other locations':
-        model8T0range={False: range(1,100),True: range(12,17)}[model8fast]
+        model8T0range={False: range(15,20),True: range(7,36)}[modelSlow]
     else:
-        model8T0range={False: range(1,100),True: range(12,17)}[model8fast]
+        model8T0range={False: range(15,20),True: range(7,36)}[modelSlow]
 
-    model8T1range={False: range(1,28),True: range(12,17)}[model8fast]
-    model8T2range={False: range(1,28),True: range(9,20)}[model8fast]
+    model8T1range={False: range(15,20),True: range(7,22)}[modelSlow]
+    model8T2range={False: range(12,20),True: range(7,22)}[modelSlow]
     for T0 in model8T0range:
         print 'Model8',where,T0
         for T1 in model8T1range:
@@ -298,9 +302,9 @@ def probe(data,P,where):
 
     r9best=None
     model9best=None
-    model9T0range=range(1,101,5)
-    model9T1range=range(1,16,1)
-    model9T2range=range(1,16,1)
+    model9T0range={False:range(22,41),True:range(14,42)}[modelSlow]
+    model9T1range={False:range(17,20),True:range(7,22)}[modelSlow]
+    model9T2range={False:range(12,20),True:range(7,22)}[modelSlow]
     for T0 in model9T0range:
         print 'Model9',where,T0
         for T1 in model9T1range:
@@ -333,27 +337,27 @@ def probe(data,P,where):
 
 for p in [1,2,3]:
 
-    plt.subplot(2,2,p)
-    
     data={
         1: china,
-        3: other,
-        2: china+other
+        2: other,
+        3: china+other
     }[p]
 
     where={
         1: 'Mainland China',
-        3: 'Other locations',
-        2: 'Total'
+        2: 'Other locations',
+        3: 'Total'
         }[p]
 
     P={
         1: 1.4e9,
-        3: 7.7e9-1.4e9,
-        2: 7.7e9
+        2: 7.7e9-1.4e9,
+        3: 7.7e9
         }[p]
 
     print '{}:'.format(where)
+
+    plt.subplot(2,3,{1:1,2:4,3:2}[p])  # Use 1,2,3.  Benford's Law at 3, Rate at 5, 6 unused.
 
     plt.plot(np.arange(len(data)),data,linewidth=4,color='red',label='Observed ; {} days'.format(len(data)),zorder=100)
 
@@ -418,7 +422,7 @@ for p in [1,2,3]:
     plt.ylabel('Confirmed cases')
     plt.xlabel('Days from 2020-01-20')
     plt.xlim(left=0.0)
-    plt.legend(loc='upper left',framealpha=0.9,fontsize='x-small').set_zorder(200)
+    plt.legend(loc='upper left',framealpha=0.9,fontsize='xx-small').set_zorder(200)
     plt.title(where+' - best fit models')
 
 china_gain_daily=((china[1:]/china[:-1])-1.0)*100.0
@@ -427,21 +431,35 @@ other_gain_daily=((other[1:]/other[:-1])-1.0)*100.0
 china_gain_weekly=(np.array([(china[i]/china[i-7])**(1.0/7.0)-1.0 for i in xrange(7,len(china))]))*100.0
 other_gain_weekly=(np.array([(other[i]/other[i-7])**(1.0/7.0)-1.0 for i in xrange(7,len(other))]))*100.0
 
-ax=plt.subplot(2,2,4)
+ax=plt.subplot(2,3,5)
 plt.scatter(np.arange(len(china_gain_daily))+0.5,china_gain_daily,color='red',label='Mainland China (daily change)')
 plt.scatter(np.arange(len(other_gain_daily))+0.5,other_gain_daily,color='blue',label='Other locations (daily change)')
 plt.plot(np.arange(len(china_gain_weekly))+7.0/2.0,china_gain_weekly,color='red',label='Mainland China (1-week window)',linewidth=2)
 plt.plot(np.arange(len(other_gain_weekly))+7.0/2.0,other_gain_weekly,color='blue',label='Other locations (1-week window)',linewidth=2)
 plt.ylim(bottom=0.0)
+plt.yscale('symlog')
 plt.xlim(left=0.0)
+plt.grid(True)
+plt.xticks(np.arange(0,len(china_gain_daily)+1,5))
+plt.yticks([1.0,2.5,5.0,7.5,10.0,25.0,50.0,75.0,100.0])
 plt.ylabel('Daily % increase rate')
 plt.xlabel('Days from 2020-01-20')
-plt.legend(loc='upper right',framealpha=0.9,fontsize='x-small').set_zorder(200)
+plt.legend(loc='upper right',framealpha=0.9,fontsize='xx-small').set_zorder(200)
 plt.title('Daily % increase rate')
-#plt.yscale('symlog') # Not yet
 
 vals = ax.get_yticks()
 ax.set_yticklabels(['{:,.1f}%'.format(x) for x in vals])
+
+ax=plt.subplot(2,3,3)
+width=0.25
+plt.bar(np.arange(1,10)-width,np.log10(1.0+1.0/np.arange(1,10)),width,color='green',label='Expected')
+plt.bar(np.arange(1,10)      ,frequency(china),width,color='red',label='Mainland China')
+plt.bar(np.arange(1,10)+width,frequency(other),width,color='blue',label='Other locations')
+plt.legend(loc='upper right',fontsize='xx-small')
+plt.ylabel('Frequency')
+plt.xlabel('Leading digit')
+plt.xticks(np.arange(1,10))
+plt.title("Benford's Law compliance")
 
 plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
 
