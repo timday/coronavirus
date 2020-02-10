@@ -13,7 +13,7 @@ def frequency(s):
 # Data from https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
 # Use inspect element on graph to get precise numbers
 # Starts 2020-01-20:
-china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409,30553,34075,36778,39772],dtype=np.float64)
+china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409,30553,34075,36778,39790],dtype=np.float64)
 other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212,  227,  265,  317,  343,  361],dtype=np.float64)
 
 assert len(china)==len(other)
@@ -272,17 +272,17 @@ def probe(data,P,where):
     r7s=map(lambda x7: scipy.optimize.minimize(error7,x7,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x7s)
     r7=min(r7s,key=lambda r: r.fun)
 
-    model8fast=True
+    modelSlow=False
     
     r8best=None
     model8best=None
     if where=='Other locations':
-        model8T0range={False: range(1,100),True: range(7,36)}[model8fast]
+        model8T0range={False: range(15,20),True: range(7,36)}[modelSlow]
     else:
-        model8T0range={False: range(1,100),True: range(7,36)}[model8fast]
+        model8T0range={False: range(15,20),True: range(7,36)}[modelSlow]
 
-    model8T1range={False: range(1,28),True: range(7,22)}[model8fast]
-    model8T2range={False: range(1,28),True: range(7,22)}[model8fast]
+    model8T1range={False: range(15,20),True: range(7,22)}[modelSlow]
+    model8T2range={False: range(12,20),True: range(7,22)}[modelSlow]
     for T0 in model8T0range:
         print 'Model8',where,T0
         for T1 in model8T1range:
@@ -302,9 +302,9 @@ def probe(data,P,where):
 
     r9best=None
     model9best=None
-    model9T0range=range(7,36)
-    model9T1range=range(7,22)
-    model9T2range=range(7,22)
+    model9T0range={False:range(22,41),True:range(14,42)}[modelSlow]
+    model9T1range={False:range(17,20),True:range(7,22)}[modelSlow]
+    model9T2range={False:range(12,20),True:range(7,22)}[modelSlow]
     for T0 in model9T0range:
         print 'Model9',where,T0
         for T1 in model9T1range:
@@ -438,12 +438,15 @@ plt.scatter(np.arange(len(other_gain_daily))+0.5,other_gain_daily,color='blue',l
 plt.plot(np.arange(len(china_gain_weekly))+7.0/2.0,china_gain_weekly,color='red',label='Mainland China (1-week window)',linewidth=2)
 plt.plot(np.arange(len(other_gain_weekly))+7.0/2.0,other_gain_weekly,color='blue',label='Other locations (1-week window)',linewidth=2)
 plt.ylim(bottom=0.0)
+plt.yscale('symlog')
 plt.xlim(left=0.0)
+plt.grid(True)
+plt.xticks(np.arange(0,len(china_gain_daily)+1,5))
+plt.yticks([1.0,2.5,5.0,7.5,10.0,25.0,50.0,75.0,100.0])
 plt.ylabel('Daily % increase rate')
 plt.xlabel('Days from 2020-01-20')
 plt.legend(loc='upper right',framealpha=0.9,fontsize='xx-small').set_zorder(200)
 plt.title('Daily % increase rate')
-#plt.yscale('symlog') # Not yet
 
 vals = ax.get_yticks()
 ax.set_yticklabels(['{:,.1f}%'.format(x) for x in vals])
@@ -452,11 +455,11 @@ ax=plt.subplot(2,3,3)
 width=0.25
 plt.bar(np.arange(1,10)-width,np.log10(1.0+1.0/np.arange(1,10)),width,color='green',label='Expected')
 plt.bar(np.arange(1,10)      ,frequency(china),width,color='red',label='Mainland China')
-plt.bar(np.arange(1,10)+width,frequency(china),width,color='blue',label='Other locations')
+plt.bar(np.arange(1,10)+width,frequency(other),width,color='blue',label='Other locations')
 plt.legend(loc='upper right',fontsize='xx-small')
 plt.ylabel('Frequency')
 plt.xlabel('Leading digit')
-ax.set_xticks(np.arange(10))
+plt.xticks(np.arange(1,10))
 plt.title("Benford's Law compliance")
 
 plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
