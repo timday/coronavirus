@@ -318,7 +318,6 @@ def probe(data,P,where):
     r9=r9best
     model9=model9best
 
-
     print '  Model 0 score {:.6f} (success {}) {}'.format(r0.fun,r0.success,r0.x)
     print '  Model 1 score {:.6f} (success {}) {}'.format(r1.fun,r1.success,r1.x)
     print '  Model 2 score {:.6f} (success {}) {}'.format(r2.fun,r2.success,r2.x)
