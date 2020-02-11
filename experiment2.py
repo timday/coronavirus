@@ -18,10 +18,16 @@ w=w/np.sum(w)
 
 # Needs to return derivatives
 def model(Y,t):
+
+    w0=np.sum(w*np.array([Y(t-7-d)[0] for d in range(7)]))
+    ww0=np.sum(w*w*np.array([Y(t-7-d)[0] for d in range(7)]))
+    w1=np.sum(w*np.array([Y(t-7-d)[1] for d in range(7)]))
+    ww1=np.sum(w*w*np.array([Y(t-7-d)[1] for d in range(7)]))
+    
     return np.array([
-             np.sum(w*np.array([Y(t-7-d)[1] for d in range(7)])) - min(1.0,Y(t)[0])*np.sum(w*np.array([w[d]*Y(t-7-d)[0] for d in range(7)])),  # Huh?  Double multiply by w and w[d] in subtracted expression here.
-        1.2 *np.sum(w*np.array([Y(t-7-d)[0] for d in range(7)])) - min(1.0,Y(t)[1])*np.sum(w*np.array([w[d]*Y(t-7-d)[1] for d in range(7)])),  # Huh?  Double multiply by w and w[d] in subtracted expression here.
-        0.05*np.sum(w*np.array([Y(t-7-d)[1] for d in range(7)]))
+            w1 - min(1.0,Y(t)[0])*ww0,  # Huh?  Double multiply by w and w[d] in subtracted expression here.
+        1.2*w0 - min(1.0,Y(t)[1])*ww1,  # Huh?  Double multiply by w and w[d] in subtracted expression here.
+        0.05*w0
     ])
 
 def values_before_zero(t):
