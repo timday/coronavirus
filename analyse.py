@@ -13,8 +13,8 @@ def frequency(s):
 # Data from https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
 # Use inspect element on graph to get precise numbers
 # Starts 2020-01-20:
-china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409,30553,34075,36778,39790],dtype=np.float64)
-other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212,  227,  265,  317,  343,  361],dtype=np.float64)
+china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409,30553,34075,36778,39790,42306],dtype=np.float64)
+other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212,  227,  265,  317,  343,  361,  457],dtype=np.float64)
 
 assert len(china)==len(other)
 
@@ -357,7 +357,7 @@ for p in [1,2,3]:
 
     print '{}:'.format(where)
 
-    plt.subplot(2,3,{1:1,2:4,3:2}[p])  # Use 1,2,3.  Benford's Law at 3, Rate at 5, 6 unused.
+    plt.subplot(2,3,{1:1,2:4,3:2}[p])  # Use 1,4,2.  Benford's Law at 3&6. Rate at 5.
 
     plt.plot(np.arange(len(data)),data,linewidth=4,color='red',label='Observed ; {} days'.format(len(data)),zorder=100)
 
@@ -459,7 +459,18 @@ plt.legend(loc='upper right',fontsize='xx-small')
 plt.ylabel('Frequency')
 plt.xlabel('Leading digit')
 plt.xticks(np.arange(1,10))
-plt.title("Benford's Law compliance")
+plt.title("Benford's Law compliance - total")
+
+ax=plt.subplot(2,3,6)
+width=0.25
+plt.bar(np.arange(1,10)-width,np.log10(1.0+1.0/np.arange(1,10)),width,color='green',label='Expected')
+plt.bar(np.arange(1,10)      ,frequency(china[1:]-china[:-1]),width,color='red',label='Mainland China')
+plt.bar(np.arange(1,10)+width,frequency(other[1:]-other[:-1]),width,color='blue',label='Other locations')
+plt.legend(loc='upper right',fontsize='xx-small')
+plt.ylabel('Frequency')
+plt.xlabel('Leading digit')
+plt.xticks(np.arange(1,10))
+plt.title("Benford's Law compliance - changes")
 
 plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
 
