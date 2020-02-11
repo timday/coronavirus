@@ -37,7 +37,7 @@ def model(Y,t):
     #i=(1.2/R)*w3+Y(t)[1]
     return np.array([
         -i,               # Uninfected            
-        -Y(t)[1]/(7.0*R), # Initial impulse decays away
+        -Y(t)[1]/(7.0*R), # Initial impulse decays away4.py
         i - w2,           # Infectious
         w2 - w3,          # Contagious
         0.05*Y(t)[3]      # Observed
