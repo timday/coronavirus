@@ -11,7 +11,7 @@ import matplotlib.pyplot as plt
 # Elements:
 #  0: Number contagious
 #  1: Number incubating 
-#  4: Number observed
+#  2: Number observed
 
 w=np.array([min(0.5+i,6.5-i) for i in range(7)])
 w=w/np.sum(w)
@@ -19,8 +19,8 @@ w=w/np.sum(w)
 # Needs to return derivatives
 def model(Y,t):
     return np.array([
-             np.sum(w*np.array([Y(t-7-d)[1] for d in range(7)])) - min(1.0,Y(t)[0])*np.sum(w*np.array([w[d]*Y(t-7-d)[0] for d in range(7)])),
-        1.2 *np.sum(w*np.array([Y(t-7-d)[0] for d in range(7)])) - min(1.0,Y(t)[1])*np.sum(w*np.array([w[d]*Y(t-7-d)[1] for d in range(7)])),
+             np.sum(w*np.array([Y(t-7-d)[1] for d in range(7)])) - min(1.0,Y(t)[0])*np.sum(w*np.array([w[d]*Y(t-7-d)[0] for d in range(7)])),  # Huh?  Double multiply by w and w[d] in subtracted expression here.
+        1.2 *np.sum(w*np.array([Y(t-7-d)[0] for d in range(7)])) - min(1.0,Y(t)[1])*np.sum(w*np.array([w[d]*Y(t-7-d)[1] for d in range(7)])),  # Huh?  Double multiply by w and w[d] in subtracted expression here.
         0.05*np.sum(w*np.array([Y(t-7-d)[1] for d in range(7)]))
     ])
 
