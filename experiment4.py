@@ -24,23 +24,37 @@ s=np.linspace(0.0,7.0*R,20) # Changing 20 to 40 makes too much difference... sus
 w=tri(s,7.0*R)
 assert math.fabs(scipy.integrate.simps(w,s)-1.0) < 0.01
 
-def f(t,y):
-    i=(2.0*y[3]+y[1])*(y[0]/P)
-    return np.array([
-        -i,
-        -y[1],
-        i-y[2],
-        y[2]-y[3],
-        0.05*i
-    ])
 
 def sim(T):
+    ts=[]
+    ys=[]
+
+    def f(t,y):
+
+        # TODO: Not too convinced.  Number dropping out now should be the derivative of the number added a while ago.
+        # But... the average derivative is just a gradient based on two end point values!  Bit more complicated if weighted though.
+        d=np.linspace(t-14.0,t-7.0,29)
+        tv=np.array(ts)
+        yv=np.array(ys)
+        yv2=yv[:,2]
+        yv3=yv[:,3]
+        w2=np.trapz(np.interp(d,tv,yv2),d)/7.0
+        w3=np.trapz(np.interp(d,tv,yv3),d)/7.0
+
+        print t,w2,w3
+        
+        i=(1.2*y[3]+y[1])*(y[0]/P)  
+        return np.array([
+            -i,
+            -y[1],
+            i-w2,
+            w2-w3,
+            0.05*i
+        ])
 
     t=0.0
     y=np.array([P,1.0,0.0,0.0,0.0])
 
-    ts=[]
-    ys=[]
     while t<=T:
         ts.append(t)
         ys.append(y)
