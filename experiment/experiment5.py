@@ -3,57 +3,55 @@
 import math
 import numpy as np
 from ddeint import ddeint
-import scipy.integrate
 import matplotlib.pyplot as plt
-
-# Normalized triangle weighting t a vector
-def tri(t,r):
-    return np.minimum(1.0-t/r,t/r)/(0.25*r)
 
 # Elements:
 #  0: Uninfected
-#  1: Initial infectious impulse
-#  2: Number incubating
-#  3: Number contagious 
-#  4: Number observed
-
-R=10.0
+#  1: Number incubating
+#  2: Number contagious
+#  3: Number observed
 
 P=1e9
 
-s=np.linspace(0.0,7.0*R,20) # Changing 20 to 40 makes too much difference... suspicious.
-w=tri(s,7.0*R)
-assert math.fabs(scipy.integrate.simps(w,s)-1.0) < 0.01
-
+def impulse(t):
+    if t<1.0:
+        return 1.0
+    else:
+        return 0.0
+    
 # Needs to return derivatives
 def model(Y,t):
 
-    y=np.array(map(lambda d: Y(t-7.0*R-d),s))
+    k=1.5
+    
+    y=Y(t)
 
-    w2=np.sum(w*y[:,2])
-    w3=np.sum(w*y[:,3])
+    y7=Y(t-7.0)
+    y14=Y(t-14.0)
 
-    i=(1.2/R)*(Y(t)[3]+Y(t)[1])*max(0.0,(Y(t)[0]/P))
-    #i=(1.2/R)*w3+Y(t)[1]
+    i_now=k*y[2]*max(0.0,y[0]/P)
+    i_then=k*y7[2]*max(0.0,y7[0]/P)
+    
+    c_now=i_then+impulse(t)
+    c_then=k*y14[2]*max(0.0,y14[0]/P)-impulse(t-7)
+    
     return np.array([
-        -i,               # Uninfected            
-        -Y(t)[1]/(7.0*R), # Initial impulse decays away4.py
-        i - w2,           # Infectious
-        w2 - w3,          # Contagious
-        0.05*Y(t)[3]      # Observed
+        -i_now,                              # Uninfected            
+        i_now-i_then*min(1.0,max(y[1],0.0)), # Incubating
+        c_now-c_then*min(1.0,max(y[2],0.0)), # Recovered
+        0.05*c_now                           # Observed
     ])
 
 def values_before_zero(t):
-    return np.array([P,1.0,0.0,0.0,0.0])
+    return np.array([P,0.0,0.0,0.0])
 
-ts=np.linspace(0.0,90.0*R,121)
+ts=np.linspace(0.0,120.0,121)
 ys=ddeint(model,values_before_zero,ts)
 
-plt.plot(ts/R,ys[:,0],color='black')
-plt.plot(ts/R,ys[:,1],color='purple')
-plt.plot(ts/R,ys[:,2],color='blue')
-plt.plot(ts/R,ys[:,3],color='green')
-plt.plot(ts/R,ys[:,4],color='red')
+plt.plot(ts,ys[:,0],color='black')
+plt.plot(ts,ys[:,1],color='blue')
+plt.plot(ts,ys[:,2],color='green')
+plt.plot(ts,ys[:,3],color='red')
 plt.yscale('symlog')
 plt.grid(True)
 plt.show()
