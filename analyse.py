@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+from ddeint import ddeint
 import math
 import numpy as np
 import scipy.optimize
@@ -13,8 +14,8 @@ def frequency(s):
 # Data from https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
 # Use inspect element on graph to get precise numbers
 # Starts 2020-01-20:
-china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409,30553,34075,36778,39790,42306,44327],dtype=np.float64)
-other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212,  227,  265,  317,  343,  361,  457,  476],dtype=np.float64)
+china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409,30553,34075,36778,39790,42306,44327,44699,59832],dtype=np.float64)
+other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212,  227,  265,  317,  343,  361,  457,  476,  523,  538],dtype=np.float64)
 
 assert len(china)==len(other)
 
@@ -114,6 +115,46 @@ def model7(x,t):
     s=np.minimum(t,T)
     return C*np.exp(k*t+j*s*(1.0-s/(2.0*T)))  # NB Continues to evolve at rate k once j influence reaches limit
 
+def model8(x,ts):
+    i=x[0]
+    k=x[1]
+    T0=x[2]
+    Ti=x[3]
+    Tc=x[4]
+
+    def impulse(t):
+        if 0.0<t and t<1.0:
+            return i
+        else:
+            return 0.0
+    
+    def model(Y,t):
+
+        y=Y(t)        
+        yp=Y(t-Ti)
+        ypp=Y(t-Ti-Tc)
+        
+        i_now=k*y[1]
+        i_then=k*yp[1]
+        
+        c_now=i_then+impulse(t)
+        c_then=k*ypp[1]+impulse(t-Tc)
+        
+        return np.array([
+            i_now-i_then*min(1.0,max(y[0],0.0)), # Incubating
+            c_now-c_then*min(1.0,max(y[1],0.0)), # Recovered
+            c_now                                # Observed
+        ])
+
+    def values_before_zero(t):
+        return np.array([0.0,0.0,0.0])
+
+    tms=np.concatenate([np.linspace(0.0,T0,endpoint=False),ts+T0])
+    ys=ddeint(model,values_before_zero,tms)
+    return ys[-len(ts):,2]
+
+#print "Model8: ",model8(np.array([1.0,30,7.0,7.0]),np.linspace(0.0,30.0,31))
+
 # TODO: Consider models with two variables... an infected but not yet contagious population.
 # DSolve[{x'[t]=k*y[t],y'[t]=k*y[t]-j*y[t]},...) ... but that's daft, just growth at (k-j) rate.
 
@@ -140,77 +181,6 @@ def model7(x,t):
 # Simplify: don't bother with incubating?  Assume all cases confirmed?
 # Just ends up with similar exponential to previous.
 
-# Actually do day-by-day queue.  Discrete.
-# State is [fresh,infectious[...queue],immune]  Make infectious queue size a fixed constant and run it for all of 1-14 days and see which fits best.
-
-class model8c:
-    def __init__(self,t0,ti,tc):
-        self._t0=t0
-        self._ti=ti
-        self._tc=tc
-        self._weight=np.array([math.sin((i+0.5)*math.pi/tc) for i in range(tc)])
-        self._weight=self._weight/np.sum(self._weight)
-    def __call__(self,x,t):
-        n0=x[0]
-        k=x[1]
-        P=x[2]
-
-        cases=0.0
-        record=[]
-        p=P
-
-        pi=np.zeros(self._ti)    # Incubating.
-        pc=np.zeros(self._tc)    # Contagious.
-        pc[0]=n0
-
-        tv=-self._t0
-        while tv<=t[-1]:
-            cases=cases+np.sum(pc)/len(pc)  # Assume detect all contagious at some point (does not remove/isolate though!)
-            if tv>=t[0]:
-                record.append(cases)
-            i=min(p,k*(p/P)*np.sum(pc*self._weight)/len(pc))  # New incubation starts
-            p=p-i                                             # Reduce uninfected population
-            pc=np.insert(pc,0,pi[-1])[:-1]                    # Slide contagious cases
-            pi=np.insert(pi,0,i)[:-1]                         # Slide incubating cases
-            tv=tv+1
-
-        assert len(record)==len(t)
-        return record
-
-class model9c:
-    def __init__(self,t0,ti,tc,P):
-        self._t0=t0
-        self._ti=ti
-        self._tc=tc
-        self._P=P
-        self._weight=np.array([math.sin((i+0.5)*math.pi/tc) for i in range(tc)])
-        self._weight=self._weight/np.sum(self._weight)
-    def __call__(self,x,t):
-        k=x[0]
-
-        cases=0.0
-        record=[]
-        p=P
-
-        pi=np.zeros(self._ti)    # Incubating.
-        pc=np.zeros(self._tc)    # Contagious.
-        pc[0]=1.0
-
-        tv=-self._t0
-        while tv<=t[-1]:
-            cases=cases+np.sum(pc)/len(pc)  # Assume detect all contagious at some point (does not remove/isolate though!)
-            if tv>=t[0]:
-                record.append(cases)
-            i=min(p,k*(p/P)*np.sum(pc*self._weight)/len(pc))  # New incubation starts
-            p=p-i                                             # Reduce uninfected population
-            pc=np.insert(pc,0,pi[-1])[:-1]                    # Slide contagious cases
-            pi=np.insert(pi,0,i)[:-1]                         # Slide incubating cases
-            tv=tv+1
-
-        assert len(record)==len(t)
-        return record
- 
-    
 def probe(data,P,where):
 
     def error(v):
@@ -234,6 +204,10 @@ def probe(data,P,where):
         return error(model6(x,days))
     def error7(x):
         return error(model7(x,days))
+    def error8(x):
+        err=error(model8(x,days))
+        print '  Model8: {:.1f} {:.1f} {:.1f} {:.1f} {:.1f} : {:.3f}'.format(x[0],x[1],x[2],x[3],x[4],err)
+        return  err
 
     # 'nelder-mead' works good for the first three.
     # BFGS and COBYLA also seem useful/relatively stable (may not take bounds though).  SLSQP seems to be default when there are bounds.
@@ -242,85 +216,48 @@ def probe(data,P,where):
     k=1.0/3.0
     a=0.1
     T=len(data)
-    
+
+    print 'Model 0'
     x0=np.array([data[0],k])
     r0=scipy.optimize.minimize(error0,x0,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf)])
 
+    print 'Model 1'
     x1=np.array([data[0],k,a])
     r1=scipy.optimize.minimize(error1,x1,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)])
 
+    print 'Model 2'
     x2=np.array([data[0],k,a])
     r2=scipy.optimize.minimize(error2,x2,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)])  
 
+    print 'Model 3'
     x3s=[np.array([data[0],k,pv]) for pv in [0.000000001*P,0.00000001*P,0.0000001*P,0.000001*P,0.00001*P,0.0001*P,0.001*P,0.01*P,0.1*P,P]]
     r3s=map(lambda x3: scipy.optimize.minimize(error3,x3,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,P)]),x3s)
     r3=min(r3s,key=lambda r: r.fun)
 
+    print 'Model 4'
     x4s=[np.array([data[0],jkv[0],jkv[1],a]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)]]
     r4s=map(lambda x4: scipy.optimize.minimize(error4,x4,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)]),x4s)
     r4=min(r4s,key=lambda r: r.fun)
 
+    print 'Model 5'
     x5s=[np.array([data[0],jkv[0],jkv[1],a]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)]]
     r5s=map(lambda x5: scipy.optimize.minimize(error5,x5,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)]),x5s)
     r5=min(r5s,key=lambda r: r.fun)
 
+    print 'Model 6'
     x6s=[np.array([data[0],k,tv]) for tv in [0.5*T,0.75*T,T,1.5*T,2.0*T]]
     r6s=map(lambda x6: scipy.optimize.minimize(error6,x6,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x6s)
     r6=min(r6s,key=lambda r: r.fun)
     
+    print 'Model 7'
     x7s=[np.array([data[0],jkv[0],jkv[1],tv]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)] for tv in [0.5*T,0.75*T,T,1.5*T,2.0*T]]
     r7s=map(lambda x7: scipy.optimize.minimize(error7,x7,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x7s)
     r7=min(r7s,key=lambda r: r.fun)
 
-    modelSlow=False
-    
-    r8best=None
-    model8best=None
-    if where=='Other locations':
-        model8T0range={False: range(15,20),True: range(7,36)}[modelSlow]
-    else:
-        model8T0range={False: range(15,20),True: range(7,36)}[modelSlow]
-
-    model8T1range={False: range(15,20),True: range(7,22)}[modelSlow]
-    model8T2range={False: range(12,20),True: range(7,22)}[modelSlow]
-    for T0 in model8T0range:
-        print 'Model8',where,T0
-        for T1 in model8T1range:
-            for T2 in model8T2range:
-                model8=model8c(T0,T1,T2)
-                    
-                def error8(x):
-                    return error(model8(x,days))
-
-                x8=np.array([1.0,2.0,P])
-                r8=scipy.optimize.minimize(error8,x8,method='SLSQP',options={'maxiter':10000},bounds=[(1.0,P),(0.0,np.inf),(0.0,P)])
-                if r8.success and (r8best==None or r8.fun<r8best.fun):
-                    r8best=r8
-                    model8best=model8
-    r8=r8best
-    model8=model8best
-
-    r9best=None
-    model9best=None
-    model9T0range={False:range(22,41),True:range(14,42)}[modelSlow]
-    model9T1range={False:range(17,20),True:range(7,22)}[modelSlow]
-    model9T2range={False:range(12,20),True:range(7,22)}[modelSlow]
-    for T0 in model9T0range:
-        print 'Model9',where,T0
-        for T1 in model9T1range:
-            for T2 in model9T2range:
-                model9=model9c(T0,T1,T2,P)
-                    
-                def error9(x):
-                    return error(model9(x,days))
-
-                x9=np.array([2.0])
-                r9=scipy.optimize.minimize(error9,x9,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf)])
-                if r9.success and (r9best==None or r9.fun<r9best.fun):
-                    r9best=r9
-                    model9best=model9
-    r9=r9best
-    model9=model9best
+    print 'Model 8'
+    x8s=[np.array([i,k,T0,14.0,7.0]) for i in [7.5] for k in [7.5] for T0 in [14.0,21.0,28.0,35.0]]
+    r8s=map(lambda x8: scipy.optimize.minimize(error8,x8,method='SLSQP',options={'eps':1.0,'ftol':0.01,'maxiter':1000},bounds=[(1.0,np.inf),(0.0,np.inf),(1.0,180.0),(1.0,28.0),(1.0,28.0)]),x8s)
+    r8=min(r8s,key=lambda r: r.fun)
 
     print '  Model 0 score {:.6f} (success {}) {}'.format(r0.fun,r0.success,r0.x)
     print '  Model 1 score {:.6f} (success {}) {}'.format(r1.fun,r1.success,r1.x)
@@ -330,10 +267,9 @@ def probe(data,P,where):
     print '  Model 5 score {:.6f} (success {}) {}'.format(r5.fun,r5.success,r5.x)
     print '  Model 6 score {:.6f} (success {}) {}'.format(r6.fun,r6.success,r6.x)
     print '  Model 7 score {:.6f} (success {}) {}'.format(r7.fun,r7.success,r7.x)
-    print '  Model 8 score {:.6f} (success {}) {} {}'.format(r8.fun,r8.success,r8.x,[model8._t0,model8._ti,model8._tc])
-    print '  Model 9 score {:.6f} (success {}) {} {}'.format(r9.fun,r9.success,r9.x,[model9._t0,model9._ti,model9._tc])
+    print '  Model 8 score {:.6f} (success {}) {}'.format(r8.fun,r8.success,r8.x)
 
-    return [r0,r1,r2,r3,r4,r5,r6,r7,r8,r9],model8,model9
+    return [r0,r1,r2,r3,r4,r5,r6,r7,r8]
 
 for p in [1,2,3]:
 
@@ -361,7 +297,7 @@ for p in [1,2,3]:
 
     plt.plot(np.arange(len(data)),data,linewidth=4,color='red',label='Observed ; {} days'.format(len(data)),zorder=100)
 
-    results,model8,model9=probe(data,P,where)
+    results=probe(data,P,where)
     k=map(lambda r: r.x,results)
     ok=map(lambda r: r.success,results)
 
@@ -411,12 +347,8 @@ for p in [1,2,3]:
         plt.plot(t,model7(k[7],t),color='pink',label=label7,zorder=8,linewidth=2)
 
     if ok[8]:
-        label8='$S_0$'+(' ; $t_0={}, t_i={}, t_c={}, n_0={:.1f}, k={:.2f}, P={:.2g}$'.format(-model8._t0,model8._ti,model8._tc,k[8][0],k[8][1],k[8][2]))+' '+tickmarks(8)
+        label8='${DDE}_0$'+(' ; $i={:.1f}, k={:.1f}, T_0={:.1f}, T_i={:.1f}, T_c={:.1f}$'.format(k[8][0],k[8][1],-k[8][2],k[8][3],k[8][4]))+' '+tickmarks(8)
         plt.plot(t,model8(k[8],t),color='lawngreen',label=label8,zorder=9,linewidth=2)
-
-    if ok[9]:
-        label9='$S_1$'+(' ; $t_0={}, t_i={}, t_c={}, k={:.2f}$'.format(-model9._t0,model9._ti,model9._tc,k[9][0]))+' '+tickmarks(9)
-        plt.plot(t,model9(k[9],t),color='cyan',label=label9,zorder=10,linewidth=2)
         
     plt.yscale('symlog')
     plt.ylabel('Confirmed cases')
