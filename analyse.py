@@ -14,8 +14,8 @@ def frequency(s):
 # Data from https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
 # Use inspect element on graph to get precise numbers
 # Starts 2020-01-20:
-china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409,30553,34075,36778,39790,42306,44327,44699,59832,66292,68347,70446,72364,74139,74546,74999,75472,76922,76938,77150,],dtype=np.float64)
-other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212,  227,  265,  317,  343,  361,  457,  476,  523,  538,  595,  685,  780,  896, 1013, 1095, 1200, 1371, 1677, 2047, 2403],dtype=np.float64)
+china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409,30553,34075,36778,39790,42306,44327,44699,59832,66292,68347,70446,72364,74139,74546,74999,75472,76922,76938,77152],dtype=np.float64)
+other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212,  227,  265,  317,  343,  361,  457,  476,  523,  538,  595,  685,  780,  896, 1013, 1095, 1200, 1371, 1677, 2047, 2418],dtype=np.float64)
 
 assert len(china)==len(other)
 
@@ -354,7 +354,7 @@ for p in [1,2,3]:
     plt.ylabel('Confirmed cases')
     plt.xlabel('Days from 2020-01-20')
     plt.xlim(left=0.0)
-    plt.legend(loc='upper left',framealpha=0.9,fontsize='xx-small').set_zorder(200)
+    plt.legend(loc='upper left',framealpha=0.75,fontsize='xx-small').set_zorder(200)
     plt.title(where+' - best fit models')
 
 china_gain_daily=((china[1:]/china[:-1])-1.0)*100.0
@@ -376,7 +376,7 @@ plt.xticks(np.arange(0,len(china_gain_daily)+1,5))
 plt.yticks([1.0,2.5,5.0,7.5,10.0,25.0,50.0,75.0,100.0])
 plt.ylabel('Daily % increase rate')
 plt.xlabel('Days from 2020-01-20')
-plt.legend(loc='upper right',framealpha=0.9,fontsize='xx-small').set_zorder(200)
+plt.legend(loc='upper right',framealpha=0.75,fontsize='xx-small').set_zorder(200)
 plt.title('Daily % increase rate')
 
 vals = ax.get_yticks()
