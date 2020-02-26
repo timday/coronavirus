@@ -6,6 +6,7 @@ import numpy as np
 import scipy.optimize
 import scipy.special
 import matplotlib.pyplot as plt
+from multiprocessing import Pool
 
 def frequency(s):
     c=np.array([len([n for n in s if str(int(n))[0]==str(m)]) for m in range(1,10)],dtype=np.float64)
@@ -14,8 +15,8 @@ def frequency(s):
 # Data from https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
 # Use inspect element on graph to get precise numbers
 # Starts 2020-01-20:
-china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409,30553,34075,36778,39790,42306,44327,44699,59832,66292,68347,70446,72364,74139,74546,74999,75472,76922,76938,77152],dtype=np.float64)
-other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212,  227,  265,  317,  343,  361,  457,  476,  523,  538,  595,  685,  780,  896, 1013, 1095, 1200, 1371, 1677, 2047, 2418],dtype=np.float64)
+china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409,30553,34075,36778,39790,42306,44327,44699,59832,66292,68347,70446,72364,74139,74546,74999,75472,76922,76938,77152,77660],dtype=np.float64)
+other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212,  227,  265,  317,  343,  361,  457,  476,  523,  538,  595,  685,  780,  896, 1013, 1095, 1200, 1371, 1677, 2047, 2418, 2755],dtype=np.float64)
 
 assert len(china)==len(other)
 
@@ -116,6 +117,7 @@ def model7(x,t):
     return C*np.exp(k*t+j*s*(1.0-s/(2.0*T)))  # NB Continues to evolve at rate k once j influence reaches limit
 
 def model8(x,ts):
+    
     i=x[0]
     k=x[1]
     T0=x[2]
@@ -123,33 +125,41 @@ def model8(x,ts):
     Tc=x[4]
 
     def impulse(t):
-        if 0.0<t and t<1.0:
-            return i
-        else:
+        if t<=0.0:
             return 0.0
-    
+        else:
+            return i*math.exp(-t)
+
     def model(Y,t):
 
+        # Elements:
+        #  0: Number incubating
+        #  1: Number contagious
+        #  2: Number observed
+    
         y=Y(t)        
         yp=Y(t-Ti)
         ypp=Y(t-Ti-Tc)
+        ypm=Y(t-Ti-0.5*Tc)
         
-        i_now=k*y[1]
-        i_then=k*yp[1]
+        i_now=k*y[1]+impulse(t)
+        i_then=k*yp[1]+impulse(t-Ti)
         
-        c_now=i_then+impulse(t)
-        c_then=k*ypp[1]+impulse(t-Tc)
+        c_now=i_then
+        c_then=k*ypp[1]+impulse(t-Ti-Tc)
+
+        c_mid=k*ypm[1]+impulse(t-Ti-0.5*Tc)
         
         return np.array([
-            i_now-i_then*min(1.0,max(y[0],0.0)), # Incubating
-            c_now-c_then*min(1.0,max(y[1],0.0)), # Recovered
-            c_now                                # Observed
+            i_now-i_then, # Incubating
+            c_now-c_then, # Contagious
+            c_mid         # Observed
         ])
 
     def values_before_zero(t):
         return np.array([0.0,0.0,0.0])
 
-    tms=np.concatenate([np.linspace(0.0,T0,endpoint=False),ts+T0])
+    tms=np.concatenate([np.linspace(0.0,T0,1000,endpoint=False),ts+T0])
     ys=ddeint(model,values_before_zero,tms)
     return ys[-len(ts):,2]
 
@@ -181,33 +191,47 @@ def model8(x,ts):
 # Simplify: don't bother with incubating?  Assume all cases confirmed?
 # Just ends up with similar exponential to previous.
 
+def error(v,data):
+    return np.sum((np.log(v)-np.log(data))**2)
+
+def model8error(x,days,data):
+    err=error(model8(x,days),data)
+    print '  Model8: {:.1f} {:.1f} {:.1f} {:.1f} {:.1f} : {:.3f}'.format(x[0],x[1],x[2],x[3],x[4],err)
+    return  err
+    
+class model8minfn:
+    def __init__(self,days,data):
+        self._days=days
+        self._data=data
+    def __call__(self,x8):
+        return scipy.optimize.minimize(
+            lambda x: model8error(x,self._days,self._data),
+            x8,
+            method='SLSQP',
+            options={'eps':0.5,'ftol':0.1,'maxiter':1000},
+            bounds=[(0.0,np.inf),(0.0,np.inf),(1.0,1000.0),(1.0,100.0),(1.0,100.0)]
+        )
+    
 def probe(data,P,where):
 
-    def error(v):
-        return np.sum((np.log(v)-np.log(data))**2)
-    
     days=np.arange(len(data))
 
     def error0(x):
-        return error(model0(x,days))
+        return error(model0(x,days),data)
     def error1(x):
-        return error(model1(x,days))
+        return error(model1(x,days),data)
     def error2(x):
-        return error(model2(x,days))
+        return error(model2(x,days),data)
     def error3(x):
-        return error(model3(x,days))
+        return error(model3(x,days),data)
     def error4(x):
-        return error(model4(x,days))
+        return error(model4(x,days),data)
     def error5(x):
-        return error(model5(x,days))
+        return error(model5(x,days),data)
     def error6(x):
-        return error(model6(x,days))
+        return error(model6(x,days),data)
     def error7(x):
-        return error(model7(x,days))
-    def error8(x):
-        err=error(model8(x,days))
-        print '  Model8: {:.1f} {:.1f} {:.1f} {:.1f} {:.1f} : {:.3f}'.format(x[0],x[1],x[2],x[3],x[4],err)
-        return  err
+        return error(model7(x,days),data)
 
     # 'nelder-mead' works good for the first three.
     # BFGS and COBYLA also seem useful/relatively stable (may not take bounds though).  SLSQP seems to be default when there are bounds.
@@ -255,8 +279,10 @@ def probe(data,P,where):
     r7=min(r7s,key=lambda r: r.fun)
 
     print 'Model 8'
-    x8s=[np.array([i,k,T0,14.0,7.0]) for i in [7.5] for k in [7.5] for T0 in [14.0,21.0,28.0,35.0]]
-    r8s=map(lambda x8: scipy.optimize.minimize(error8,x8,method='SLSQP',options={'eps':1.0,'ftol':0.01,'maxiter':1000},bounds=[(1.0,np.inf),(0.0,np.inf),(1.0,180.0),(1.0,28.0),(1.0,28.0)]),x8s)
+    x8s=[np.array([1.0,1.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,2.0,3.0] for Tc in [14.0,21.0,28.0] for Ti in [14.0,21.0,28.0]]
+    minfn=model8minfn(days,data)
+    pool=Pool(8)
+    r8s=pool.map(minfn,x8s)
     r8=min(r8s,key=lambda r: r.fun)
 
     print '  Model 0 score {:.6f} (success {}) {}'.format(r0.fun,r0.success,r0.x)
@@ -354,7 +380,10 @@ for p in [1,2,3]:
     plt.ylabel('Confirmed cases')
     plt.xlabel('Days from 2020-01-20')
     plt.xlim(left=0.0)
-    plt.legend(loc='upper left',framealpha=0.75,fontsize='xx-small').set_zorder(200)
+
+    handles,labels = plt.gca().get_legend_handles_labels()
+    plt.legend(handles[::-1],labels[::-1],loc='upper left',framealpha=0.25,fontsize='xx-small').set_zorder(200)
+
     plt.title(where+' - best fit models')
 
 china_gain_daily=((china[1:]/china[:-1])-1.0)*100.0
