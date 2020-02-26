@@ -119,16 +119,17 @@ def model7(x,t):
 def model8(x,ts):
     
     i=x[0]
-    k=x[1]
-    T0=x[2]
-    Ti=x[3]
-    Tc=x[4]
+    j=x[1]
+    k=x[2]
+    T0=x[3]
+    Ti=x[4]
+    Tc=x[5]
 
     def impulse(t):
         if t<=0.0:
             return 0.0
         else:
-            return i*math.exp(-t)
+            return i*math.exp(-t/j)
 
     def model(Y,t):
 
@@ -196,7 +197,7 @@ def error(v,data):
 
 def model8error(x,days,data):
     err=error(model8(x,days),data)
-    print '  Model8: {:.1f} {:.1f} {:.1f} {:.1f} {:.1f} : {:.3f}'.format(x[0],x[1],x[2],x[3],x[4],err)
+    print '  Model8: {:.1f} {:.1f} {:.1f} {:.1f} {:.1f} {:.1f} : {:.3f}'.format(x[0],x[1],x[2],x[3],x[4],x[5],err)
     return  err
     
 class model8minfn:
@@ -209,7 +210,7 @@ class model8minfn:
             x8,
             method='SLSQP',
             options={'eps':0.5,'ftol':0.1,'maxiter':1000},
-            bounds=[(0.0,np.inf),(0.0,np.inf),(1.0,1000.0),(1.0,100.0),(1.0,100.0)]
+            bounds=[(0.0,np.inf),(1.0,10.0),(0.0,np.inf),(1.0,1000.0),(1.0,100.0),(1.0,100.0)]   # Large j causes problems?
         )
     
 def probe(data,P,where):
@@ -279,7 +280,7 @@ def probe(data,P,where):
     r7=min(r7s,key=lambda r: r.fun)
 
     print 'Model 8'
-    x8s=[np.array([1.0,1.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,2.0,3.0] for Tc in [14.0,21.0,28.0] for Ti in [14.0,21.0,28.0]]
+    x8s=[np.array([1.0,1.0,1.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,2.0,3.0] for Tc in [14.0,21.0,28.0] for Ti in [14.0,21.0,28.0]]
     minfn=model8minfn(days,data)
     pool=Pool(8)
     r8s=pool.map(minfn,x8s)
@@ -373,7 +374,7 @@ for p in [1,2,3]:
         plt.plot(t,model7(k[7],t),color='pink',label=label7,zorder=8,linewidth=2)
 
     if ok[8]:
-        label8='${DDE}_0$'+(' ; $i={:.1f}, k={:.1f}, T_0={:.1f}, T_i={:.1f}, T_c={:.1f}$'.format(k[8][0],k[8][1],-k[8][2],k[8][3],k[8][4]))+' '+tickmarks(8)
+        label8='${DDE}_0$'+(' ; $i={:.1f}, j={:.1f}, k={:.1f}, T_0={:.1f}, T_i={:.1f}, T_c={:.1f}$'.format(k[8][0],k[8][1],k[8][2],-k[8][3],k[8][4],k[8][5]))+' '+tickmarks(8)
         plt.plot(t,model8(k[8],t),color='lawngreen',label=label8,zorder=9,linewidth=2)
         
     plt.yscale('symlog')
