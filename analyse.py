@@ -15,8 +15,8 @@ def frequency(s):
 # Data from https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
 # Use inspect element on graph to get precise numbers
 # Starts 2020-01-20:
-china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409,30553,34075,36778,39790,42306,44327,44699,59832,66292,68347,70446,72364,74139,74546,74999,75472,76922,76938,77152,77660],dtype=np.float64)
-other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212,  227,  265,  317,  343,  361,  457,  476,  523,  538,  595,  685,  780,  896, 1013, 1095, 1200, 1371, 1677, 2047, 2418, 2755],dtype=np.float64)
+china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409,30553,34075,36778,39790,42306,44327,44699,59832,66292,68347,70446,72364,74139,74546,74999,75472,76922,76938,77152,77660,78065,78498],dtype=np.float64)
+other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212,  227,  265,  317,  343,  361,  457,  476,  523,  538,  595,  685,  780,  896, 1013, 1095, 1200, 1371, 1677, 2047, 2418, 2755, 3332, 4258],dtype=np.float64)
 
 assert len(china)==len(other)
 
@@ -129,7 +129,7 @@ def model8(x,ts):
         if t<=0.0:
             return 0.0
         else:
-            return i*math.exp(-t/j)
+            return i*math.exp(-t/j)/j
 
     def model(Y,t):
 
@@ -209,8 +209,8 @@ class model8minfn:
             lambda x: model8error(x,self._days,self._data),
             x8,
             method='SLSQP',
-            options={'eps':0.5,'ftol':0.1,'maxiter':1000},
-            bounds=[(0.0,np.inf),(1.0,10.0),(0.0,np.inf),(1.0,1000.0),(1.0,100.0),(1.0,100.0)]   # Large j causes problems?
+            options={'eps':0.5,'ftol':0.01,'maxiter':1000},
+            bounds=[(0.0,np.inf),(1.0,100.0),(0.0,np.inf),(1.0,1000.0),(1.0,100.0),(1.0,100.0)]   # Large (unlimited) j causes problems?
         )
     
 def probe(data,P,where):
@@ -280,7 +280,7 @@ def probe(data,P,where):
     r7=min(r7s,key=lambda r: r.fun)
 
     print 'Model 8'
-    x8s=[np.array([1.0,1.0,1.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,2.0,3.0] for Tc in [14.0,21.0,28.0] for Ti in [14.0,21.0,28.0]]
+    x8s=[np.array([1.0,1.0,1.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,1.5,2.0,2.5,3.0] for Tc in [7.0,14.0,21.0,28.0,35.0] for Ti in [7.0,14.0,21.0,28.0,35.0]]
     minfn=model8minfn(days,data)
     pool=Pool(8)
     r8s=pool.map(minfn,x8s)
@@ -421,7 +421,7 @@ plt.legend(loc='upper right',fontsize='xx-small')
 plt.ylabel('Frequency')
 plt.xlabel('Leading digit')
 plt.xticks(np.arange(1,10))
-plt.title("Benford's Law compliance - total")
+plt.title("Benford's Law compliance - total cases")
 
 ax=plt.subplot(2,3,6)
 width=0.25
@@ -432,7 +432,7 @@ plt.legend(loc='upper right',fontsize='xx-small')
 plt.ylabel('Frequency')
 plt.xlabel('Leading digit')
 plt.xticks(np.arange(1,10))
-plt.title("Benford's Law compliance - changes")
+plt.title("Benford's Law compliance - daily cases")
 
 plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
 
