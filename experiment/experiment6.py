@@ -5,11 +5,6 @@ import numpy as np
 from ddeint import ddeint
 import matplotlib.pyplot as plt
 
-# Elements:
-#  0: Number incubating
-#  1: Number contagious
-#  2: Number observed
-
 Ti=14.0
 Tc=7.0
 
@@ -19,8 +14,16 @@ def impulse(t):
     else:
         return 10.0*math.exp(-t)
 
+# Elements:
+#  0: Number incubating
+#  1: Number contagious
+#  2: Number observed
+
+def values_before_zero0(t):
+    return np.array([0.0,0.0,0.0])
+
 # Needs to return derivatives
-def model(Y,t):
+def model0(Y,t):
 
     k=1.25
     
@@ -32,13 +35,18 @@ def model(Y,t):
     ypp=Y(t-Ti-Tc)
     yppp=Y(t-Ti-0.5*Tc)
 
-    i_now=k*y[1]+impulse(t)
-    i_then=k*yp[1]+impulse(t-Ti)
+    i=impulse(t)
+    ip=impulse(t-Ti)
+    ipp=impulse(t-Ti-Tc)
+    ippp=impulse(t-Ti-0.5*Tc)
+    
+    i_now=k*y[1]+i
+    i_then=k*yp[1]+ip
     
     c_now=i_then
-    c_then=k*ypp[1]+impulse(t-Ti-Tc)
+    c_then=k*ypp[1]+ipp
 
-    m=k*yppp[1]+impulse(t-Ti-0.5*Tc)
+    m=k*yppp[1]+ippp
     
     return np.array([
         i_now-i_then, # Incubating
@@ -46,15 +54,15 @@ def model(Y,t):
         0.1*m         # Observed
     ])
 
-def values_before_zero(t):
-    return np.array([0.0,0.0,0.0])
-
 ts=np.linspace(0.0,90.0,901)
-ys=ddeint(model,values_before_zero,ts)
+y0s=ddeint(model0,values_before_zero0,ts)
 
-plt.plot(ts,ys[:,0],color='blue')
-plt.plot(ts,ys[:,1],color='green')
-plt.plot(ts,ys[:,2],color='red')
+# Considered multiple channels for various periods of incubation... but seems to get monstrously complicated quickly.
+
+plt.plot(ts,y0s[:,0],color='blue')
+plt.plot(ts,y0s[:,1],color='green')
+plt.plot(ts,y0s[:,2],color='red')
+
 plt.yscale('symlog')
 plt.grid(True)
 plt.show()
