@@ -197,7 +197,7 @@ def error(v,data):
 
 def model8error(x,days,data):
     err=error(model8(x,days),data)
-    print '  Model8: {:.1f} {:.1f} {:.1f} {:.1f} {:.1f} {:.1f} : {:.3f}'.format(x[0],x[1],x[2],x[3],x[4],x[5],err)
+    print '    Model8: {:.1f} {:.1f} {:.1f} {:.1f} {:.1f} {:.1f} : {:.3f}'.format(x[0],x[1],x[2],x[3],x[4],x[5],err)
     return  err
     
 class model8minfn:
@@ -205,6 +205,7 @@ class model8minfn:
         self._days=days
         self._data=data
     def __call__(self,x8):
+        print 'Model8 minimizing from: {:.1f} {:.1f} {:.1f} {:.1f} {:.1f} {:.1f}'.format(x8[0],x8[1],x8[2],x8[3],x8[4],x8[5])
         return scipy.optimize.minimize(
             lambda x: model8error(x,self._days,self._data),
             x8,
@@ -280,7 +281,7 @@ def probe(data,P,where):
     r7=min(r7s,key=lambda r: r.fun)
 
     print 'Model 8'
-    x8s=[np.array([1.0,1.0,1.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,1.5,2.0,2.5,3.0] for Tc in [7.0,14.0,21.0,28.0,35.0] for Ti in [7.0,14.0,21.0,28.0,35.0]]
+    x8s=[np.array([5.0,5.0,5.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,2.0,3.0] for Tc in [10.0,15.0,20.0] for Ti in [21.0,28.0,35.0]]
     minfn=model8minfn(days,data)
     pool=Pool(8)
     r8s=pool.map(minfn,x8s)
