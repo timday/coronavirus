@@ -1,3 +1,10 @@
+Data sources
+============
+
+* JHU tracker <https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6>
+
+* JHU time series data <https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series>
+
 Notes
 =====
 
