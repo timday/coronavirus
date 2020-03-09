@@ -234,7 +234,7 @@ def error(v,data):
 
 def model8error(x,days,data):
     err=error(model8(x,days),data)
-    print '    Model8: {:.1f} {:.1f} {:.1f} {:.1f} {:.1f} {:.1f} : {:.3f}'.format(x[0],x[1],x[2],x[3],x[4],x[5],err)
+    #print '    Model8: {:.1f} {:.1f} {:.1f} {:.1f} {:.1f} {:.1f} : {:.3f}'.format(x[0],x[1],x[2],x[3],x[4],x[5],err)
     return  err
     
 class model8minfn:
@@ -276,7 +276,7 @@ def probe(data,P,where):
     # BFGS and COBYLA also seem useful/relatively stable (may not take bounds though).  SLSQP seems to be default when there are bounds.
 
     # Initial values to guess for k and a
-    k=1.0/3.0
+    k=1.0/4.0
     a=0.1
     T=len(data)
 
@@ -319,13 +319,14 @@ def probe(data,P,where):
 
     print 'Model 8'
     #x8s=[np.array([5.0,5.0,5.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,2.0,3.0] for Tc in [10.0,15.0,20.0] for Ti in [21.0,28.0,35.0]]
-    ##x8s=[np.array([5.0,5.0,5.0,2.0*(28.0+15.0),28.0,15.0])]
-    #minfn=model8minfn(days,data)
-    #pool=Pool(8)
-    #r8s=pool.map(minfn,x8s)
-    #r8=min(r8s,key=lambda r: r.fun)
-    r8=r7
-    r8.success=False
+    x8s=[np.array([5.0,5.0,5.0,2.0*(28.0+15.0),28.0,15.0])]
+    minfn=model8minfn(days,data)
+    pool=Pool(8)
+    r8s=pool.map(minfn,x8s)
+    r8=min(r8s,key=lambda r: r.fun)
+
+    #r8=r7
+    #r8.success=False
 
     print '  Model 0 score {:.6f} (success {}) {}'.format(r0.fun,r0.success,r0.x)
     print '  Model 1 score {:.6f} (success {}) {}'.format(r1.fun,r1.success,r1.x)
@@ -339,9 +340,11 @@ def probe(data,P,where):
 
     return [r0,r1,r2,r3,r4,r5,r6,r7,r8]
 
-for p in range(3):  # TODO: Projections for other locations
+for p in range(12):  # TODO: Projections for other locations
 
-    data=timeseries[timeseriesKeys[p]]
+    alldata=timeseries[timeseriesKeys[p]]
+    data=np.array([x for x in alldata if x>=30.0])
+    start=len(alldata)-len(data)
     P=populations[timeseriesKeys[p]]
     where=descriptions[p]
 
@@ -354,15 +357,16 @@ for p in range(3):  # TODO: Projections for other locations
     #   Total
     #   UK
     #   Italy
-    #   South Korea
-    #   US
-    #   ?
+    #   ...
     # 2nd figure
     #   Growth rates
     # 3rd figure:
     #   Benford's Law plots.
+
+    if p==6:
+        plt.figure()
     
-    plt.subplot(2,2,1+p)
+    plt.subplot(2,3,1+(p%6))
 
     plt.plot(np.arange(len(data)),data,linewidth=4,color='red',label='Observed ; {} days'.format(len(data)),zorder=100)
 
@@ -385,15 +389,18 @@ for p in range(3):  # TODO: Projections for other locations
         return n*u'\u2714'
         
     t=np.arange(30+len(data))
-    
-    label0='$\\frac{dx}{dt} = k.x$'+(' ; $x_0={:.1f}, k={:.2f}$'.format(k[0][0],k[0][1]))+' '+tickmarks(0)
-    plt.plot(t,model0(k[0],t),color='green',label=label0,zorder=1,linewidth=2)
-    
-    label1='$\\frac{dx}{dt} = \\frac{k}{1+a.t}.x$'+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k[1][0],k[1][1],k[1][2]))+' '+tickmarks(1)
-    plt.plot(t,model1(k[1],t),color='black',label=label1,zorder=2,linewidth=2)
 
-    label2='$\\frac{dx}{dt} = \\frac{k}{e^{a.t}}.x$ '+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k[2][0],k[2][1],k[2][2]))+' '+tickmarks(2)
-    plt.plot(t,model2(k[2],t),color='blue',label=label2,zorder=3,linewidth=2)
+    if ok[0]:
+        label0='$\\frac{dx}{dt} = k.x$'+(' ; $x_0={:.1f}, k={:.2f}$'.format(k[0][0],k[0][1]))+' '+tickmarks(0)
+        plt.plot(t,model0(k[0],t),color='green',label=label0,zorder=1,linewidth=2)
+
+    if ok[1]:
+        label1='$\\frac{dx}{dt} = \\frac{k}{1+a.t}.x$'+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k[1][0],k[1][1],k[1][2]))+' '+tickmarks(1)
+        plt.plot(t,model1(k[1],t),color='black',label=label1,zorder=2,linewidth=2)
+
+    if ok[2]:
+        label2='$\\frac{dx}{dt} = \\frac{k}{e^{a.t}}.x$ '+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k[2][0],k[2][1],k[2][2]))+' '+tickmarks(2)
+        plt.plot(t,model2(k[2],t),color='blue',label=label2,zorder=3,linewidth=2)
 
     if ok[3]:
         label3='$\\frac{dx}{dt} = k.x.(1-\\frac{x}{P})$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, P={:.2g}$'.format(k[3][0],k[3][1],k[3][2]))+' '+tickmarks(3)
@@ -421,7 +428,10 @@ for p in range(3):  # TODO: Projections for other locations
         
     plt.yscale('symlog')
     plt.ylabel('Confirmed cases')
-    plt.xlabel('Days from 2020-01-20')
+    if start==0:
+        plt.xlabel('Days from 2020-01-20')
+    else:
+        plt.xlabel('Days from 2020-01-20 + {}'.format(start))
     plt.xlim(left=0.0)
 
     handles,labels = plt.gca().get_legend_handles_labels()
@@ -442,7 +452,7 @@ for p in [x for x in range(len(timeseriesKeys)) if not x==2]:   # 2 (total) isn'
     gain_daily[data[1:]<30.0]=np.nan
     gain_weekly[data[7:]<30.0]=np.nan
     
-    plt.scatter(np.arange(len(gain_daily))+0.5,gain_daily,s=3.0,color=colors[p])
+    plt.scatter(np.arange(len(gain_daily))+0.5,gain_daily,s=5.0,color=colors[p])
     plt.plot(np.arange(len(gain_weekly))+7.0/2.0,gain_weekly,color=colors[p],linewidth=2,label=descriptions[p])
     
 plt.ylim(bottom=0.0)
