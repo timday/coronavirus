@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 
+import csv
 from ddeint import ddeint
 import math
 import numpy as np
@@ -19,6 +20,42 @@ china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17
 other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212,  227,  265,  317,  343,  361,  457,  476,  523,  538,  595,  685,  780,  896, 1013, 1095, 1200, 1371, 1677, 2047, 2418, 2755, 3332, 4258, 5300, 6762, 8545,10283,12693,14853,17464,21227,25184,29136],dtype=np.float64)
 
 assert len(china)==len(other)
+
+# Starts 2020-01-22, so zero pad.
+csvfile=open('data/time_series_19-covid-Confirmed.csv','rb')
+reader=csv.reader(csvfile)
+timeseries={}
+for row in reader:
+    if row[1]=='UK' or row[1]=='Italy' or row[1]=='South Korea' or row[1]=='US' or row[1]=='Iran' or row[1]=='France' or row[1]=='Germany' or row[1]=='Spain' or row[1]=='Japan' or row[1]=='Switzerland':
+        if not row[1] in timeseries:
+            timeseries[row[1]]=np.zeros(2+len(row[4:]))
+        timeseries[row[1]]+=np.concatenate([np.zeros(2),np.array(map(lambda x: int(x),row[4:]),dtype=np.float64)])
+
+timeseries['China']=china
+timeseries['Other']=other
+timeseries['Total']=china+other
+
+timeseriesKeys=['China','Other','Total','UK','Italy','France','Germany','Spain','Switzerland','US','South Korea','Japan','Iran']
+for k in timeseriesKeys:
+    assert len(timeseries[k])==len(china)
+
+descriptions=['Mainland China','Other locations (non-China)','Global total','UK','Italy','France','Germany','Spain','Switzerland','US','South Korea','Japan','Iran']
+populations={
+    'China'      :1.4e9,
+    'Other'      :7.7e9-1.4e9,
+    'Total'      :7.7e9,
+    'UK'         :6.6e7,
+    'Italy'      :6e7,
+    'France'     :6.7e7,
+    'Germany'    :8.3e7,
+    'Spain'      :4.7e7,
+    'Switzerland':8.6e6,
+    'US'         :3.3e8,
+    'South Korea':5.1e7,
+    'Japan'      :1.3e8,
+    'Iran'       :8.1e7
+    }
+colors=['tab:red','black','tab:gray','tab:green','tab:olive','tab:blue','tab:cyan','tab:purple','tab:gray','tab:orange','tab:pink','hotpink','tab:brown']
 
 # Straight exponential growth
 # DSolve[x'[t] == k*x[t], x[t], t]
@@ -281,11 +318,14 @@ def probe(data,P,where):
     r7=min(r7s,key=lambda r: r.fun)
 
     print 'Model 8'
-    x8s=[np.array([5.0,5.0,5.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,2.0,3.0] for Tc in [10.0,15.0,20.0] for Ti in [21.0,28.0,35.0]]
-    minfn=model8minfn(days,data)
-    pool=Pool(8)
-    r8s=pool.map(minfn,x8s)
-    r8=min(r8s,key=lambda r: r.fun)
+    #x8s=[np.array([5.0,5.0,5.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,2.0,3.0] for Tc in [10.0,15.0,20.0] for Ti in [21.0,28.0,35.0]]
+    ##x8s=[np.array([5.0,5.0,5.0,2.0*(28.0+15.0),28.0,15.0])]
+    #minfn=model8minfn(days,data)
+    #pool=Pool(8)
+    #r8s=pool.map(minfn,x8s)
+    #r8=min(r8s,key=lambda r: r.fun)
+    r8=r7
+    r8.success=False
 
     print '  Model 0 score {:.6f} (success {}) {}'.format(r0.fun,r0.success,r0.x)
     print '  Model 1 score {:.6f} (success {}) {}'.format(r1.fun,r1.success,r1.x)
@@ -299,29 +339,30 @@ def probe(data,P,where):
 
     return [r0,r1,r2,r3,r4,r5,r6,r7,r8]
 
-for p in [1,2,3]:
+for p in range(3):  # TODO: Projections for other locations
 
-    data={
-        1: china,
-        2: other,
-        3: china+other
-    }[p]
+    data=timeseries[timeseriesKeys[p]]
+    P=populations[timeseriesKeys[p]]
+    where=descriptions[p]
 
-    where={
-        1: 'Mainland China',
-        2: 'Other locations',
-        3: 'Total'
-        }[p]
+    print where,data
 
-    P={
-        1: 1.4e9,
-        2: 7.7e9-1.4e9,
-        3: 7.7e9
-        }[p]
-
-    print '{}:'.format(where)
-
-    plt.subplot(2,3,{1:1,2:4,3:2}[p])  # Use 1,4,2.  Benford's Law at 3&6. Rate at 5.
+    # Layout:
+    # 1st figure
+    #   China
+    #   Other
+    #   Total
+    #   UK
+    #   Italy
+    #   South Korea
+    #   US
+    #   ?
+    # 2nd figure
+    #   Growth rates
+    # 3rd figure:
+    #   Benford's Law plots.
+    
+    plt.subplot(2,2,1+p)
 
     plt.plot(np.arange(len(data)),data,linewidth=4,color='red',label='Observed ; {} days'.format(len(data)),zorder=100)
 
@@ -388,32 +429,39 @@ for p in [1,2,3]:
 
     plt.title(where+' - best fit models')
 
-china_gain_daily=((china[1:]/china[:-1])-1.0)*100.0
-other_gain_daily=((other[1:]/other[:-1])-1.0)*100.0
+plt.figure(figsize=(9,6))
 
-china_gain_weekly=(np.array([(china[i]/china[i-7])**(1.0/7.0)-1.0 for i in xrange(7,len(china))]))*100.0
-other_gain_weekly=(np.array([(other[i]/other[i-7])**(1.0/7.0)-1.0 for i in xrange(7,len(other))]))*100.0
+ax=plt.subplot(1,1,1)
 
-ax=plt.subplot(2,3,5)
-plt.scatter(np.arange(len(china_gain_daily))+0.5,china_gain_daily,color='red',label='Mainland China (daily change)')
-plt.scatter(np.arange(len(other_gain_daily))+0.5,other_gain_daily,color='blue',label='Other locations (daily change)')
-plt.plot(np.arange(len(china_gain_weekly))+7.0/2.0,china_gain_weekly,color='red',label='Mainland China (1-week window)',linewidth=2)
-plt.plot(np.arange(len(other_gain_weekly))+7.0/2.0,other_gain_weekly,color='blue',label='Other locations (1-week window)',linewidth=2)
+for p in [x for x in range(len(timeseriesKeys)) if not x==2]:   # 2 (total) isn't very interesting yet
+
+    data=timeseries[timeseriesKeys[p]]
+    gain_daily=((data[1:]/data[:-1])-1.0)*100.0
+    gain_weekly=(np.array([(data[i]/data[i-7])**(1.0/7.0)-1.0 for i in xrange(7,len(data))]))*100.0
+
+    gain_daily[data[1:]<30.0]=np.nan
+    gain_weekly[data[7:]<30.0]=np.nan
+    
+    plt.scatter(np.arange(len(gain_daily))+0.5,gain_daily,s=3.0,color=colors[p])
+    plt.plot(np.arange(len(gain_weekly))+7.0/2.0,gain_weekly,color=colors[p],linewidth=2,label=descriptions[p])
+    
 plt.ylim(bottom=0.0)
 plt.yscale('symlog')
 plt.xlim(left=0.0)
 plt.grid(True)
-plt.xticks(np.arange(0,len(china_gain_daily)+1,5))
-plt.yticks([1.0,2.5,5.0,7.5,10.0,25.0,50.0,75.0,100.0])
+plt.xticks(np.arange(0,len(gain_daily)+1,5))
+plt.yticks([1.0,2.5,5.0,7.5,10.0,25.0,50.0,75.0,100.0,250.0])
 plt.ylabel('Daily % increase rate')
 plt.xlabel('Days from 2020-01-20')
-plt.legend(loc='upper right',framealpha=0.75,fontsize='xx-small').set_zorder(200)
-plt.title('Daily % increase rate')
+plt.legend(loc='lower left',framealpha=0.75,fontsize='xx-small').set_zorder(200)
+plt.title('Daily % increase rate and 1-week window\nStarts when >=30 cases')
 
 vals = ax.get_yticks()
 ax.set_yticklabels(['{:,.1f}%'.format(x) for x in vals])
 
-ax=plt.subplot(2,3,3)
+plt.figure(figsize=(12,5))
+
+ax=plt.subplot(1,2,1)
 width=0.25
 plt.bar(np.arange(1,10)-width,np.log10(1.0+1.0/np.arange(1,10)),width,color='green',label='Expected')
 plt.bar(np.arange(1,10)      ,frequency(china),width,color='red',label='Mainland China')
@@ -424,7 +472,7 @@ plt.xlabel('Leading digit')
 plt.xticks(np.arange(1,10))
 plt.title("Benford's Law compliance - total cases")
 
-ax=plt.subplot(2,3,6)
+ax=plt.subplot(1,2,2)
 width=0.25
 plt.bar(np.arange(1,10)-width,np.log10(1.0+1.0/np.arange(1,10)),width,color='green',label='Expected')
 plt.bar(np.arange(1,10)      ,frequency(china[1:]-china[:-1]),width,color='red',label='Mainland China')
