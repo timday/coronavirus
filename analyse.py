@@ -155,7 +155,7 @@ def model7(x,t):
     s=np.minimum(t,T)
     return C*np.exp(k*t+j*s*(1.0-s/(2.0*T)))  # NB Continues to evolve at rate k once j influence reaches limit
 
-def model8(x,ts):
+def model8(x,ts,P):
     
     i=x[0]
     j=x[1]
@@ -177,18 +177,23 @@ def model8(x,ts):
         #  1: Number contagious
         #  2: Number observed
     
-        y=Y(t)        
-        yp=Y(t-Ti)
+        y  =Y(t)        
+        yp =Y(t-Ti)
         ypp=Y(t-Ti-Tc)
         ypm=Y(t-Ti-0.5*Tc)
+
+        s=  max(0.0,1.0-y[2]/P)
+        sp= max(0.0,1.0-yp[2]/P)
+        spp=max(0.0,1.0-ypp[2]/P)
+        spm=max(0.0,1.0-ypm[2]/P)
         
-        i_now=k*y[1]+impulse(t)
-        i_then=k*yp[1]+impulse(t-Ti)
+        i_now=(k*y[1]+impulse(t))*s
+        i_then=(k*yp[1]+impulse(t-Ti))*sp
         
         c_now=i_then
-        c_then=k*ypp[1]+impulse(t-Ti-Tc)
+        c_then=(k*ypp[1]+impulse(t-Ti-Tc))*spp
 
-        c_mid=k*ypm[1]+impulse(t-Ti-0.5*Tc)
+        c_mid=(k*ypm[1]+impulse(t-Ti-0.5*Tc))*spm
         
         return np.array([
             i_now-i_then, # Incubating
@@ -199,7 +204,7 @@ def model8(x,ts):
     def values_before_zero(t):
         return np.array([0.0,0.0,0.0])
 
-    tms=np.concatenate([np.linspace(0.0,T0,1000,endpoint=False),ts+T0])
+    tms=np.concatenate([np.linspace(0.0,T0,100,endpoint=False),ts+T0])
     ys=ddeint(model,values_before_zero,tms)
     return ys[-len(ts):,2]
 
@@ -234,23 +239,25 @@ def model8(x,ts):
 def error(v,data):
     return np.sum((np.log(v)-np.log(data))**2)
 
-def model8error(x,days,data):
-    err=error(model8(x,days),data)
+def model8error(x,days,P,data):
+    #print '    Model8: {:.1f} {:.1f} {:.1f} {:.1f} {:.1f} {:.1f}...'.format(x[0],x[1],x[2],x[3],x[4],x[5])
+    err=error(model8(x,days,P),data)
     #print '    Model8: {:.1f} {:.1f} {:.1f} {:.1f} {:.1f} {:.1f} : {:.3f}'.format(x[0],x[1],x[2],x[3],x[4],x[5],err)
     return  err
     
 class model8minfn:
-    def __init__(self,days,data):
+    def __init__(self,days,P,data):
         self._days=days
+        self._P=P
         self._data=data
     def __call__(self,x8):
         print 'Model8 minimizing from: {:.1f} {:.1f} {:.1f} {:.1f} {:.1f} {:.1f}'.format(x8[0],x8[1],x8[2],x8[3],x8[4],x8[5])
         return scipy.optimize.minimize(
-            lambda x: model8error(x,self._days,self._data),
+            lambda x: model8error(x,self._days,self._P,self._data),
             x8,
             method='SLSQP',
             options={'eps':0.5,'ftol':0.01,'maxiter':1000},
-            bounds=[(0.0,np.inf),(1.0,100.0),(0.0,np.inf),(1.0,1000.0),(1.0,100.0),(1.0,100.0)]   # Large (unlimited) j causes problems?
+            bounds=[(0.0,100.0),(1.0,100.0),(0.0,np.inf),(1.0,1000.0),(1.0,100.0),(1.0,100.0)]   # Large (unlimited) j (&i?) causes problems?
         )
     
 def probe(data,P,where):
@@ -322,7 +329,7 @@ def probe(data,P,where):
     print 'Model 8'
     x8s=[np.array([5.0,5.0,5.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,2.0] for Ti in [14.0,21.0,28.0,35.0] for Tc in [18.0]]
     #x8s=[np.array([5.0,5.0,5.0,2.0*(28.0+15.0),28.0,15.0])]
-    minfn=model8minfn(days,data)
+    minfn=model8minfn(days,P,data)
     pool=Pool(8)
     r8s=pool.map(minfn,x8s)
     r8=min(r8s,key=lambda r: r.fun)
@@ -353,7 +360,7 @@ def clean(a):
         print "Cleaned",a,"to",c
     return c
 
-for p in range(12):  # 11 OK, 13 bad. # 13 is all
+for p in range(13):  # 11 OK, Number 12 (Iran) bad. # 13 is all
 
     print
     print '********************'
@@ -474,7 +481,7 @@ for p in range(12):  # 11 OK, 13 bad. # 13 is all
 
     if ok[8]:
         label8='${DDE}_0$'+(' ; $i={:.1f}, j={:.1f}, k={:.1f}, T_0={:.1f}, T_i={:.1f}, T_c={:.1f}$'.format(k[8][0],k[8][1],k[8][2],-k[8][3],k[8][4],k[8][5]))+' '+tickmarks(8)
-        plt.plot(date(t+start),poplimit(model8(k[8],t)),color='lawngreen',label=label8,zorder=9,linewidth=2)
+        plt.plot(date(t+start),poplimit(model8(k[8],t,P)),color='lawngreen',label=label8,zorder=9,linewidth=2)
         
     plt.yscale('symlog')
     plt.ylabel('Confirmed cases')
