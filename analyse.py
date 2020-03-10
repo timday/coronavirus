@@ -342,18 +342,34 @@ def probe(data,P,where):
 
     return [r0,r1,r2,r3,r4,r5,r6,r7,r8]
 
-for p in range(6):  # TODO: Projections for other locations
+def clean(a):
+    c=np.concatenate(
+        [
+            np.minimum(a[:-1],a[1:]),
+            np.array([a[-1]])
+        ]
+    )
+    if not np.array_equal(a,c):
+        print "Cleaned",a,"to",c
+    return c
 
-    alldata=timeseries[timeseriesKeys[p]]
-    data=np.array([x for x in alldata if x>=30.0])
-    start=len(alldata)-len(data)
-    P=populations[timeseriesKeys[p]]
-    where=descriptions[p]
+for p in range(13):
 
     print
     print '********************'
-    print where,data
+    where=descriptions[p]
+    print where
 
+    alldata=timeseries[timeseriesKeys[p]]
+
+    alldata=clean(alldata)
+    
+    data=np.array([x for x in alldata if x>=30.0])
+    start=len(alldata)-len(data)
+    P=populations[timeseriesKeys[p]]
+
+    print data
+    
     # Layout:
     # 1st figure
     #   China
@@ -367,15 +383,27 @@ for p in range(6):  # TODO: Projections for other locations
     # 3rd figure:
     #   Benford's Law plots.
 
-    if p==0 or p==6:
-        fig=plt.figure()
+    if p==0:
+        fig1=plt.figure()
+        def on_resize1(event):
+            fig1.tight_layout()
+            fig1.canvas.draw()
+        fig1.canvas.mpl_connect('resize_event', on_resize1)
 
-        def on_resize(event):
-            fig.tight_layout()
-            fig.canvas.draw()
+    if p==6:
+        fig2=plt.figure()
+        def on_resize2(event):
+            fig2.tight_layout()
+            fig2.canvas.draw()
+        fig2.canvas.mpl_connect('resize_event', on_resize2)
 
-        fig.canvas.mpl_connect('resize_event', on_resize)
-    
+    if p==12:
+        fig3=plt.figure()
+        def on_resize3(event):
+            fig3.tight_layout()
+            fig3.canvas.draw()
+        fig3.canvas.mpl_connect('resize_event', on_resize3)
+
     plt.subplot(2,3,1+(p%6))
 
     results=probe(data,P,where)
@@ -400,7 +428,7 @@ for p in range(6):  # TODO: Projections for other locations
 
     def poplimit(a):
         r=np.array(a)
-        r[a>populations]=np.nan
+        r[a>P]=np.nan
         return r
     
     basedate=mdates.date2num(datetime.datetime(2020,1,20))
@@ -460,7 +488,8 @@ for p in range(6):  # TODO: Projections for other locations
 
     plt.title(where)
 
-plt.tight_layout(pad=0.05)
+    if p%6==5:
+        plt.tight_layout(pad=0.05)
 
 plt.figure(figsize=(9,6))
 
