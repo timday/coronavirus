@@ -320,15 +320,15 @@ def probe(data,P,where):
     r7=min(r7s,key=lambda r: r.fun)
 
     print 'Model 8'
-    #x8s=[np.array([5.0,5.0,5.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,2.0] for Ti in [14.0,21.0,28.0,35.0] for Tc in [18.0]]
-    ##x8s=[np.array([5.0,5.0,5.0,2.0*(28.0+15.0),28.0,15.0])]
-    #minfn=model8minfn(days,data)
-    #pool=Pool(8)
-    #r8s=pool.map(minfn,x8s)
-    #r8=min(r8s,key=lambda r: r.fun)
+    x8s=[np.array([5.0,5.0,5.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,2.0] for Ti in [14.0,21.0,28.0,35.0] for Tc in [18.0]]
+    #x8s=[np.array([5.0,5.0,5.0,2.0*(28.0+15.0),28.0,15.0])]
+    minfn=model8minfn(days,data)
+    pool=Pool(8)
+    r8s=pool.map(minfn,x8s)
+    r8=min(r8s,key=lambda r: r.fun)
 
-    r8=r7
-    r8.success=False
+    #r8=r7
+    #r8.success=False
 
     print '  Model 0 score {:.6f} (success {}) {}'.format(r0.fun,r0.success,r0.x)
     print '  Model 1 score {:.6f} (success {}) {}'.format(r1.fun,r1.success,r1.x)
@@ -353,7 +353,7 @@ def clean(a):
         print "Cleaned",a,"to",c
     return c
 
-for p in range(13):
+for p in range(12):  # 11 OK, 13 bad. # 13 is all
 
     print
     print '********************'
