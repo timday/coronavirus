@@ -41,7 +41,11 @@ timeseriesKeys=['China','Other','Total','UK','Italy','France','Germany','Spain',
 for k in timeseriesKeys:
     assert len(timeseries[k])==len(china)
 
-descriptions=['Mainland China','Other locations (non-China)','Global total','UK','Italy','France','Germany','Spain','Switzerland','US','South Korea','Japan','Iran']
+descriptions=dict(zip(timeseriesKeys,timeseriesKeys))
+descriptions['China']='Mainland China'
+descriptions['Other']='Other locations (non-China)'
+descriptions['Total']='Global total'
+
 populations={
     'China'      :1.4e9,
     'Other'      :7.7e9-1.4e9,
@@ -327,15 +331,15 @@ def probe(data,P,where):
     r7=min(r7s,key=lambda r: r.fun)
 
     print 'Model 8'
-    x8s=[np.array([5.0,5.0,5.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,2.0] for Ti in [14.0,21.0,28.0,35.0] for Tc in [18.0]]
-    #x8s=[np.array([5.0,5.0,5.0,2.0*(28.0+15.0),28.0,15.0])]
-    minfn=model8minfn(days,P,data)
-    pool=Pool(8)
-    r8s=pool.map(minfn,x8s)
-    r8=min(r8s,key=lambda r: r.fun)
+    #x8s=[np.array([5.0,5.0,5.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,2.0] for Ti in [14.0,21.0,28.0,35.0] for Tc in [18.0]]
+    ##x8s=[np.array([5.0,5.0,5.0,2.0*(28.0+15.0),28.0,15.0])]
+    #minfn=model8minfn(days,P,data)
+    #pool=Pool(8)
+    #r8s=pool.map(minfn,x8s)
+    #r8=min(r8s,key=lambda r: r.fun)
 
-    #r8=r7
-    #r8.success=False
+    r8=r7
+    r8.success=False
 
     print '  Model 0 score {:.6f} (success {}) {}'.format(r0.fun,r0.success,r0.x)
     print '  Model 1 score {:.6f} (success {}) {}'.format(r1.fun,r1.success,r1.x)
@@ -364,7 +368,7 @@ for p in range(13):  # 11 OK, Number 12 (Iran) bad. # 13 is all
 
     print
     print '********************'
-    where=descriptions[p]
+    where=descriptions[timeseriesKeys[p]]
     print where
 
     alldata=timeseries[timeseriesKeys[p]]
@@ -485,7 +489,8 @@ for p in range(13):  # 11 OK, Number 12 (Iran) bad. # 13 is all
         
     plt.yscale('symlog')
     plt.ylabel('Confirmed cases')
-    plt.xticks(rotation=75,fontsize=10)
+    plt.xticks(rotation=75,fontsize=8)
+    plt.yticks(fontsize=8)
     plt.gca().set_xlim(left=basedate)
     plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval=1))
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
@@ -512,7 +517,7 @@ for p in [x for x in range(len(timeseriesKeys)) if not x==2]:   # 2 (total) isn'
     gain_weekly[data[7:]<30.0]=np.nan
     
     plt.scatter(np.arange(len(gain_daily))+0.5,gain_daily,s=5.0,color=colors[p])
-    plt.plot(np.arange(len(gain_weekly))+7.0/2.0,gain_weekly,color=colors[p],linewidth=2,label=descriptions[p])
+    plt.plot(np.arange(len(gain_weekly))+7.0/2.0,gain_weekly,color=colors[p],linewidth=2,label=descriptions[timeseriesKeys[p]])
     
 plt.ylim(bottom=0.0)
 plt.yscale('symlog')
