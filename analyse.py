@@ -247,7 +247,7 @@ class model8minfn:
             lambda x: model8error(x,self._days,self._data),
             x8,
             method='SLSQP',
-            options={'eps':0.5,'ftol':0.1,'maxiter':1000},
+            options={'eps':0.5,'ftol':0.01,'maxiter':1000},
             bounds=[(0.0,np.inf),(1.0,100.0),(0.0,np.inf),(1.0,1000.0),(1.0,100.0),(1.0,100.0)]   # Large (unlimited) j causes problems?
         )
     
@@ -282,51 +282,51 @@ def probe(data,P,where):
 
     print 'Model 0'
     x0=np.array([data[0],k])
-    r0=scipy.optimize.minimize(error0,x0,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf)])
+    r0=scipy.optimize.minimize(error0,x0,method='SLSQP',options={'ftol':0.01,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf)])
 
     print 'Model 1'
     x1=np.array([data[0],k,a])
-    r1=scipy.optimize.minimize(error1,x1,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)])
+    r1=scipy.optimize.minimize(error1,x1,method='SLSQP',options={'ftol':0.01,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)])
 
     print 'Model 2'
     x2=np.array([data[0],k,a])
-    r2=scipy.optimize.minimize(error2,x2,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)])  
+    r2=scipy.optimize.minimize(error2,x2,method='SLSQP',options={'ftol':0.01,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)])  
 
     print 'Model 3'
     x3s=[np.array([data[0],k,pv]) for pv in [0.000000001*P,0.00000001*P,0.0000001*P,0.000001*P,0.00001*P,0.0001*P,0.001*P,0.01*P,0.1*P,P]]
-    r3s=map(lambda x3: scipy.optimize.minimize(error3,x3,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,P)]),x3s)
+    r3s=map(lambda x3: scipy.optimize.minimize(error3,x3,method='SLSQP',options={'ftol':0.01,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,P)]),x3s)
     r3=min(r3s,key=lambda r: r.fun)
 
     print 'Model 4'
     x4s=[np.array([data[0],jkv[0],jkv[1],a]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)]]
-    r4s=map(lambda x4: scipy.optimize.minimize(error4,x4,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)]),x4s)
+    r4s=map(lambda x4: scipy.optimize.minimize(error4,x4,method='SLSQP',options={'ftol':0.01,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)]),x4s)
     r4=min(r4s,key=lambda r: r.fun)
 
     print 'Model 5'
     x5s=[np.array([data[0],jkv[0],jkv[1],a]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)]]
-    r5s=map(lambda x5: scipy.optimize.minimize(error5,x5,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)]),x5s)
+    r5s=map(lambda x5: scipy.optimize.minimize(error5,x5,method='SLSQP',options={'ftol':0.01,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)]),x5s)
     r5=min(r5s,key=lambda r: r.fun)
 
     print 'Model 6'
     x6s=[np.array([data[0],k,tv]) for tv in [0.5*T,0.75*T,T,1.5*T,2.0*T]]
-    r6s=map(lambda x6: scipy.optimize.minimize(error6,x6,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x6s)
+    r6s=map(lambda x6: scipy.optimize.minimize(error6,x6,method='SLSQP',options={'ftol':0.01,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x6s)
     r6=min(r6s,key=lambda r: r.fun)
     
     print 'Model 7'
     x7s=[np.array([data[0],jkv[0],jkv[1],tv]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)] for tv in [0.5*T,0.75*T,T,1.5*T,2.0*T]]
-    r7s=map(lambda x7: scipy.optimize.minimize(error7,x7,method='SLSQP',options={'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x7s)
+    r7s=map(lambda x7: scipy.optimize.minimize(error7,x7,method='SLSQP',options={'ftol':0.01,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x7s)
     r7=min(r7s,key=lambda r: r.fun)
 
     print 'Model 8'
-    x8s=[np.array([5.0,5.0,5.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,2.0,3.0] for Tc in [10.0,15.0,20.0] for Ti in [21.0,28.0,35.0]]
-    #x8s=[np.array([5.0,5.0,5.0,2.0*(28.0+15.0),28.0,15.0])]
-    minfn=model8minfn(days,data)
-    pool=Pool(8)
-    r8s=pool.map(minfn,x8s)
-    r8=min(r8s,key=lambda r: r.fun)
+    #x8s=[np.array([5.0,5.0,5.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,2.0] for Ti in [14.0,21.0,28.0,35.0] for Tc in [18.0]]
+    ##x8s=[np.array([5.0,5.0,5.0,2.0*(28.0+15.0),28.0,15.0])]
+    #minfn=model8minfn(days,data)
+    #pool=Pool(8)
+    #r8s=pool.map(minfn,x8s)
+    #r8=min(r8s,key=lambda r: r.fun)
 
-    #r8=r7
-    #r8.success=False
+    r8=r7
+    r8.success=False
 
     print '  Model 0 score {:.6f} (success {}) {}'.format(r0.fun,r0.success,r0.x)
     print '  Model 1 score {:.6f} (success {}) {}'.format(r1.fun,r1.success,r1.x)
@@ -340,7 +340,7 @@ def probe(data,P,where):
 
     return [r0,r1,r2,r3,r4,r5,r6,r7,r8]
 
-for p in range(4):  # TODO: Projections for other locations
+for p in range(6):  # TODO: Projections for other locations
 
     alldata=timeseries[timeseriesKeys[p]]
     data=np.array([x for x in alldata if x>=30.0])
@@ -348,6 +348,8 @@ for p in range(4):  # TODO: Projections for other locations
     P=populations[timeseriesKeys[p]]
     where=descriptions[p]
 
+    print
+    print '********************'
     print where,data
 
     # Layout:
@@ -367,17 +369,20 @@ for p in range(4):  # TODO: Projections for other locations
         plt.figure()
     
     plt.subplot(2,3,1+(p%6))
+    plt.suptitle('Best fit models')
 
-    plt.plot(np.arange(len(data)),data,linewidth=4,color='red',label='Observed ; {} days'.format(len(data)),zorder=100)
+    plt.plot(np.arange(len(data))+start,data,linewidth=4,color='red',label='Observed ; {} days $\geq 30$ cases'.format(len(data)),zorder=100)
 
     results=probe(data,P,where)
     k=map(lambda r: r.x,results)
     ok=map(lambda r: r.success,results)
 
     # Squash models with redundant findings
-    ok[4]=ok[4] and math.fabs(k[4][1])>=0.005
-    ok[5]=ok[5] and math.fabs(k[5][1])>=0.005
-    ok[7]=ok[7] and math.fabs(k[7][1])>=0.005
+    ok[1]=ok[1] and math.fabs(k[1][2])>=0.005  
+    ok[2]=ok[2] and math.fabs(k[2][2])>=0.005  
+    ok[4]=ok[4] and math.fabs(k[4][1])>=0.005 and math.fabs(k[4][2])>=0.005 and math.fabs(k[4][3])>=0.005
+    ok[5]=ok[5] and math.fabs(k[5][1])>=0.005 and math.fabs(k[5][2])>=0.005
+    ok[7]=ok[7] and math.fabs(k[7][1])>=0.005 and math.fabs(k[7][2])>=0.005
 
     scores=sorted([(i,results[i].fun) for i in range(len(results)) if ok[i]],key=lambda x: x[1])
     
@@ -387,57 +392,59 @@ for p in range(4):  # TODO: Projections for other locations
         elif scores[1][0]==i: n=2
         elif scores[2][0]==i: n=1
         return n*u'\u2714'
+
+    def poplimit(a):
+        r=np.array(a)
+        r[a>populations]=np.nan
+        return r
         
     t=np.arange(30+len(data))
 
     if ok[0]:
         label0='$\\frac{dx}{dt} = k.x$'+(' ; $x_0={:.1f}, k={:.2f}$'.format(k[0][0],k[0][1]))+' '+tickmarks(0)
-        plt.plot(t,model0(k[0],t),color='green',label=label0,zorder=1,linewidth=2)
+        plt.plot(t+start,poplimit(model0(k[0],t)),color='green',label=label0,zorder=1,linewidth=2)
 
     if ok[1]:
         label1='$\\frac{dx}{dt} = \\frac{k}{1+a.t}.x$'+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k[1][0],k[1][1],k[1][2]))+' '+tickmarks(1)
-        plt.plot(t,model1(k[1],t),color='black',label=label1,zorder=2,linewidth=2)
+        plt.plot(t+start,poplimit(model1(k[1],t)),color='black',label=label1,zorder=2,linewidth=2)
 
     if ok[2]:
         label2='$\\frac{dx}{dt} = \\frac{k}{e^{a.t}}.x$ '+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k[2][0],k[2][1],k[2][2]))+' '+tickmarks(2)
-        plt.plot(t,model2(k[2],t),color='blue',label=label2,zorder=3,linewidth=2)
+        plt.plot(t+start,poplimit(model2(k[2],t)),color='blue',label=label2,zorder=3,linewidth=2)
 
     if ok[3]:
         label3='$\\frac{dx}{dt} = k.x.(1-\\frac{x}{P})$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, P={:.2g}$'.format(k[3][0],k[3][1],k[3][2]))+' '+tickmarks(3)
-        plt.plot(t,model3(k[3],t),color='orange',label=label3,zorder=4,linewidth=2)
+        plt.plot(t+start,poplimit(model3(k[3],t)),color='orange',label=label3,zorder=4,linewidth=2)
 
     if ok[4]:
         label4='$\\frac{dx}{dt} = (k+\\frac{j}{1+a.t}).x$'+(' ; $x_0={:.1f}, k={:.2f}, j={:.2f}, a={:.2f}$'.format(k[4][0],k[4][1],k[4][2],k[4][3]))+' '+tickmarks(4)
-        plt.plot(t,model4(k[4],t),color='grey',label=label4,zorder=5,linewidth=2)
+        plt.plot(t+start,poplimit(model4(k[4],t)),color='grey',label=label4,zorder=5,linewidth=2)
     
     if ok[5]:
         label5='$\\frac{dx}{dt} = (k+\\frac{j}{e^{a.t}}).x$'+(' ; $x_0={:.1f}, k={:.2f}, j={:.2f}, a={:.2f}$'.format(k[5][0],k[5][1],k[5][2],k[5][3]))+' '+tickmarks(5)
-        plt.plot(t,model5(k[5],t),color='skyblue',label=label5,zorder=6,linewidth=2)
+        plt.plot(t+start,poplimit(model5(k[5],t)),color='skyblue',label=label5,zorder=6,linewidth=2)
 
     if ok[6]:
         label6='$\\frac{dx}{dt} = k.(1-\\frac{t}{T}).x$ for $t \\leq T$, else $0$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, T={:.1f}$'.format(k[6][0],k[6][1],k[6][2]))+' '+tickmarks(6)
-        plt.plot(t,model6(k[6],t),color='purple',label=label6,zorder=7,linewidth=2)
+        plt.plot(t+start,poplimit(model6(k[6],t)),color='purple',label=label6,zorder=7,linewidth=2)
 
     if ok[7]:
         label7='$\\frac{dx}{dt} = (k+j.(1-\\frac{t}{T})).x$ for $t \\leq T$, else $k.x$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, j={:.2f}, T={:.1f}$'.format(k[7][0],k[7][1],k[7][2],k[7][3]))+' '+tickmarks(7)
-        plt.plot(t,model7(k[7],t),color='pink',label=label7,zorder=8,linewidth=2)
+        plt.plot(t+start,poplimit(model7(k[7],t)),color='pink',label=label7,zorder=8,linewidth=2)
 
     if ok[8]:
         label8='${DDE}_0$'+(' ; $i={:.1f}, j={:.1f}, k={:.1f}, T_0={:.1f}, T_i={:.1f}, T_c={:.1f}$'.format(k[8][0],k[8][1],k[8][2],-k[8][3],k[8][4],k[8][5]))+' '+tickmarks(8)
-        plt.plot(t,model8(k[8],t),color='lawngreen',label=label8,zorder=9,linewidth=2)
+        plt.plot(t+start,poplimit(model8(k[8],t)),color='lawngreen',label=label8,zorder=9,linewidth=2)
         
     plt.yscale('symlog')
     plt.ylabel('Confirmed cases')
-    if start==0:
-        plt.xlabel('Days from 2020-01-20')
-    else:
-        plt.xlabel('Days from 2020-01-20 + {}'.format(start))
+    plt.xlabel('Days from 2020-01-20')
     plt.xlim(left=0.0)
 
     handles,labels = plt.gca().get_legend_handles_labels()
     plt.legend(handles[::-1],labels[::-1],loc='upper left',framealpha=0.25,fontsize='xx-small').set_zorder(200)
 
-    plt.title(where+' - best fit models')
+    plt.title(where)
 
 plt.figure(figsize=(9,6))
 
