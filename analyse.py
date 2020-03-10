@@ -485,7 +485,7 @@ for p in range(13):  # 11 OK, Number 12 (Iran) bad. # 13 is all
         
     plt.yscale('symlog')
     plt.ylabel('Confirmed cases')
-    plt.xticks(rotation=75)
+    plt.xticks(rotation=75,fontsize=10)
     plt.gca().set_xlim(left=basedate)
     plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval=1))
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
