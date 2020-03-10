@@ -61,7 +61,22 @@ populations={
     'Japan'      :1.3e8,
     'Iran'       :8.1e7
     }
-colors=['tab:red','black','tab:gray','tab:green','tab:olive','tab:blue','tab:cyan','tab:purple','tab:gray','tab:orange','tab:pink','hotpink','tab:brown']
+
+colors={
+    'China'      :'tab:red',
+    'Other'      :'black',
+    'Total'      :'tab:gray',
+    'UK'         :'tab:green',
+    'Italy'      :'tab:olive',
+    'France'     :'tab:blue',
+    'Germany'    :'tab:cyan',
+    'Spain'      :'tab:purple',
+    'Switzerland':'tab:gray',
+    'US'         :'tab:orange',
+    'South Korea':'tab:pink',
+    'Japan'      :'hotpink',
+    'Iran'       :'tab:brown'
+    }
 
 # Straight exponential growth
 # DSolve[x'[t] == k*x[t], x[t], t]
@@ -492,7 +507,7 @@ for p in range(13):  # 11 OK, Number 12 (Iran) bad. # 13 is all
     plt.xticks(rotation=75,fontsize=8)
     plt.yticks(fontsize=8)
     plt.gca().set_xlim(left=basedate)
-    plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval=1))
+    plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=mdates.MO))
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
 
     handles,labels = plt.gca().get_legend_handles_labels()
@@ -516,17 +531,19 @@ for p in [x for x in range(len(timeseriesKeys)) if not x==2]:   # 2 (total) isn'
     gain_daily[data[1:]<30.0]=np.nan
     gain_weekly[data[7:]<30.0]=np.nan
     
-    plt.scatter(np.arange(len(gain_daily))+0.5,gain_daily,s=5.0,color=colors[p])
-    plt.plot(np.arange(len(gain_weekly))+7.0/2.0,gain_weekly,color=colors[p],linewidth=2,label=descriptions[timeseriesKeys[p]])
+    plt.scatter(date(np.arange(len(gain_daily))+0.5),gain_daily,s=5.0,color=colors[timeseriesKeys[p]])
+    plt.plot(date(np.arange(len(gain_weekly))+7.0/2.0),gain_weekly,color=colors[timeseriesKeys[p]],linewidth=2,label=descriptions[timeseriesKeys[p]])
     
 plt.ylim(bottom=0.0)
 plt.yscale('symlog')
-plt.xlim(left=0.0)
 plt.grid(True)
-plt.xticks(np.arange(0,len(gain_daily)+1,5))
 plt.yticks([1.0,2.5,5.0,7.5,10.0,25.0,50.0,75.0,100.0,250.0])
 plt.ylabel('Daily % increase rate')
-plt.xlabel('Days from 2020-01-20')
+plt.xticks(rotation=75,fontsize=8)
+plt.yticks(fontsize=8)
+plt.gca().set_xlim(left=basedate)
+plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=mdates.MO))
+plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
 plt.legend(loc='lower left',framealpha=0.75,fontsize='xx-small').set_zorder(200)
 plt.title('Daily % increase rate and 1-week window\nStarts when >=30 cases')
 
