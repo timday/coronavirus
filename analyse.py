@@ -1,11 +1,13 @@
 #!/usr/bin/env python
 
 import csv
+import datetime
 from ddeint import ddeint
 import math
 import numpy as np
 import scipy.optimize
 import scipy.special
+import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 from multiprocessing import Pool
 
@@ -365,13 +367,16 @@ for p in range(6):  # TODO: Projections for other locations
     # 3rd figure:
     #   Benford's Law plots.
 
-    if p==6:
-        plt.figure()
+    if p==0 or p==6:
+        fig=plt.figure()
+
+        def on_resize(event):
+            fig.tight_layout()
+            fig.canvas.draw()
+
+        fig.canvas.mpl_connect('resize_event', on_resize)
     
     plt.subplot(2,3,1+(p%6))
-    plt.suptitle('Best fit models')
-
-    plt.plot(np.arange(len(data))+start,data,linewidth=4,color='red',label='Observed ; {} days $\geq 30$ cases'.format(len(data)),zorder=100)
 
     results=probe(data,P,where)
     k=map(lambda r: r.x,results)
@@ -397,54 +402,65 @@ for p in range(6):  # TODO: Projections for other locations
         r=np.array(a)
         r[a>populations]=np.nan
         return r
-        
+    
+    basedate=mdates.date2num(datetime.datetime(2020,1,20))
+
+    def date(t):
+        return [basedate+x for x in t]
+                
+    plt.plot(date(np.arange(len(data))+start),data,linewidth=4,color='red',label='Observed ; {} days $\geq 30$ cases'.format(len(data)),zorder=100)
+
     t=np.arange(30+len(data))
 
     if ok[0]:
         label0='$\\frac{dx}{dt} = k.x$'+(' ; $x_0={:.1f}, k={:.2f}$'.format(k[0][0],k[0][1]))+' '+tickmarks(0)
-        plt.plot(t+start,poplimit(model0(k[0],t)),color='green',label=label0,zorder=1,linewidth=2)
+        plt.plot(date(t+start),poplimit(model0(k[0],t)),color='green',label=label0,zorder=1,linewidth=2)
 
     if ok[1]:
         label1='$\\frac{dx}{dt} = \\frac{k}{1+a.t}.x$'+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k[1][0],k[1][1],k[1][2]))+' '+tickmarks(1)
-        plt.plot(t+start,poplimit(model1(k[1],t)),color='black',label=label1,zorder=2,linewidth=2)
+        plt.plot(date(t+start),poplimit(model1(k[1],t)),color='black',label=label1,zorder=2,linewidth=2)
 
     if ok[2]:
         label2='$\\frac{dx}{dt} = \\frac{k}{e^{a.t}}.x$ '+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k[2][0],k[2][1],k[2][2]))+' '+tickmarks(2)
-        plt.plot(t+start,poplimit(model2(k[2],t)),color='blue',label=label2,zorder=3,linewidth=2)
+        plt.plot(date(t+start),poplimit(model2(k[2],t)),color='blue',label=label2,zorder=3,linewidth=2)
 
     if ok[3]:
         label3='$\\frac{dx}{dt} = k.x.(1-\\frac{x}{P})$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, P={:.2g}$'.format(k[3][0],k[3][1],k[3][2]))+' '+tickmarks(3)
-        plt.plot(t+start,poplimit(model3(k[3],t)),color='orange',label=label3,zorder=4,linewidth=2)
+        plt.plot(date(t+start),poplimit(model3(k[3],t)),color='orange',label=label3,zorder=4,linewidth=2)
 
     if ok[4]:
         label4='$\\frac{dx}{dt} = (k+\\frac{j}{1+a.t}).x$'+(' ; $x_0={:.1f}, k={:.2f}, j={:.2f}, a={:.2f}$'.format(k[4][0],k[4][1],k[4][2],k[4][3]))+' '+tickmarks(4)
-        plt.plot(t+start,poplimit(model4(k[4],t)),color='grey',label=label4,zorder=5,linewidth=2)
+        plt.plot(date(t+start),poplimit(model4(k[4],t)),color='grey',label=label4,zorder=5,linewidth=2)
     
     if ok[5]:
         label5='$\\frac{dx}{dt} = (k+\\frac{j}{e^{a.t}}).x$'+(' ; $x_0={:.1f}, k={:.2f}, j={:.2f}, a={:.2f}$'.format(k[5][0],k[5][1],k[5][2],k[5][3]))+' '+tickmarks(5)
-        plt.plot(t+start,poplimit(model5(k[5],t)),color='skyblue',label=label5,zorder=6,linewidth=2)
+        plt.plot(date(t+start),poplimit(model5(k[5],t)),color='skyblue',label=label5,zorder=6,linewidth=2)
 
     if ok[6]:
         label6='$\\frac{dx}{dt} = k.(1-\\frac{t}{T}).x$ for $t \\leq T$, else $0$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, T={:.1f}$'.format(k[6][0],k[6][1],k[6][2]))+' '+tickmarks(6)
-        plt.plot(t+start,poplimit(model6(k[6],t)),color='purple',label=label6,zorder=7,linewidth=2)
+        plt.plot(date(t+start),poplimit(model6(k[6],t)),color='purple',label=label6,zorder=7,linewidth=2)
 
     if ok[7]:
         label7='$\\frac{dx}{dt} = (k+j.(1-\\frac{t}{T})).x$ for $t \\leq T$, else $k.x$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, j={:.2f}, T={:.1f}$'.format(k[7][0],k[7][1],k[7][2],k[7][3]))+' '+tickmarks(7)
-        plt.plot(t+start,poplimit(model7(k[7],t)),color='pink',label=label7,zorder=8,linewidth=2)
+        plt.plot(date(t+start),poplimit(model7(k[7],t)),color='pink',label=label7,zorder=8,linewidth=2)
 
     if ok[8]:
         label8='${DDE}_0$'+(' ; $i={:.1f}, j={:.1f}, k={:.1f}, T_0={:.1f}, T_i={:.1f}, T_c={:.1f}$'.format(k[8][0],k[8][1],k[8][2],-k[8][3],k[8][4],k[8][5]))+' '+tickmarks(8)
-        plt.plot(t+start,poplimit(model8(k[8],t)),color='lawngreen',label=label8,zorder=9,linewidth=2)
+        plt.plot(date(t+start),poplimit(model8(k[8],t)),color='lawngreen',label=label8,zorder=9,linewidth=2)
         
     plt.yscale('symlog')
     plt.ylabel('Confirmed cases')
-    plt.xlabel('Days from 2020-01-20')
-    plt.xlim(left=0.0)
+    plt.xticks(rotation=75)
+    plt.gca().set_xlim(left=basedate)
+    plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(interval=1))
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
 
     handles,labels = plt.gca().get_legend_handles_labels()
     plt.legend(handles[::-1],labels[::-1],loc='upper left',framealpha=0.25,fontsize='xx-small').set_zorder(200)
 
     plt.title(where)
+
+plt.tight_layout(pad=0.05)
 
 plt.figure(figsize=(9,6))
 
