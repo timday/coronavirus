@@ -18,8 +18,8 @@ def frequency(s):
 # Data from https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
 # Use inspect element on graph to get precise numbers
 # Starts 2020-01-20:
-china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409,30553,34075,36778,39790,42306,44327,44699,59832,66292,68347,70446,72364,74139,74546,74999,75472,76922,76938,77152,77660,78065,78498,78824,79251,79826,80026,80151,80271,80422,80573,80652,80699,80735],dtype=np.float64)
-other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212,  227,  265,  317,  343,  361,  457,  476,  523,  538,  595,  685,  780,  896, 1013, 1095, 1200, 1371, 1677, 2047, 2418, 2755, 3332, 4258, 5300, 6762, 8545,10283,12693,14853,17464,21227,25184,29136,32847],dtype=np.float64)
+china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409,30553,34075,36778,39790,42306,44327,44699,59832,66292,68347,70446,72364,74139,74546,74999,75472,76922,76938,77152,77660,78065,78498,78824,79251,79826,80026,80151,80271,80422,80573,80652,80699,80735,80757],dtype=np.float64)
+other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212,  227,  265,  317,  343,  361,  457,  476,  523,  538,  595,  685,  780,  896, 1013, 1095, 1200, 1371, 1677, 2047, 2418, 2755, 3332, 4258, 5300, 6762, 8545,10283,12693,14853,17464,21227,25184,29136,32847,37825],dtype=np.float64)
 
 assert len(china)==len(other)
 
@@ -28,7 +28,7 @@ csvfile=open('data/time_series_19-covid-Confirmed.csv','rb')
 reader=csv.reader(csvfile)
 timeseries={}
 for row in reader:
-    if row[1]=='UK' or row[1]=='Italy' or row[1]=='South Korea' or row[1]=='US' or row[1]=='Iran' or row[1]=='France' or row[1]=='Germany' or row[1]=='Spain' or row[1]=='Japan' or row[1]=='Switzerland':
+    if row[1]=='UK' or row[1]=='Italy' or row[1]=='Republic of Korea' or row[1]=='US' or row[1]=='Iran (Islamic Republic of)' or row[1]=='France' or row[1]=='Germany' or row[1]=='Spain' or row[1]=='Japan' or row[1]=='Switzerland' or row[1]=='Netherlands' or row[1]=='Sweden' or row[1]=='Norway' or row[1]=='Denmark' or row[1]=='Belgium':
         if not row[1] in timeseries:
             timeseries[row[1]]=np.zeros(2+len(row[4:]))
         timeseries[row[1]]+=np.concatenate([np.zeros(2),np.array(map(lambda x: int(x),row[4:]),dtype=np.float64)])
@@ -37,14 +37,18 @@ timeseries['China']=china
 timeseries['Other']=other
 timeseries['Total']=china+other
 
-timeseriesKeys=['China','Other','Total','UK','Italy','France','Germany','Spain','Switzerland','US','South Korea','Japan','Iran']
+timeseriesKeys=['Total','Other','China','Iran (Islamic Republic of)','Republic of Korea','Italy','France','Spain','Germany','US','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark']
 for k in timeseriesKeys:
     assert len(timeseries[k])==len(china)
 
+timeseriesKeys.sort(key=lambda k: timeseries[k][-1],reverse=True)
+
 descriptions=dict(zip(timeseriesKeys,timeseriesKeys))
 descriptions['China']='Mainland China'
-descriptions['Other']='Other locations (non-China)'
-descriptions['Total']='Global total'
+descriptions['Other']='Global ex-China'
+descriptions['Total']='Global Total'
+descriptions['Iran (Islamic Republic of)']='Iran'
+descriptions['Republic of Korea']='South Korea'
 
 populations={
     'China'      :1.4e9,
@@ -52,30 +56,48 @@ populations={
     'Total'      :7.7e9,
     'UK'         :6.6e7,
     'Italy'      :6e7,
+    'Netherlands':1.7e7,
     'France'     :6.7e7,
     'Germany'    :8.3e7,
     'Spain'      :4.7e7,
     'Switzerland':8.6e6,
     'US'         :3.3e8,
-    'South Korea':5.1e7,
+    'Republic of Korea':5.1e7,
     'Japan'      :1.3e8,
-    'Iran'       :8.1e7
+    'Iran (Islamic Republic of)'       :8.1e7,
+    'Sweden'     :1e7,
+    'Norway'     :5e6,
+    'Denmark'    :5.6e6,
+    'Belgium'    :1.1e7
     }
 
+def rgb(r,g,b):
+    return (r/255.0,g/255.0,b/255.0)
+
+# Tableau20 looks useful (bookmarked goodstuff).  Unused 225,187,120 and 197,176,213.
 colors={
-    'China'      :'tab:red',
-    'Other'      :'black',
-    'Total'      :'tab:gray',
-    'UK'         :'tab:green',
-    'Italy'      :'tab:olive',
-    'France'     :'tab:blue',
-    'Germany'    :'tab:cyan',
-    'Spain'      :'tab:purple',
-    'Switzerland':'tab:gray',
-    'US'         :'tab:orange',
-    'South Korea':'tab:pink',
-    'Japan'      :'hotpink',
-    'Iran'       :'tab:brown'
+    'China'      :rgb(214, 39, 40),  
+    'Other'      :rgb(  0,  0,  0),
+    'Total'      :rgb(127,127,127),  # Or 199x3
+
+    'US'         :rgb( 23,190,207),
+
+    'UK'         :rgb( 31,119,180),
+    'France'     :rgb(140, 86, 75),
+    'Germany'    :rgb(196,156,148),
+    'Spain'      :rgb(152,223,138),
+    'Italy'      :rgb( 44,160, 44),
+
+    'Sweden'     :rgb(158,218,229),
+    'Norway'     :rgb(174,199,232),
+    'Denmark'    :rgb(219,219,141),
+    'Netherlands':rgb(188,189, 34),
+    'Belgium'    :rgb(247,182,210),
+    'Switzerland':rgb(255,152,150),
+
+    'Republic of Korea':rgb(255,127, 14),
+    'Japan'      :rgb(227,119,194),
+    'Iran (Islamic Republic of)'       :rgb(148,103,189)
     }
 
 # Straight exponential growth
@@ -307,42 +329,45 @@ def probe(data,P,where):
     k=1.0/4.0
     a=0.1
     T=len(data)
+    tolerance=0.001
 
     print 'Model 0'
     x0=np.array([data[0],k])
-    r0=scipy.optimize.minimize(error0,x0,method='SLSQP',options={'ftol':0.01,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf)])
+    r0=scipy.optimize.minimize(error0,x0,method='SLSQP',options={'ftol':tolerance,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf)])
 
     print 'Model 1'
-    x1=np.array([data[0],k,a])
-    r1=scipy.optimize.minimize(error1,x1,method='SLSQP',options={'ftol':0.01,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)])
+    x1s=[np.array([data[0],k,a]),np.array([data[0],k,0.0])]
+    r1s=map(lambda x1: scipy.optimize.minimize(error1,x1,method='SLSQP',options={'ftol':tolerance,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x1s)
+    r1=min(r1s,key=lambda r: r.fun)
 
     print 'Model 2'
-    x2=np.array([data[0],k,a])
-    r2=scipy.optimize.minimize(error2,x2,method='SLSQP',options={'ftol':0.01,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)])  
+    x2s=[np.array([data[0],k,a]),np.array([data[0],k,0.0])]
+    r2s=map(lambda x2: scipy.optimize.minimize(error2,x2,method='SLSQP',options={'ftol':tolerance,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x2s)
+    r2=min(r2s,key=lambda r: r.fun)
 
     print 'Model 3'
     x3s=[np.array([data[0],k,pv]) for pv in [0.000000001*P,0.00000001*P,0.0000001*P,0.000001*P,0.00001*P,0.0001*P,0.001*P,0.01*P,0.1*P,P]]
-    r3s=map(lambda x3: scipy.optimize.minimize(error3,x3,method='SLSQP',options={'ftol':0.01,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,P)]),x3s)
+    r3s=map(lambda x3: scipy.optimize.minimize(error3,x3,method='SLSQP',options={'ftol':tolerance,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,P)]),x3s)
     r3=min(r3s,key=lambda r: r.fun)
 
     print 'Model 4'
     x4s=[np.array([data[0],jkv[0],jkv[1],a]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)]]
-    r4s=map(lambda x4: scipy.optimize.minimize(error4,x4,method='SLSQP',options={'ftol':0.01,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)]),x4s)
+    r4s=map(lambda x4: scipy.optimize.minimize(error4,x4,method='SLSQP',options={'ftol':tolerance,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)]),x4s)
     r4=min(r4s,key=lambda r: r.fun)
 
     print 'Model 5'
     x5s=[np.array([data[0],jkv[0],jkv[1],a]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)]]
-    r5s=map(lambda x5: scipy.optimize.minimize(error5,x5,method='SLSQP',options={'ftol':0.01,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)]),x5s)
+    r5s=map(lambda x5: scipy.optimize.minimize(error5,x5,method='SLSQP',options={'ftol':tolerance,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)]),x5s)
     r5=min(r5s,key=lambda r: r.fun)
 
     print 'Model 6'
     x6s=[np.array([data[0],k,tv]) for tv in [0.5*T,0.75*T,T,1.5*T,2.0*T]]
-    r6s=map(lambda x6: scipy.optimize.minimize(error6,x6,method='SLSQP',options={'ftol':0.01,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x6s)
+    r6s=map(lambda x6: scipy.optimize.minimize(error6,x6,method='SLSQP',options={'ftol':tolerance,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x6s)
     r6=min(r6s,key=lambda r: r.fun)
     
     print 'Model 7'
     x7s=[np.array([data[0],jkv[0],jkv[1],tv]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)] for tv in [0.5*T,0.75*T,T,1.5*T,2.0*T]]
-    r7s=map(lambda x7: scipy.optimize.minimize(error7,x7,method='SLSQP',options={'ftol':0.01,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x7s)
+    r7s=map(lambda x7: scipy.optimize.minimize(error7,x7,method='SLSQP',options={'ftol':tolerance,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x7s)
     r7=min(r7s,key=lambda r: r.fun)
 
     print 'Model 8'
@@ -379,7 +404,7 @@ def clean(a):
         print "Cleaned",a,"to",c
     return c
 
-for p in range(13):  # 11 OK, Number 12 (Iran) bad. # 13 is all
+for p in range(len(timeseriesKeys)):  # 11 OK, Number 12 (Iran) bad. # 13 is all
 
     print
     print '********************'
@@ -396,19 +421,6 @@ for p in range(13):  # 11 OK, Number 12 (Iran) bad. # 13 is all
 
     print data
     
-    # Layout:
-    # 1st figure
-    #   China
-    #   Other
-    #   Total
-    #   UK
-    #   Italy
-    #   ...
-    # 2nd figure
-    #   Growth rates
-    # 3rd figure:
-    #   Benford's Law plots.
-
     if p==0:
         fig1=plt.figure()
         def on_resize1(event):
@@ -522,7 +534,7 @@ plt.figure(figsize=(9,6))
 
 ax=plt.subplot(1,1,1)
 
-for p in [x for x in range(len(timeseriesKeys)) if not x==2]:   # 2 (total) isn't very interesting yet
+for p in range(len(timeseriesKeys)):
 
     data=timeseries[timeseriesKeys[p]]
     gain_daily=((data[1:]/data[:-1])-1.0)*100.0
@@ -531,8 +543,8 @@ for p in [x for x in range(len(timeseriesKeys)) if not x==2]:   # 2 (total) isn'
     gain_daily[data[1:]<30.0]=np.nan
     gain_weekly[data[7:]<30.0]=np.nan
     
-    plt.scatter(date(np.arange(len(gain_daily))+0.5),gain_daily,s=5.0,color=colors[timeseriesKeys[p]])
-    plt.plot(date(np.arange(len(gain_weekly))+7.0/2.0),gain_weekly,color=colors[timeseriesKeys[p]],linewidth=2,label=descriptions[timeseriesKeys[p]])
+    plt.scatter(date(np.arange(len(gain_daily))+0.5),gain_daily,s=9.0,color=colors[timeseriesKeys[p]])
+    plt.plot(date(np.arange(len(gain_weekly))+7.0/2.0),gain_weekly,color=colors[timeseriesKeys[p]],linewidth=3.0,label=descriptions[timeseriesKeys[p]])
     
 plt.ylim(bottom=0.0)
 plt.yscale('symlog')
@@ -575,7 +587,5 @@ plt.xticks(np.arange(1,10))
 plt.title("Benford's Law compliance - daily cases")
 
 plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
-
-#plt.suptitle('Least-squares fits to confirmed cases')  # Just eats space, not very useful
 
 plt.show()
