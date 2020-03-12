@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+# -*- coding: utf-8 -*-
 
 import csv
 import datetime
@@ -15,29 +16,44 @@ def frequency(s):
     c=np.array([len([n for n in s if str(int(n))[0]==str(m)]) for m in range(1,10)],dtype=np.float64)
     return c/np.sum(c)
 
+basedate=mdates.date2num(datetime.datetime(2020,1,20))
+
 # Data from https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6
 # Use inspect element on graph to get precise numbers
 # Starts 2020-01-20:
-china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409,30553,34075,36778,39790,42306,44327,44699,59832,66292,68347,70446,72364,74139,74546,74999,75472,76922,76938,77152,77660,78065,78498,78824,79251,79826,80026,80151,80271,80422,80573,80652,80699,80735,80757],dtype=np.float64)
-other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212,  227,  265,  317,  343,  361,  457,  476,  523,  538,  595,  685,  780,  896, 1013, 1095, 1200, 1371, 1677, 2047, 2418, 2755, 3332, 4258, 5300, 6762, 8545,10283,12693,14853,17464,21227,25184,29136,32847,37825],dtype=np.float64)
+china=np.array([278,326,547,639,916,1979,2737,4409,5970,7678,9658,11221,14341,17187,19693,23680,27409,30553,34075,36778,39790,42306,44327,44699,59832,66292,68347,70446,72364,74139,74546,74999,75472,76922,76938,77152,77660,78065,78498,78824,79251,79826,80026,80151,80271,80422,80573,80652,80699,80735,80757,80921],dtype=np.float64)
+other=np.array([  4,  6,  8, 14, 25,  40,  57,  64,  87, 105, 118,  153,  173,  183,  188,  212,  227,  265,  317,  343,  361,  457,  476,  523,  538,  595,  685,  780,  896, 1013, 1095, 1200, 1371, 1677, 2047, 2418, 2755, 3332, 4258, 5300, 6762, 8545,10283,12693,14853,17464,21227,25184,29136,32847,37825,44944],dtype=np.float64)
 
 assert len(china)==len(other)
+
+# Keys keep changing.
+# Republic of Korea -> Korea, South
+# Iran (Islamic Republic of) -> Iran
 
 # Starts 2020-01-22, so zero pad.
 csvfile=open('data/time_series_19-covid-Confirmed.csv','rb')
 reader=csv.reader(csvfile)
 timeseries={}
+interesting=frozenset(['UK','Italy','South Korea','US','Iran','France','Germany','Spain','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium'])
 for row in reader:
-    if row[1]=='UK' or row[1]=='Italy' or row[1]=='Republic of Korea' or row[1]=='US' or row[1]=='Iran (Islamic Republic of)' or row[1]=='France' or row[1]=='Germany' or row[1]=='Spain' or row[1]=='Japan' or row[1]=='Switzerland' or row[1]=='Netherlands' or row[1]=='Sweden' or row[1]=='Norway' or row[1]=='Denmark' or row[1]=='Belgium':
-        if not row[1] in timeseries:
-            timeseries[row[1]]=np.zeros(2+len(row[4:]))
-        timeseries[row[1]]+=np.concatenate([np.zeros(2),np.array(map(lambda x: int(x),row[4:]),dtype=np.float64)])
+    where=row[1]
+    if where=='Republic of Korea' or where=='Korea, South':
+        where='South Korea'
+    if where=='Iran (Islamic Republic of)':
+        where='Iran'
+    if where=='United Kingdom':
+        where='UK'
+
+    if where in interesting:
+        if not where in timeseries:
+            timeseries[where]=np.zeros(2+len(row[4:]))
+        timeseries[where]+=np.concatenate([np.zeros(2),np.array(map(lambda x: int(x),row[4:]),dtype=np.float64)])
 
 timeseries['China']=china
 timeseries['Other']=other
 timeseries['Total']=china+other
 
-timeseriesKeys=['Total','Other','China','Iran (Islamic Republic of)','Republic of Korea','Italy','France','Spain','Germany','US','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark']
+timeseriesKeys=['Total','Other','China','Iran','South Korea','Italy','France','Spain','Germany','US','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark']
 for k in timeseriesKeys:
     assert len(timeseries[k])==len(china)
 
@@ -47,8 +63,6 @@ descriptions=dict(zip(timeseriesKeys,timeseriesKeys))
 descriptions['China']='Mainland China'
 descriptions['Other']='Global ex-China'
 descriptions['Total']='Global Total'
-descriptions['Iran (Islamic Republic of)']='Iran'
-descriptions['Republic of Korea']='South Korea'
 
 populations={
     'China'      :1.4e9,
@@ -62,9 +76,9 @@ populations={
     'Spain'      :4.7e7,
     'Switzerland':8.6e6,
     'US'         :3.3e8,
-    'Republic of Korea':5.1e7,
+    'South Korea':5.1e7,
     'Japan'      :1.3e8,
-    'Iran (Islamic Republic of)'       :8.1e7,
+    'Iran'       :8.1e7,
     'Sweden'     :1e7,
     'Norway'     :5e6,
     'Denmark'    :5.6e6,
@@ -95,9 +109,9 @@ colors={
     'Belgium'    :rgb(247,182,210),
     'Switzerland':rgb(255,152,150),
 
-    'Republic of Korea':rgb(255,127, 14),
+    'South Korea':rgb(255,127, 14),
     'Japan'      :rgb(227,119,194),
-    'Iran (Islamic Republic of)'       :rgb(148,103,189)
+    'Iran'       :rgb(148,103,189)
     }
 
 # Straight exponential growth
@@ -371,16 +385,16 @@ def probe(data,P,where):
     r7=min(r7s,key=lambda r: r.fun)
 
     print 'Model 8'
-    x8s=[np.array([5.0,5.0,5.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,2.0] for Ti in [14.0,21.0,28.0,35.0] for Tc in [14.0,17.5,21.0]]
-    #x8s=[np.array([5.0,5.0,5.0,2.0*(28.0+15.0),28.0,15.0])]
-    minfn=model8minfn(days,P,data)
-    pool=Pool(8)
-    r8s=pool.map(minfn,x8s)
-    r8=min(r8s,key=lambda r: r.fun)
+    #x8s=[np.array([5.0,5.0,5.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,2.0] for Ti in [14.0,21.0,28.0,35.0] for Tc in [14.0,17.5,21.0]]
+    ##x8s=[np.array([5.0,5.0,5.0,2.0*(28.0+15.0),28.0,15.0])]
+    #minfn=model8minfn(days,P,data)
+    #pool=Pool(8)
+    #r8s=pool.map(minfn,x8s)
+    #r8=min(r8s,key=lambda r: r.fun)
 
-    ## Disable model8
-    #r8=r7
-    #r8.success=False
+    # Disable model8
+    r8=r7
+    r8.success=False
 
     print '  Model 0 score {:.6f} (success {}) {}'.format(r0.fun,r0.success,r0.x)
     print '  Model 1 score {:.6f} (success {}) {}'.format(r1.fun,r1.success,r1.x)
@@ -470,8 +484,6 @@ for p in range(len(timeseriesKeys)):  # 11 OK, Number 12 (Iran) bad. # 13 is all
         r[a>P]=np.nan
         return r
     
-    basedate=mdates.date2num(datetime.datetime(2020,1,20))
-
     def date(t):
         return [basedate+x for x in t]
                 
@@ -543,21 +555,26 @@ for p in range(len(timeseriesKeys)):
 
     gain_daily[data[1:]<30.0]=np.nan
     gain_weekly[data[7:]<30.0]=np.nan
-    
-    plt.scatter(date(np.arange(len(gain_daily))+0.5),gain_daily,s=9.0,color=colors[timeseriesKeys[p]])
-    plt.plot(date(np.arange(len(gain_weekly))+7.0/2.0),gain_weekly,color=colors[timeseriesKeys[p]],linewidth=3.0,label=descriptions[timeseriesKeys[p]])
-    
+
+    day_dates=date(np.arange(len(gain_daily))+0.5)
+    plt.scatter(day_dates,gain_daily,s=9.0,color=colors[timeseriesKeys[p]])
+    week_dates=date(np.arange(len(gain_weekly))+7.0/2.0)
+    plt.plot(week_dates,gain_weekly,color=colors[timeseriesKeys[p]],linewidth=3.0,label=descriptions[timeseriesKeys[p]])
+
+    plt.text(day_dates[-1]+1.5,gain_weekly[-1],descriptions[timeseriesKeys[p]],horizontalalignment='left',verticalalignment='center',fontdict={'size':8,'alpha':0.75,'weight':'bold','color':colors[timeseriesKeys[p]]})
+
+plt.xlim(left=basedate,right=day_dates[-1]+1)
 plt.ylim(bottom=0.0)
 plt.yscale('symlog')
 plt.grid(True)
 plt.yticks([1.0,2.0,3.0,4.0,5.0,7.5,10.0,20.0,30.0,40.0,50.0,75.0,100.0,200.0,300.0])
 plt.ylabel('Daily % increase rate')
-plt.xticks(rotation=75,fontsize=8)
-plt.yticks(fontsize=8)
+plt.xticks(rotation=75,fontsize=10)
+plt.yticks(fontsize=10)
 plt.gca().set_xlim(left=basedate)
 plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=mdates.MO))
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-plt.legend(loc='lower left',framealpha=0.75,fontsize='xx-small').set_zorder(200)
+plt.legend(loc='lower left',framealpha=0.9,fontsize='small').set_zorder(200)   # Was xx-small, but that's too small.
 plt.title('Daily % increase rate and 1-week window\nStarts when >=30 cases')
 
 vals = ax.get_yticks()
