@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import argparse
 import csv
 import datetime
 from ddeint import ddeint
@@ -11,6 +12,10 @@ import scipy.special
 import matplotlib.dates as mdates
 import matplotlib.pyplot as plt
 from multiprocessing import Pool
+
+parser=argparse.ArgumentParser(description='Analyse coronavirus data.')
+parser.add_argument('--dde',action='store_true',default=False,help='Include slow DDE modelling.')
+args=parser.parse_args()
 
 def frequency(s):
     c=np.array([len([n for n in s if str(int(n))[0]==str(m)]) for m in range(1,10)],dtype=np.float64)
@@ -384,17 +389,17 @@ def probe(data,P,where):
     r7s=map(lambda x7: scipy.optimize.minimize(error7,x7,method='SLSQP',options={'ftol':tolerance,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x7s)
     r7=min(r7s,key=lambda r: r.fun)
 
-    print 'Model 8'
-    #x8s=[np.array([5.0,5.0,5.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,2.0] for Ti in [14.0,21.0,28.0,35.0] for Tc in [14.0,17.5,21.0]]
-    ##x8s=[np.array([5.0,5.0,5.0,2.0*(28.0+15.0),28.0,15.0])]
-    #minfn=model8minfn(days,P,data)
-    #pool=Pool(8)
-    #r8s=pool.map(minfn,x8s)
-    #r8=min(r8s,key=lambda r: r.fun)
-
-    # Disable model8
-    r8=r7
-    r8.success=False
+    if args.dde:
+        print 'Model 8'
+        x8s=[np.array([5.0,5.0,5.0,T0*(Ti+Tc),Ti,Tc]) for T0 in [1.0,2.0] for Ti in [14.0,21.0,28.0,35.0] for Tc in [14.0,17.5,21.0]]
+        #x8s=[np.array([5.0,5.0,5.0,2.0*(28.0+15.0),28.0,15.0])]
+        minfn=model8minfn(days,P,data)
+        pool=Pool(8)
+        r8s=pool.map(minfn,x8s)
+        r8=min(r8s,key=lambda r: r.fun)
+    else:
+        r8=r7
+        r8.success=False
 
     print '  Model 0 score {:.6f} (success {}) {}'.format(r0.fun,r0.success,r0.x)
     print '  Model 1 score {:.6f} (success {}) {}'.format(r1.fun,r1.success,r1.x)
