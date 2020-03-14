@@ -494,6 +494,10 @@ for p in range(len(timeseriesKeys)):  # 11 OK, Number 12 (Iran) bad. # 13 is all
                 
     plt.plot(date(np.arange(len(data))+start),data,linewidth=4,color='red',label='Observed ; {} days $\geq 30$ cases'.format(len(data)),zorder=100)
 
+    alldata_nonzero=np.array(alldata)
+    alldata_nonzero[alldata==0.0]=np.nan
+    plt.plot(date(np.arange(len(alldata))),alldata_nonzero,linewidth=1,color='red',zorder=101)
+    
     t=np.arange(30+len(data))
 
     if ok[0]:
