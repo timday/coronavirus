@@ -543,6 +543,7 @@ for p in range(len(timeseriesKeys)):  # 11 OK, Number 12 (Iran) bad. # 13 is all
     plt.gca().set_xlim(left=basedate)
     plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=mdates.MO))
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    plt.grid(True)
 
     handles,labels = plt.gca().get_legend_handles_labels()
     plt.legend(handles[::-1],labels[::-1],loc='upper left',framealpha=0.25,fontsize='xx-small').set_zorder(200)
