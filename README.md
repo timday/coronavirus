@@ -8,6 +8,13 @@ Data sources
 * JHU time series data <https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series>.
     * Fetch with `wget https://raw.githubusercontent.com/CSSEGISandData/COVID-19/master/csse_covid_19_data/csse_covid_19_time_series/time_series_19-covid-Confirmed.csv` in `data`
 
+TODO
+====
+Something with deaths and recovered data?
+
+Deaths/total cases and deaths/closed cases (closed cases=deaths+recovered) should converge in time.
+
+
 Notes
 =====
 
