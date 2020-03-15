@@ -94,7 +94,7 @@ populations={
 def rgb(r,g,b):
     return (r/255.0,g/255.0,b/255.0)
 
-# Tableau20 looks useful (bookmarked goodstuff).  Unused 225,187,120 and 197,176,213.
+# Tableau20 looks useful (bookmarked goodstuff).  Unused 197,176,213.
 colors={
     'China'      :rgb(214, 39, 40),  
     'Other'      :rgb(  0,  0,  0),
