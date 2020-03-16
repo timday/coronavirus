@@ -82,7 +82,7 @@ def clean(a):
 def getJHUData(all):
 
     results=[]
-    for what in {False:range(1),True:range(3)}:
+    for what in {False:range(1),True:range(3)}[all]:
 
         csvfile=open(['data/time_series_19-covid-Confirmed.csv','data/time_series_19-covid-Recovered.csv','data/time_series_19-covid-Deaths.csv'][what],'rb')
         reader=csv.reader(csvfile)
