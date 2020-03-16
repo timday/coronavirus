@@ -312,17 +312,6 @@ def probe(data,P,where):
 
     return [r0,r1,r2,r3,r4,r5,r6,r7,r8]
 
-def clean(a):
-    c=np.concatenate(
-        [
-            np.minimum(a[:-1],a[1:]),
-            np.array([a[-1]])
-        ]
-    )
-    if not np.array_equal(a,c):
-        print "Cleaned",a,"to",c
-    return c
-
 for p in range(len(timeseriesKeys)):
 
     print
@@ -332,8 +321,6 @@ for p in range(len(timeseriesKeys)):
 
     alldata=timeseries[timeseriesKeys[p]]
 
-    alldata=clean(alldata)
-    
     data=np.array([x for x in alldata if x>=30.0])
     start=len(alldata)-len(data)
     P=populations[timeseriesKeys[p]]

@@ -48,6 +48,21 @@ for row in reader:
 timeseries['Total']=timeseries['China']+timeseries['Other']
 
 timeseriesKeys=['Total','Other','China','Iran','South Korea','Italy','France','Spain','Germany','US','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria']
+
+def clean(a):
+    c=np.concatenate(
+        [
+            np.minimum(a[:-1],a[1:]),
+            np.array([a[-1]])
+        ]
+    )
+    if not np.array_equal(a,c):
+        print "Cleaned",a,"to",c
+    return c
+
+for k in timeseriesKeys:
+    timeseries[k]=clean(timeseries[k])
+
 for k in timeseriesKeys:
     assert len(timeseries[k])==len(timeseries['China'])
 
