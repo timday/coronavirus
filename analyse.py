@@ -39,7 +39,7 @@ assert len(china)==len(other)
 csvfile=open('data/time_series_19-covid-Confirmed.csv','rb')
 reader=csv.reader(csvfile)
 timeseries={}
-interesting=frozenset(['UK','Italy','South Korea','US','Iran','France','Germany','Spain','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium'])
+interesting=frozenset(['UK','Italy','South Korea','US','Iran','France','Germany','Spain','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria'])
 for row in reader:
     where=row[1]
     if where=='Republic of Korea' or where=='Korea, South':
@@ -58,7 +58,7 @@ timeseries['China']=china
 timeseries['Other']=other
 timeseries['Total']=china+other
 
-timeseriesKeys=['Total','Other','China','Iran','South Korea','Italy','France','Spain','Germany','US','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark']
+timeseriesKeys=['Total','Other','China','Iran','South Korea','Italy','France','Spain','Germany','US','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria']
 for k in timeseriesKeys:
     assert len(timeseries[k])==len(china)
 
@@ -87,13 +87,14 @@ populations={
     'Sweden'     :1e7,
     'Norway'     :5e6,
     'Denmark'    :5.6e6,
-    'Belgium'    :1.1e7
+    'Belgium'    :1.1e7,
+    'Austria'    :8.8e6
     }
 
 def rgb(r,g,b):
     return (r/255.0,g/255.0,b/255.0)
 
-# Tableau20 looks useful (bookmarked goodstuff).  Unused 225,187,120 and 197,176,213.
+# Tableau20 looks useful (bookmarked goodstuff).  Unused 197,176,213.
 colors={
     'China'      :rgb(214, 39, 40),  
     'Other'      :rgb(  0,  0,  0),
@@ -112,6 +113,7 @@ colors={
     'Denmark'    :rgb(219,219,141),
     'Netherlands':rgb(188,189, 34),
     'Belgium'    :rgb(247,182,210),
+    'Austria'    :rgb(225,187,120),
     'Switzerland':rgb(255,152,150),
 
     'South Korea':rgb(255,127, 14),
@@ -424,7 +426,7 @@ def clean(a):
         print "Cleaned",a,"to",c
     return c
 
-for p in range(len(timeseriesKeys)):  # 11 OK, Number 12 (Iran) bad. # 13 is all
+for p in range(len(timeseriesKeys)):
 
     print
     print '********************'
@@ -461,6 +463,13 @@ for p in range(len(timeseriesKeys)):  # 11 OK, Number 12 (Iran) bad. # 13 is all
             fig3.tight_layout()
             fig3.canvas.draw()
         fig3.canvas.mpl_connect('resize_event', on_resize3)
+
+    if p==18:
+        fig4=plt.figure()
+        def on_resize4(event):
+            fig4.tight_layout()
+            fig4.canvas.draw()
+        fig4.canvas.mpl_connect('resize_event', on_resize4)
 
     plt.subplot(2,3,1+(p%6))
 
