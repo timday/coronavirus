@@ -28,7 +28,8 @@ for k in timeseriesKeys:
     data[data<30.0]=np.nan
 
     plt.plot(np.arange(len(timeseries[k]))-base,data,color=colors[k],label=k,linewidth=3.0)
-             
+
+plt.grid(True)
 plt.yscale('symlog')
 plt.legend(loc='upper left',framealpha=0.9,fontsize='small')
              
