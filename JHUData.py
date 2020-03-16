@@ -105,7 +105,7 @@ def getJHUData(all):
                 where='UK'
         
             if not where in timeseries:
-                if where=='China':
+                if where=='China' and what==0:
                     pad=np.array([278.0,326.0])
                 else:
                     pad=np.array([0.0,0.0])
