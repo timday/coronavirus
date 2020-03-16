@@ -68,7 +68,7 @@ colors={
     'Iran'       :rgb(148,103,189)
     }
 
-def clean(a):
+def clean(a,where):
     c=np.concatenate(
         [
             np.minimum(a[:-1],a[1:]),
@@ -76,7 +76,7 @@ def clean(a):
         ]
     )
     if not np.array_equal(a,c):
-        print "Cleaned",a,"to",c
+        print 'Cleaned',where,':',a,'to',c
     return c
 
 def getJHUData(all):
@@ -123,7 +123,7 @@ def getJHUData(all):
         timeseries['Total']=timeseries['China']+timeseries['Other']
         
         for k in timeseriesKeys:
-            timeseries[k]=clean(timeseries[k])
+            timeseries[k]=clean(timeseries[k],k)
         
         for k in timeseriesKeys:
             assert len(timeseries[k])==len(timeseries['China'])
