@@ -9,15 +9,34 @@ import numpy as np
 # csv file starts 2020-01-22, so zero pad, except for China which has a couple of extra days data on main tracker chart
 basedate=mdates.date2num(datetime.datetime(2020,1,20))
 
-timeseriesKeys=['Total','Other','China','Iran','South Korea','Italy','France','Spain','Germany','US','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria']
-
-descriptions=dict(zip(timeseriesKeys,timeseriesKeys))
-descriptions['China']='Mainland China'
-descriptions['Other']='Global ex-China'
-descriptions['Total']='Global Total'
+descriptions={
+    'China'      :'Mainland China',
+    'China:Hubei':'China (Hubei province)',
+    'China:Other':'China (Other provinces)',
+    'Other'      :'Global ex-China',
+    'Total'      :'Global Total',
+    'UK'         :'UK',
+    'Italy'      :'Italy',
+    'Netherlands':'Netherlands',
+    'France'     :'France'     ,
+    'Germany'    :'Germany'    ,
+    'Spain'      :'Spain'      ,
+    'Switzerland':'Switzerland',
+    'US'         :'US'         ,
+    'South Korea':'South Korea',
+    'Japan'      :'Japan'      ,
+    'Iran'       :'Iran'       ,
+    'Sweden'     :'Sweden'     ,
+    'Norway'     :'Norway'     ,
+    'Denmark'    :'Denmark'    ,
+    'Belgium'    :'Belgium'    ,
+    'Austria'    :'Austria'    
+}
 
 populations={
     'China'      :1.4e9,
+    'China:Hubei':5.8e7,
+    'China:Other':1.4e9-5.8e7,
     'Other'      :7.7e9-1.4e9,
     'Total'      :7.7e9,
     'UK'         :6.6e7,
@@ -43,7 +62,10 @@ def rgb(r,g,b):
 
 # Tableau20 looks useful (bookmarked goodstuff).  Unused 197,176,213.
 colors={
-    'China'      :rgb(214, 39, 40),  
+    'China'      :rgb(214, 39, 40),
+    'China:Hubei':rgb(214, 39, 40),
+    'China:Other':rgb(214, 39, 40),
+    
     'Other'      :rgb(  0,  0,  0),
     'Total'      :rgb(127,127,127),  # Or 199x3
 
@@ -79,8 +101,10 @@ def clean(a,where):
         print 'Cleaned',where,':',a,'to',c
     return c
 
-def getJHUData(all):
+def getJHUData(all,splitChina):
 
+    timeseriesKeys=['Total','Other','China','Iran','South Korea','Italy','France','Spain','Germany','US','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria']
+    
     results=[]
     for what in {False:range(1),True:range(3)}[all]:
 
@@ -134,5 +158,8 @@ def getJHUData(all):
 
         results.append(timeseries)
 
-    return results
+    if not all:
+        results=results[0]
+        
+    return timeseriesKeys,results
     

@@ -7,7 +7,7 @@ import numpy as np
 
 from JHUData import *
 
-timeseries=getJHUData(True)
+timeseriesKeys,timeseries=getJHUData(True,False)
 
 fig=plt.figure()
 

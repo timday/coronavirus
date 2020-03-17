@@ -18,7 +18,7 @@ parser=argparse.ArgumentParser(description='Analyse coronavirus data.')
 parser.add_argument('--dde',action='store_true',default=False,help='Include slow DDE modelling.')
 args=parser.parse_args()
 
-timeseries=getJHUData(False)[0]
+timeseriesKeys,timeseries=getJHUData(False,False)
 
 # Straight exponential growth
 # DSolve[x'[t] == k*x[t], x[t], t]

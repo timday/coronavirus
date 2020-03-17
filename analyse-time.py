@@ -8,7 +8,7 @@ import numpy as np
 
 from JHUData import *
 
-timeseries=getJHUData(False)[0]
+timeseriesKeys,timeseries=getJHUData(False,False)
 
 common=1000.0
 
