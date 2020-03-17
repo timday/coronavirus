@@ -39,7 +39,7 @@ for k in timeseriesKeys:
 
     data[data<30.0]=np.nan
 
-    txt=k+': {:+.1f} days'.format(whenItaly-base)
+    txt=descriptions[k]+': {:+.1f} days'.format(whenItaly-base)
     plt.plot(np.arange(len(timeseries[k]))-base,data,color=colors[k],label=txt,linewidth=3.0)
 
 plt.gca().xaxis.set_major_locator(matplotlib.ticker.MultipleLocator(7.0))
