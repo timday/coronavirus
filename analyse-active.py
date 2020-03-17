@@ -7,7 +7,7 @@ import numpy as np
 
 from JHUData import *
 
-timeseriesKeys,timeseries=getJHUData(True,False)
+timeseriesKeys,timeseries=getJHUData(True,True)
 
 fig=plt.figure()
 
@@ -16,7 +16,7 @@ for p in range(4):
     plt.subplot(2,2,1+p)
 
     for k in timeseriesKeys:
-    
+
         casesTotal=timeseries[0][k]
         casesRecovered=timeseries[1][k]
         casesFatal=timeseries[2][k]
@@ -28,7 +28,11 @@ for p in range(4):
         if p==2 or p==3:
            casesActive=casesActive/populations[k]
 
-        plt.plot(np.arange(len(casesActive)),casesActive,label=descriptions[k],color=colors[k],linewidth=3.0)
+        if k=='China:Other':
+            w=2.0
+        else:
+            w=3.0
+        plt.plot(np.arange(len(casesActive)),casesActive,label=descriptions[k],color=colors[k],linewidth=w)
     
     if p==0 or p==2:
        plt.yscale('log')

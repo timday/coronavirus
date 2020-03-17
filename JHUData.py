@@ -90,6 +90,7 @@ colors={
     'Iran'       :rgb(148,103,189)
     }
 
+# Recursive in case error spans more than one day
 def clean(a,where):
     c=np.concatenate(
         [
@@ -99,19 +100,27 @@ def clean(a,where):
     )
     if not np.array_equal(a,c):
         print 'Cleaned',where,':',a,'to',c
-    return c
+        return clean(c,where)
+    else:
+        return c
 
 def getJHUData(all,splitChina):
 
-    timeseriesKeys=['Total','Other','China','Iran','South Korea','Italy','France','Spain','Germany','US','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria']
-    
     results=[]
+
+    timeseriesKeys=['Total','Other','Iran','South Korea','Italy','France','Spain','Germany','US','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria']
+    if splitChina:
+        timeseriesKeys.append('China:Hubei')
+        timeseriesKeys.append('China:Other')
+    else:
+        timeseriesKeys.append('China')            
+    
     for what in {False:range(1),True:range(3)}[all]:
 
         csvfile=open(['data/time_series_19-covid-Confirmed.csv','data/time_series_19-covid-Recovered.csv','data/time_series_19-covid-Deaths.csv'][what],'rb')
         reader=csv.reader(csvfile)
         timeseries={}
-        interesting=frozenset(['China','UK','Italy','South Korea','US','Iran','France','Germany','Spain','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria'])
+        interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Iran','France','Germany','Spain','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria'])
         firstRow=True
         for row in reader:
         
@@ -127,9 +136,15 @@ def getJHUData(all,splitChina):
                 where='Iran'
             if where=='United Kingdom':
                 where='UK'
+
+            if splitChina and where=='China':
+                if row[0]=='Hubei':
+                    where='China:Hubei'
+                else:
+                    where='China:Other'
         
             if not where in timeseries:
-                if where=='China' and what==0:
+                if what==0 and (where=='China' or where=='China:Hubei'):
                     pad=np.array([278.0,326.0])
                 else:
                     pad=np.array([0.0,0.0])
@@ -139,18 +154,20 @@ def getJHUData(all,splitChina):
                     timeseries[where]=np.concatenate([pad,np.zeros(len(row[4:]))])
                 timeseries[where]+=np.concatenate([np.array([0.0,0.0]),np.array(map(lambda x: int(x),row[4:]),dtype=np.float64)])
         
-            if where!='China':
+            if where.split(':')[0]!='China':
                 if not 'Other' in timeseries:
                     timeseries['Other']=np.concatenate([pad,np.zeros(len(row[4:]))])
                 timeseries['Other']+=np.concatenate([np.array([0.0,0.0]),np.array(map(lambda x: int(x),row[4:]),dtype=np.float64)])
-                
-        timeseries['Total']=timeseries['China']+timeseries['Other']
-        
+
+        if splitChina:
+            timeseries['Total']=timeseries['China:Hubei']+timeseries['China:Other']+timeseries['Other']
+        else:
+            timeseries['Total']=timeseries['China']+timeseries['Other']
+
         for k in timeseriesKeys:
             timeseries[k]=clean(timeseries[k],k)
-        
-        for k in timeseriesKeys:
-            assert len(timeseries[k])==len(timeseries['China'])
+
+        assert len(set([len(t) for t in timeseries.values()]))==1 # Should all be the same length
 
         # Sort on current case count, highest first
         if what==0:
