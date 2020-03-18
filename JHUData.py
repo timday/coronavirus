@@ -7,7 +7,8 @@ import matplotlib.dates as mdates
 import numpy as np
 
 # csv file starts 2020-01-22, so zero pad, except for China which has a couple of extra days data on main tracker chart
-basedate=mdates.date2num(datetime.datetime(2020,1,20))
+pyBasedate=datetime.datetime(2020,1,20)
+basedate=mdates.date2num(pyBasedate)
 
 descriptions={
     'China'      :'Mainland China',
@@ -37,13 +38,16 @@ news={
     'China':[
         ((2020,1,20),'Wuhan Lockdown'),
         ((2020,2,13),'Hubei Lockdown'),
-        ((2020,2,13),'Hubei Lockdown inc. schools')
+        ((2020,2,20),'Hubei Lockdown inc. schools')
     ],
     'China:Hubei':[
         ((2020,1,20),'Wuhan Lockdown'),
         ((2020,2,13),'Hubei Lockdown'),
-        ((2020,2,13),'Hubei Lockdown inc. schools'),
-    ],    
+        ((2020,2,20),'Hubei Lockdown inc. schools'),
+    ],
+    'China:Other':[],
+    'Other':[],
+    'Total':[],
     'UK':[
         ((2020,3,16),'Drastic action')
     ],

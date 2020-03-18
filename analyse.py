@@ -468,6 +468,21 @@ for p in range(len(timeseriesKeys)):
 
     plt.text(day_dates[-1]+1.5,gain_weekly[-1],descriptions[timeseriesKeys[p]],horizontalalignment='left',verticalalignment='center',fontdict={'size':8,'alpha':0.75,'weight':'bold','color':colors[timeseriesKeys[p]]})
 
+for k in timeseriesKeys:
+    for item in news[k]:
+        txt=descriptions[k]+':'+item[1]
+        date=datetime.datetime(item[0][0],item[0][1],item[0][2])
+
+        plt.text(
+            mdates.date2num(date),
+            0.02,
+            txt,
+            horizontalalignment='left',
+            verticalalignment='bottom',
+            rotation=90,
+            fontdict={'size':8,'alpha':0.75,'weight':'bold','color':colors[k]}
+        )
+            
 plt.xlim(left=basedate,right=day_dates[-1]+1)
 plt.ylim(bottom=0.0)
 plt.yscale('symlog')
@@ -479,7 +494,7 @@ plt.yticks(fontsize=10)
 plt.gca().set_xlim(left=basedate)
 plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=mdates.MO))
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-plt.legend(loc='lower left',framealpha=0.9,fontsize='small').set_zorder(200)   # Was xx-small, but that's too small.
+plt.legend(loc='lower left',framealpha=0.9,fontsize='medium',bbox_to_anchor=(0.01,0.01)).set_zorder(200)   # Was xx-small, but that's too small.
 plt.title('Daily % increase rate and 1-week window\nStarts when >=30 cases')
 
 vals = ax.get_yticks()
