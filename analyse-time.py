@@ -8,11 +8,9 @@ import numpy as np
 
 from JHUData import *
 
-timeseriesKeys,timeseries=getJHUData(False,False)
+timeseriesKeys,timeseriesAll=getJHUData(True,True)
 
-common=1000.0
-
-extrapolationWindow=14
+extrapolationWindow=7
 
 def computeWhen(data,k):
     if data[-1]<common:
@@ -35,27 +33,43 @@ def computeWhen(data,k):
         base= -(math.log(data[0])-math.log(common))/math.log(growth)
     return base
 
-whenItaly=computeWhen(timeseries['Italy'],'Italy')
+for chart in range(2):
 
-for k in timeseriesKeys:
-
-    data=np.array(timeseries[k])
-
-    base=computeWhen(data,k)
+    fig=plt.figure()
     
-    # print k,T,t,base,data[T],data[T+1]
+    timeseries=timeseriesAll[{0:0,1:2}[chart]]
+    common={0:1000.0,1:20.0}[chart]
+    ignore={0:30.0,1:5.0}[chart]
 
-    data[data<30.0]=np.nan
+    what={0:'Total confirmed cases',1:'Total deaths'}[chart]
 
-    txt=descriptions[k]
-    if k!='Italy':
-        txt=txt+': {:+.1f} days'.format(whenItaly-base)
-    plt.plot(np.arange(len(timeseries[k]))-base,data,color=colors[k],label=txt,linewidth=3.0)
+    whenItaly=computeWhen(timeseries['Italy'],'Italy')
+    
+    for k in timeseriesKeys:
+    
+        data=np.array(timeseries[k])
+    
+        base=computeWhen(data,k)
+        
+        # print k,T,t,base,data[T],data[T+1]
+    
+        data[data<ignore]=np.nan
+    
+        txt=descriptions[k]
+        if k!='Italy':
+            txt=txt+': {:+.1f} days'.format(whenItaly-base)
 
-plt.gca().xaxis.set_major_locator(matplotlib.ticker.MultipleLocator(7.0))
-plt.grid(True)
-plt.yscale('symlog')
-plt.legend(loc='upper left',framealpha=0.9)
-plt.title('Aligned on {:d} cases.\nTimes +/- ahead/behind Italy'.format(int(common)))
-             
+        if k=='China:Other':
+            w=2.0
+        else:
+            w=3.0
+
+        plt.plot(np.arange(len(timeseries[k]))-base,data,color=colors[k],label=txt,linewidth=w)
+    
+    plt.gca().xaxis.set_major_locator(matplotlib.ticker.MultipleLocator(7.0))
+    plt.grid(True)
+    plt.yscale('symlog')
+    plt.legend(loc='upper left',framealpha=0.9)
+    plt.title('{} aligned on {:d}.\nTimes +/- ahead/behind Italy'.format(what,int(common)))
+
 plt.show()

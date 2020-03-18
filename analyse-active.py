@@ -3,6 +3,7 @@
 
 import math
 import matplotlib.pyplot as plt
+import matplotlib.ticker
 import numpy as np
 
 from JHUData import *
@@ -40,6 +41,7 @@ for p in range(4):
     if p==1:
        plt.legend(loc='upper left',fontsize='small')
 
+    plt.gca().xaxis.set_major_locator(matplotlib.ticker.MultipleLocator(7.0))
     plt.title(
         {
             0: 'Active cases, log-scale',
