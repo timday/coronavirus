@@ -33,6 +33,67 @@ descriptions={
     'Austria'    :'Austria'    
 }
 
+news={
+    'China':[
+        ((2020,1,20),'Wuhan Lockdown'),
+        ((2020,2,13),'Hubei Lockdown'),
+        ((2020,2,13),'Hubei Lockdown inc. schools')
+    ],
+    'China:Hubei':[
+        ((2020,1,20),'Wuhan Lockdown'),
+        ((2020,2,13),'Hubei Lockdown'),
+        ((2020,2,13),'Hubei Lockdown inc. schools'),
+    ],    
+    'UK':[
+        ((2020,3,16),'Drastic action')
+    ],
+    'Italy':[
+        ((2020,3, 9),'National lockdown')
+    ],
+    'Netherlands':[
+        ((2020,3,16),'Closures')
+    ],
+    'France':[
+        ((2020,3,17),'National lockdown')
+    ],
+    'Germany':[
+        ((2020,3,16),'Closures')
+    ],
+    'Spain':[
+        ((2020,3,16),'National lockdown')
+    ],
+    'Switzerland':[
+        ((2020,3,16),'National lockdown')
+    ],
+    'US':[
+        ((2020,3,16),'Limited closures')
+    ],
+    'South Korea':[
+        ((2020,2,21),'Emergency measures')
+    ],
+    'Japan':[
+        ((2020,2,25),'Basic Policies')
+    ],
+    'Iran':[
+        ((2020,3,13),'Closures')
+    ],
+    'Sweden':[
+        ((2020,3,11),'Large gathering ban')
+    ],
+    'Norway':[
+        ((2020,3,12),'National lockdown')
+    ],
+    'Denmark':[
+        ((2020,3,13),'National lockdown')
+    ],
+    'Belgium':[
+        ((2020,3,18),'National lockdown')
+    ],
+    'Austria':[
+        ((2020,3,16),'National lockdown')
+    ]
+}
+    
 populations={
     'China'      :1.4e9,
     'China:Hubei':5.8e7,
