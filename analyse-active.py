@@ -41,7 +41,7 @@ for p in range(4):
             descriptions[k],
             horizontalalignment='left',
             verticalalignment='center',
-            fontdict={'size':10,'alpha':0.75,'weight':'bold','color':colors[k]}
+            fontdict={'size':10,'alpha':0.8,'weight':'bold','color':colors[k]}
         )
 
     if p==0 or p==2:

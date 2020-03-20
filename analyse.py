@@ -480,7 +480,7 @@ for k in timeseriesKeys:
             horizontalalignment='left',
             verticalalignment='bottom',
             rotation=90,
-            fontdict={'size':8,'alpha':0.75,'weight':'bold','color':colors[k]}
+            fontdict={'size':8,'alpha':0.8,'weight':'bold','color':colors[k]}
         )
             
 plt.xlim(left=basedate,right=day_dates[-1]+1)
