@@ -29,11 +29,7 @@ for p in range(4):
         if p==2 or p==3:
            casesActive=casesActive/populations[k]
 
-        if k=='China:Other':
-            w=2.0
-        else:
-            w=3.0
-        plt.plot(np.arange(len(casesActive)),casesActive,label=descriptions[k],color=colors[k],linewidth=w)
+        plt.plot(np.arange(len(casesActive)),casesActive,label=descriptions[k],color=colors[k],linewidth=3.0*widthScale[k])
     
     if p==0 or p==2:
        plt.yscale('log')

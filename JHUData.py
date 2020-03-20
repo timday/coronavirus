@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+from collections import defaultdict
 import csv
 import datetime
 import matplotlib.dates as mdates
@@ -101,6 +102,9 @@ news={
         ((2020,3,16),'National lockdown')
     ]
 }
+
+widthScale=defaultdict(lambda: 1.0)
+widthScale['China:Other'] = 0.5
     
 populations={
     'China'      :1.4e9,

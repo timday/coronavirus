@@ -59,12 +59,7 @@ for chart in range(2):
         if k!='Italy':
             txt=txt+': {:+.1f} days'.format(whenItaly-base)
 
-        if k=='China:Other':
-            w=2.0
-        else:
-            w=3.0
-
-        plt.plot(np.arange(len(timeseries[k]))-base,data,color=colors[k],label=txt,linewidth=w)
+        plt.plot(np.arange(len(timeseries[k]))-base,data,color=colors[k],label=txt,linewidth=3.0*widthScale[k])
     
     plt.gca().xaxis.set_major_locator(matplotlib.ticker.MultipleLocator(7.0))
     plt.grid(True)
