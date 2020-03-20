@@ -31,7 +31,8 @@ descriptions={
     'Norway'     :'Norway'     ,
     'Denmark'    :'Denmark'    ,
     'Belgium'    :'Belgium'    ,
-    'Austria'    :'Austria'    
+    'Austria'    :'Austria'    ,
+    'Malaysia'   :'Malaysia'
 }
 
 news={
@@ -95,6 +96,9 @@ news={
     ],
     'Austria':[
         ((2020,3,16),'National lockdown')
+    ],
+    'Malaysia':[
+        ((2020,3,16),'National lockdown')
     ]
 }
     
@@ -119,13 +123,14 @@ populations={
     'Norway'     :5e6,
     'Denmark'    :5.6e6,
     'Belgium'    :1.1e7,
-    'Austria'    :8.8e6
+    'Austria'    :8.8e6,
+    'Malaysia'   :3.2e7
     }
 
 def rgb(r,g,b):
     return (r/255.0,g/255.0,b/255.0)
 
-# Tableau20 looks useful (bookmarked goodstuff).  Unused 197,176,213.
+# Tableau20 looks useful (bookmarked goodstuff).  Unused .
 colors={
     'China'      :rgb(214, 39, 40),
     'China:Hubei':rgb(214, 39, 40),
@@ -137,6 +142,7 @@ colors={
     'US'         :rgb( 31,119,180),
 
     'UK'         :rgb( 23,190,207),
+    
     'France'     :rgb(140, 86, 75),
     'Germany'    :rgb(196,156,148),
     'Spain'      :rgb(152,223,138),
@@ -148,11 +154,12 @@ colors={
     'Netherlands':rgb(188,189, 34),
     'Belgium'    :rgb(247,182,210),
     'Austria'    :rgb(225,187,120),
-    'Switzerland':rgb(255,152,150),
+    'Switzerland':rgb(197,176,213),
 
     'South Korea':rgb(255,127, 14),
     'Japan'      :rgb(227,119,194),
-    'Iran'       :rgb(148,103,189)
+    'Iran'       :rgb(148,103,189),
+    'Malaysia'   :rgb(255,152,150)
     }
 
 # Recursive in case error spans more than one day
@@ -179,7 +186,7 @@ def getJHUData(all,splitChina):
 
     results=[]
 
-    timeseriesKeys=['Total','Other','Iran','South Korea','Italy','France','Spain','Germany','US','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria']
+    timeseriesKeys=['Total','Other','Iran','South Korea','Italy','France','Spain','Germany','US','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia']
     if splitChina:
         timeseriesKeys.append('China:Hubei')
         timeseriesKeys.append('China:Other')
@@ -191,7 +198,7 @@ def getJHUData(all,splitChina):
         csvfile=open(['data/time_series_19-covid-Confirmed.csv','data/time_series_19-covid-Recovered.csv','data/time_series_19-covid-Deaths.csv'][what],'rb')
         reader=csv.reader(csvfile)
         timeseries={}
-        interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Iran','France','Germany','Spain','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria'])
+        interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Iran','France','Germany','Spain','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia'])
         firstRow=True
         for row in reader:
         
