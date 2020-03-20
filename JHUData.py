@@ -23,6 +23,7 @@ descriptions={
     'France'     :'France'     ,
     'Germany'    :'Germany'    ,
     'Spain'      :'Spain'      ,
+    'Portugal'   :'Portugal'   ,
     'Switzerland':'Switzerland',
     'US'         :'US'         ,
     'South Korea':'South Korea',
@@ -68,6 +69,9 @@ news={
     'Spain':[
         ((2020,3,16),'National lockdown')
     ],
+    'Portugal':[
+        ((2020,3,19),'State of Emergency')
+    ],
     'Switzerland':[
         ((2020,3,16),'National lockdown')
     ],
@@ -103,9 +107,6 @@ news={
     ]
 }
 
-widthScale=defaultdict(lambda: 1.0)
-widthScale['China:Other'] = 0.5
-    
 populations={
     'China'      :1.4e9,
     'China:Hubei':5.8e7,
@@ -118,6 +119,7 @@ populations={
     'France'     :6.7e7,
     'Germany'    :8.3e7,
     'Spain'      :4.7e7,
+    'Portugal'   :1.0e7,
     'Switzerland':8.6e6,
     'US'         :3.3e8,
     'South Korea':5.1e7,
@@ -150,6 +152,7 @@ colors={
     'France'     :rgb(140, 86, 75),
     'Germany'    :rgb(196,156,148),
     'Spain'      :rgb(152,223,138),
+    'Portugal'   :rgb(152,223,138),  # Same as Spain
     'Italy'      :rgb( 44,160, 44),
 
     'Sweden'     :rgb(158,218,229),
@@ -165,6 +168,10 @@ colors={
     'Iran'       :rgb(148,103,189),
     'Malaysia'   :rgb(255,152,150)
     }
+
+widthScale=defaultdict(lambda: 1.0)
+widthScale['China:Other'] = 0.5
+widthScale['Portugal'] = 0.5
 
 # Recursive in case error spans more than one day
 def clean(a,where):
@@ -190,7 +197,7 @@ def getJHUData(all,splitChina):
 
     results=[]
 
-    timeseriesKeys=['Total','Other','Iran','South Korea','Italy','France','Spain','Germany','US','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia']
+    timeseriesKeys=['Total','Other','Iran','South Korea','Italy','France','Spain','Portugal','Germany','US','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia']
     if splitChina:
         timeseriesKeys.append('China:Hubei')
         timeseriesKeys.append('China:Other')
@@ -202,7 +209,7 @@ def getJHUData(all,splitChina):
         csvfile=open(['data/time_series_19-covid-Confirmed.csv','data/time_series_19-covid-Recovered.csv','data/time_series_19-covid-Deaths.csv'][what],'rb')
         reader=csv.reader(csvfile)
         timeseries={}
-        interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Iran','France','Germany','Spain','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia'])
+        interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Iran','France','Germany','Spain','Portugal','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia'])
         firstRow=True
         for row in reader:
         
