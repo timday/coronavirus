@@ -260,8 +260,8 @@ def getJHUData(all,splitChina):
         else:
             timeseries['Total']=timeseries['China']+timeseries['Other']
 
-        for k in timeseriesKeys:
-            timeseries[k]=clean(timeseries[k],k)
+        #for k in timeseriesKeys:
+        #    timeseries[k]=clean(timeseries[k],k)
 
         assert len(set([len(t) for t in timeseries.values()]))==1 # Should all be the same length
 
