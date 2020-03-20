@@ -38,8 +38,8 @@ for p in range(4):
     if p==0 or p==2:
        plt.yscale('log')
 
-    if p==1:
-       plt.legend(loc='upper left',fontsize='small')
+    if p==2:
+       plt.legend(loc='upper left',fontsize='x-small')
 
     plt.gca().xaxis.set_major_locator(matplotlib.ticker.MultipleLocator(7.0))
     plt.title(

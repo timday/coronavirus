@@ -169,6 +169,12 @@ def clean(a,where):
     else:
         return c
 
+def value(x):
+    if x=='':
+        return 0
+    else:
+        return int(x)
+
 def getJHUData(all,splitChina):
 
     results=[]
@@ -217,12 +223,12 @@ def getJHUData(all,splitChina):
             if where in interesting:
                 if not where in timeseries:
                     timeseries[where]=np.concatenate([pad,np.zeros(len(row[4:]))])
-                timeseries[where]+=np.concatenate([np.array([0.0,0.0]),np.array(map(lambda x: int(x),row[4:]),dtype=np.float64)])
+                timeseries[where]+=np.concatenate([np.array([0.0,0.0]),np.array(map(lambda x: value(x),row[4:]),dtype=np.float64)])
         
             if where.split(':')[0]!='China':
                 if not 'Other' in timeseries:
                     timeseries['Other']=np.concatenate([pad,np.zeros(len(row[4:]))])
-                timeseries['Other']+=np.concatenate([np.array([0.0,0.0]),np.array(map(lambda x: int(x),row[4:]),dtype=np.float64)])
+                timeseries['Other']+=np.concatenate([np.array([0.0,0.0]),np.array(map(lambda x: value(x),row[4:]),dtype=np.float64)])
 
         if splitChina:
             timeseries['Total']=timeseries['China:Hubei']+timeseries['China:Other']+timeseries['Other']
