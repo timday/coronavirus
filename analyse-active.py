@@ -24,16 +24,19 @@ def active(k):
     
 for p in range(4):
 
-    fig=plt.figure()
+    fig=plt.figure(figsize=(16,9))
 
     for k in timeseriesKeys:
+
+        if p==1 and ( k=='Other' or k=='Total' ):
+            continue
 
         casesActive=active(k)
 
         if p==2 or p==3:
            casesActive=casesActive/populations[k]
 
-        plt.plot(np.arange(len(casesActive)),casesActive,label=descriptions[k],color=colors[k],linewidth=5.0*widthScale[k])
+        plt.plot(np.arange(len(casesActive)),casesActive,label=descriptions[k],color=colors[k],linewidth=3.0*widthScale[k])
 
         plt.text(
             len(casesActive)-0.5,
@@ -41,7 +44,7 @@ for p in range(4):
             descriptions[k],
             horizontalalignment='left',
             verticalalignment='center',
-            fontdict={'size':10,'alpha':0.8,'weight':'bold','color':colors[k]}
+            fontdict={'size':8,'alpha':0.8,'weight':'bold','color':colors[k]}
         )
 
     if p==0 or p==2:
@@ -52,13 +55,18 @@ for p in range(4):
     plt.title(
         {
             0: 'Active cases (from $\geq 30$), log-scale',
-            1: 'Active cases (from $\geq 30$)',
+            1: 'Active cases (from $\geq 30$); omits global total',
             2: 'Active cases (from $\geq 30$), proportion of population, log-scale',
             3: 'Active cases (from $\geq 30$), proportion of population'
         }[p]
     )
 
     plt.legend(loc='upper left',fontsize='medium')
+
+    plt.savefig(
+        'output/'+['active-log.png','active-lin.png','active-prop-log.png','active-prop-lin.png'][p],
+        dpi=96,
+    )
 
 #def on_resize(event):
 #    fig.tight_layout()
