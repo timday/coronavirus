@@ -319,7 +319,7 @@ for p in range(len(timeseriesKeys)):
     print
     print '********************'
     where=descriptions[timeseriesKeys[p]]
-    print where
+    print 'Projection',p,':',where
 
     alldata=timeseries[timeseriesKeys[p]]
 
@@ -327,36 +327,38 @@ for p in range(len(timeseriesKeys)):
     start=len(alldata)-len(data)
     P=populations[timeseriesKeys[p]]
 
-    print data
+    print 'Data:',data
     
     if p==0:
-        fig1=plt.figure()
+        fig1=plt.figure(figsize=(16,9))
         def on_resize1(event):
-            fig1.tight_layout()
+            fig1.tight_layout(pad=0.05)
             fig1.canvas.draw()
-        fig1.canvas.mpl_connect('resize_event', on_resize1)
+        fig1.canvas.mpl_connect('resize_event',on_resize1)
 
     if p==6:
-        fig2=plt.figure()
+        fig2=plt.figure(figsize=(16,9))
         def on_resize2(event):
-            fig2.tight_layout()
+            fig2.tight_layout(pad=0.05)
             fig2.canvas.draw()
-        fig2.canvas.mpl_connect('resize_event', on_resize2)
+        fig2.canvas.mpl_connect('resize_event',on_resize2)
 
     if p==12:
-        fig3=plt.figure()
+        fig3=plt.figure(figsize=(16,9))
         def on_resize3(event):
-            fig3.tight_layout()
+            fig3.tight_layout(pad=0.05)
             fig3.canvas.draw()
-        fig3.canvas.mpl_connect('resize_event', on_resize3)
+        fig3.canvas.mpl_connect('resize_event',on_resize3)
 
     if p==18:
-        fig4=plt.figure()
+        fig4=plt.figure(figsize=(16,9))
         def on_resize4(event):
-            fig4.tight_layout()
+            fig4.tight_layout(pad=0.05)
             fig4.canvas.draw()
-        fig4.canvas.mpl_connect('resize_event', on_resize4)
+        fig4.canvas.mpl_connect('resize_event',on_resize4)
 
+    assert len(timeseriesKeys)<24
+    
     plt.subplot(2,3,1+(p%6))
 
     results=probe(data,P,where)
@@ -441,14 +443,20 @@ for p in range(len(timeseriesKeys)):
     plt.grid(True)
 
     handles,labels = plt.gca().get_legend_handles_labels()
-    plt.legend(handles[::-1],labels[::-1],loc='upper left',framealpha=0.25,fontsize='xx-small').set_zorder(200)
+    plt.legend(handles[::-1],labels[::-1],loc='upper left',framealpha=0.25,fontsize='x-small').set_zorder(200)
 
     plt.title(where)
 
-    if p%6==5:
+    if p%6==5 or p==len(timeseriesKeys)-1:
         plt.tight_layout(pad=0.05)
 
-plt.figure(figsize=(9,6))
+    if p%6==5 or p==len(timeseriesKeys)-1:
+        plt.savefig(
+            'output/projections-{}.png'.format(p/6),
+            dpi=96
+        )
+        
+plt.figure(figsize=(16,9))
 
 ax=plt.subplot(1,1,1)
 
@@ -500,7 +508,12 @@ plt.title('Daily % increase rate and 1-week window\nStarts when >=30 cases')
 vals = ax.get_yticks()
 ax.set_yticklabels(['{:,.1f}%'.format(x) for x in vals])
 
-plt.figure(figsize=(12,5))
+plt.savefig(
+    'output/growth.png',
+    dpi=96
+)
+
+plt.figure(figsize=(9,4.5))
 
 def frequency(s):
     c=np.array([len([n for n in s if str(int(n))[0]==str(m)]) for m in range(1,10)],dtype=np.float64)
@@ -529,5 +542,10 @@ plt.xticks(np.arange(1,10))
 plt.title("Benford's Law compliance - daily cases")
 
 plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
+
+plt.savefig(
+    'output/benford.png',
+    dpi=96
+)
 
 plt.show()

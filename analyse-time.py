@@ -38,8 +38,8 @@ for chart in range(2):
     fig=plt.figure(figsize=(16,9))
     
     timeseries=timeseriesAll[{0:0,1:2}[chart]]
-    common={0:1000.0,1:20.0}[chart]
-    ignore={0:30.0,1:5.0}[chart]
+    common={0:1000.0,1:30.0}[chart]
+    ignore={0:30.0,1:10.0}[chart]
 
     what={0:'Total confirmed cases',1:'Total deaths'}[chart]
 

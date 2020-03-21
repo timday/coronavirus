@@ -280,6 +280,9 @@ def getJHUData(all,splitChina):
 
     assert results[0]['Japan'][17]==45.0   # Odd spike in Japan data
     results[0]['Japan'][17]=24.0           # Average of neighbouring values
+    assert results[0]['Japan'][2]==2.0     # Odd spike in Japan data
+    results[0]['Japan'][2]=1.0             # Next value
+    
         
     if not all:
         results=results[0]
