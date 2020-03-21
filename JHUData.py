@@ -35,7 +35,8 @@ descriptions={
     'Denmark'    :'Denmark'    ,
     'Belgium'    :'Belgium'    ,
     'Austria'    :'Austria'    ,
-    'Malaysia'   :'Malaysia'
+    'Malaysia'   :'Malaysia'   ,
+    'Brazil'     :'Brazil'
 }
 
 news={
@@ -108,7 +109,10 @@ news={
     ],
     'Malaysia':[
         ((2020,3,16),'National lockdown')
-    ]
+    ],
+    'Brazil':[
+        ((2020,3,20),'State of emergency')
+    ],
 }
 
 populations={
@@ -135,7 +139,8 @@ populations={
     'Denmark'    :5.6e6,
     'Belgium'    :1.1e7,
     'Austria'    :8.8e6,
-    'Malaysia'   :3.2e7
+    'Malaysia'   :3.2e7,
+    'Brazil'     :2.1e8
     }
 
 def rgb(r,g,b):
@@ -160,6 +165,7 @@ colors={
     'Spain'      :rgb(152,223,138),
     'Portugal'   :rgb(152,223,138),  # Same as Spain
     'Italy'      :rgb( 44,160, 44),
+    'Brazil'     :rgb( 44,160, 44),  # Same as Italy
 
     'Sweden'     :rgb(158,218,229),
     'Norway'     :rgb(174,199,232),
@@ -179,6 +185,7 @@ widthScale=defaultdict(lambda: 1.0)
 widthScale['China:Other']=0.5
 widthScale['Portugal']=0.5
 widthScale['Canada']=0.5
+widthScale['Brazil']=0.5
 
 # Recursive in case error spans more than one day
 def clean(a,where):
@@ -204,7 +211,7 @@ def getJHUData(all,splitChina):
 
     results=[]
 
-    timeseriesKeys=['Total','Other','Iran','South Korea','Italy','France','Spain','Portugal','Germany','US','Canada','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia']
+    timeseriesKeys=['Total','Other','Iran','South Korea','Italy','France','Spain','Portugal','Germany','US','Canada','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia','Brazil']
     if splitChina:
         timeseriesKeys.append('China:Hubei')
         timeseriesKeys.append('China:Other')
@@ -216,7 +223,7 @@ def getJHUData(all,splitChina):
         csvfile=open(['data/time_series_19-covid-Confirmed.csv','data/time_series_19-covid-Recovered.csv','data/time_series_19-covid-Deaths.csv'][what],'rb')
         reader=csv.reader(csvfile)
         timeseries={}
-        interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Canada','Iran','France','Germany','Spain','Portugal','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia'])
+        interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Canada','Iran','France','Germany','Spain','Portugal','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia','Brazil'])
         firstRow=True
         for row in reader:
         
