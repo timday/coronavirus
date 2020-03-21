@@ -35,7 +35,7 @@ def computeWhen(data,k):
 
 for chart in range(2):
 
-    fig=plt.figure()
+    fig=plt.figure(figsize=(16,9))
     
     timeseries=timeseriesAll[{0:0,1:2}[chart]]
     common={0:1000.0,1:20.0}[chart]
@@ -66,5 +66,10 @@ for chart in range(2):
     plt.yscale('symlog')
     plt.legend(loc='upper left',framealpha=0.9)
     plt.title('{} aligned on {:d}.\nTimes +/- ahead/behind Italy'.format(what,int(common)))
+
+    plt.savefig(
+        'output/'+['aligned-cases.png','aligned-deaths.png'][chart],
+        dpi=96,
+    )
 
 plt.show()
