@@ -64,7 +64,7 @@ for chart in range(2):
     plt.gca().xaxis.set_major_locator(matplotlib.ticker.MultipleLocator(7.0))
     plt.grid(True)
     plt.yscale('symlog')
-    plt.legend(loc='upper left',framealpha=0.9)
+    plt.legend(loc='lower right',framealpha=0.9)
     plt.title('{} aligned on {:d}.\nTimes +/- ahead/behind Italy'.format(what,int(common)))
 
     plt.savefig(
