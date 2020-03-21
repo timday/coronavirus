@@ -36,7 +36,7 @@ for p in range(4):
         if p==2 or p==3:
            casesActive=casesActive/populations[k]
 
-        plt.plot(np.arange(len(casesActive)),casesActive,label=descriptions[k],color=colors[k],linewidth=3.0*widthScale[k])
+        plt.plot([t+basedate for t in range(len(casesActive))],casesActive,label=descriptions[k],color=colors[k],linewidth=3.0*widthScale[k])
 
         plt.text(
             len(casesActive)-0.5,
@@ -50,8 +50,11 @@ for p in range(4):
     if p==0 or p==2:
        plt.yscale('log')
 
-    plt.xlim(left=0,right=len(casesActive)-1)
-    plt.gca().xaxis.set_major_locator(matplotlib.ticker.MultipleLocator(7.0))
+    plt.xticks(rotation=75,fontsize=10)
+    plt.gca().set_xlim(left=basedate)
+    plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=mdates.MO))
+    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    
     plt.title(
         {
             0: 'Active cases (from $\geq 30$), log-scale',

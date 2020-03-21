@@ -8,7 +8,7 @@ import matplotlib.dates as mdates
 import numpy as np
 
 # csv file starts 2020-01-22, so zero pad, except for China which has a couple of extra days data on main tracker chart
-pyBasedate=datetime.datetime(2020,1,20)
+pyBasedate=datetime.datetime(2020,1,22)
 basedate=mdates.date2num(pyBasedate)
 
 descriptions={
@@ -245,22 +245,16 @@ def getJHUData(all,splitChina):
                     where='China:Hubei'
                 else:
                     where='China:Other'
-        
-            if not where in timeseries:
-                if what==0 and (where=='China' or where=='China:Hubei'):
-                    pad=np.array([278.0,326.0])
-                else:
-                    pad=np.array([0.0,0.0])
-        
+
             if where in interesting:
                 if not where in timeseries:
-                    timeseries[where]=np.concatenate([pad,np.zeros(len(row[4:]))])
-                timeseries[where]+=np.concatenate([np.array([0.0,0.0]),np.array(map(lambda x: value(x),row[4:]),dtype=np.float64)])
+                    timeseries[where]=np.zeros(len(row[4:]))
+                timeseries[where]+=np.array(map(lambda x: value(x),row[4:]),dtype=np.float64)
         
             if where.split(':')[0]!='China':
                 if not 'Other' in timeseries:
-                    timeseries['Other']=np.concatenate([pad,np.zeros(len(row[4:]))])
-                timeseries['Other']+=np.concatenate([np.array([0.0,0.0]),np.array(map(lambda x: value(x),row[4:]),dtype=np.float64)])
+                    timeseries['Other']=np.zeros(len(row[4:]))
+                timeseries['Other']+=np.array(map(lambda x: value(x),row[4:]),dtype=np.float64)
 
         if splitChina:
             timeseries['Total']=timeseries['China:Hubei']+timeseries['China:Other']+timeseries['Other']
@@ -278,15 +272,13 @@ def getJHUData(all,splitChina):
 
         results.append(timeseries)
 
-    assert results[0]['Japan'][17]==45.0   # Odd spike in Japan data
-    results[0]['Japan'][17]=24.0           # Average of neighbouring values
-    assert results[0]['Japan'][2]==2.0     # Odd spike in Japan data
-    results[0]['Japan'][2]=1.0             # Next value
+    assert results[0]['Japan'][15]==45.0   # Odd spike in Japan data
+    results[0]['Japan'][15]=24.0           # Average of neighbouring values
+    assert results[0]['Japan'][0]==2.0     # Odd spike in Japan data
+    results[0]['Japan'][0]=1.0             # Next value
     
-        
     if not all:
         results=results[0]
-
-        
+    
     return timeseriesKeys,results
     
