@@ -357,8 +357,6 @@ for p in range(len(timeseriesKeys)):
             fig4.canvas.draw()
         fig4.canvas.mpl_connect('resize_event',on_resize4)
 
-    assert len(timeseriesKeys)<24
-    
     plt.subplot(2,3,1+(p%6))
 
     results=probe(data,P,where)

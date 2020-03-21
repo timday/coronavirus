@@ -36,12 +36,13 @@ descriptions={
     'Belgium'    :'Belgium'    ,
     'Austria'    :'Austria'    ,
     'Malaysia'   :'Malaysia'   ,
-    'Brazil'     :'Brazil'
+    'Brazil'     :'Brazil'     ,
+    'Australia'  :'Australia'
 }
 
 news={
     'China':[
-        ((2020,1,20),'Wuhan Lockdown'),
+        ((2020,1,22),'Wuhan Lockdown'),  # Actually, on the 20th
         ((2020,2,13),'Hubei Lockdown'),
         ((2020,2,20),'Hubei Lockdown inc. schools')
     ],
@@ -113,6 +114,9 @@ news={
     'Brazil':[
         ((2020,3,20),'State of emergency')
     ],
+    'Australia':[
+        # Borders closed 2020,3,20.
+    ],
 }
 
 populations={
@@ -140,7 +144,8 @@ populations={
     'Belgium'    :1.1e7,
     'Austria'    :8.8e6,
     'Malaysia'   :3.2e7,
-    'Brazil'     :2.1e8
+    'Brazil'     :2.1e8,
+    'Australia'  :2.5e7
     }
 
 def rgb(r,g,b):
@@ -159,6 +164,7 @@ colors={
     'Canada'     :rgb( 31,119,180),  # Same as US
 
     'UK'         :rgb( 23,190,207),
+    'Australia'  :rgb( 23,190,207),
     
     'France'     :rgb(140, 86, 75),
     'Germany'    :rgb(196,156,148),
@@ -186,6 +192,7 @@ widthScale['China:Other']=0.5
 widthScale['Portugal']=0.5
 widthScale['Canada']=0.5
 widthScale['Brazil']=0.5
+widthScale['Australia']=0.5
 
 # Recursive in case error spans more than one day
 def clean(a,where):
@@ -211,7 +218,7 @@ def getJHUData(all,splitChina):
 
     results=[]
 
-    timeseriesKeys=['Total','Other','Iran','South Korea','Italy','France','Spain','Portugal','Germany','US','Canada','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia','Brazil']
+    timeseriesKeys=['Total','Other','Iran','South Korea','Italy','France','Spain','Portugal','Germany','US','Canada','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia','Brazil','Australia']
     if splitChina:
         timeseriesKeys.append('China:Hubei')
         timeseriesKeys.append('China:Other')
@@ -223,13 +230,16 @@ def getJHUData(all,splitChina):
         csvfile=open(['data/time_series_19-covid-Confirmed.csv','data/time_series_19-covid-Recovered.csv','data/time_series_19-covid-Deaths.csv'][what],'rb')
         reader=csv.reader(csvfile)
         timeseries={}
-        interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Canada','Iran','France','Germany','Spain','Portugal','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia','Brazil'])
+        interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Canada','Iran','France','Germany','Spain','Portugal','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia','Brazil','Australia'])
         firstRow=True
         for row in reader:
         
             if firstRow:
                 firstRow=False
                 continue
+
+            #if row[0]=='From Diamond Princess':
+            #    continue
             
             where=row[1]
             # Keys sometimes change.  Or just shorten them.
