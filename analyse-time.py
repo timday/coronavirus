@@ -74,7 +74,7 @@ for chart in range(2):
     plt.grid(True)
     plt.yscale('symlog')
     plt.legend(loc='lower right',framealpha=0.9)
-    plt.title('{} aligned on {:d}.\nTimes +/- ahead/behind Italy'.format(what,int(common)))
+    plt.title('{} aligned on {:d}.\nTimes +/- ahead/behind Italy.\nLines start from {}'.format(what,int(common),int(ignore)))
 
     plt.savefig(
         'output/'+['aligned-cases.png','aligned-deaths.png'][chart],
