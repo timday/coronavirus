@@ -4,19 +4,21 @@
 import matplotlib.pyplot as plt
 import numpy as np
 
+# TODO: Some useful stuff on setting fonts at http://jonathansoma.com/lede/data-studio/matplotlib/changing-fonts-in-matplotlib/
+
 # Data from https://www.arcgis.com/apps/opsdashboard/index.html#/f94c3c90da5b4e9f9a0b19484dd4bb14
 
 # Upper Tier Local Authorities (UTLA) and NHS Regions tab
 
 # 2020-03-21, dummy data
 cases={
-    'London'                  :[1965,2000],
-    'South East'              :[ 492, 500],
-    'Midlands'                :[ 491, 500],
-    'North West'              :[ 312, 500],
+    'London'                   :[1965,2000],
+    'South East'               :[ 492, 500],
+    'Midlands'                 :[ 491, 500],
+    'North West'               :[ 312, 500],
     'North East\nand Yorkshire':[ 298, 500],
-    'East of England'         :[ 221, 500],
-    'South West'              :[ 216, 500]
+    'East of England'          :[ 221, 500],
+    'South West'               :[ 216, 500]
 }
 
 # From wikipedia https://en.wikipedia.org/wiki/Results_of_the_2016_United_Kingdom_European_Union_membership_referendum#Greater_London
@@ -63,6 +65,5 @@ for tick in ax.get_xticklabels():
 for tick in ax.get_yticklabels():
     tick.set_fontname("Comic Sans MS")
     tick.set_fontsize(8)
-
 
 plt.show()
