@@ -5,13 +5,19 @@ import matplotlib
 import matplotlib.pyplot as plt
 import numpy as np
 
-# TODO: Some useful stuff on setting fonts at http://jonathansoma.com/lede/data-studio/matplotlib/changing-fonts-in-matplotlib/
+# Dashboard at https://www.arcgis.com/apps/opsdashboard/index.html#/f94c3c90da5b4e9f9a0b19484dd4bb14
+# Seems to be some csv files at https://www.gov.uk/government/publications/covid-19-track-coronavirus-cases
+# Daily indicators contains nothing but today's data.
+# Daily confirmed cases is a timeseries but just cases and totals.
+# NHSR_Cases and UTLA cases table not a timeseries.
 
-# Data from https://www.arcgis.com/apps/opsdashboard/index.html#/f94c3c90da5b4e9f9a0b19484dd4bb14
+# Aha... solving the timeseries problem: https://github.com/tomwhite/covid-19-uk-data
+#   Downloaded https://github.com/tomwhite/covid-19-uk-data/raw/master/data/covid-19-cases-uk.csv
 
-# Upper Tier Local Authorities (UTLA) and NHS Regions tab
+# Referendum results from https://data.london.gov.uk/dataset/eu-referendum-results
+#   Downloaded https://data.london.gov.uk/download/eu-referendum-results/52dccf67-a2ab-4f43-a6ba-894aaeef169e/EU-referendum-result-data.csv
 
-# Data captured
+# Data captured Upper Tier Local Authorities (UTLA) and NHS Regions tab
 #   2020-03-21
 #   2020-03-22
 cases={
