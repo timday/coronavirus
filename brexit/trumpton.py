@@ -101,7 +101,7 @@ def getCases():
 
     return timeseries
 
-def getVotes():
+def getVotes(which):
     csvfile=open('data/1976-2016-president.csv')  # Data from https://doi.org/10.7910/DVN/42MVDX/MFU99O / https://dataverse.harvard.edu/file.xhtml?persistentId=doi:10.7910/DVN/42MVDX/MFU99O
     reader=csv.reader(csvfile)
     votes={}
@@ -112,8 +112,10 @@ def getVotes():
         if firstRow:
             firstRow=False
             continue
-            
-        if row[0]=='2016' and row[6]=='US President' and row[7]=='Trump, Donald J.':
+
+        when=['2016','2012','2008'][which]
+        who=['Trump, Donald J.','Obama, Barack H.','Obama, Barack H.'][which]
+        if row[0]==when and row[6]=='US President' and row[7]==who:
             state=row[2]
             v=float(row[10])
             t=float(row[11])
@@ -127,51 +129,58 @@ def getVotes():
     return {k:votes[k]/totalvotes[k] for k in votes.keys()},totalvotes
     
 cases=getCases()
-votes,total=getVotes()
 
 window=7
 
-rate={k:(cases[k][-1]/cases[k][-1-window])**(1.0/window)-1.0 for k in cases.keys() if cases[k][-1-window]>0.0}
-print 'Not enough history for',[k for k in cases.keys() if cases[k][-1-window]==0.0]
+for p in range(3):
 
-assert len(cases)==len(votes)
+    fig=plt.figure()
+    
+    votes,total=getVotes(p)
+    
+    rate={k:(cases[k][-1]/cases[k][-1-window])**(1.0/window)-1.0 for k in cases.keys() if cases[k][-1-window]>0.0}
+    print 'Not enough history for',[k for k in cases.keys() if cases[k][-1-window]==0.0]
+    
+    assert len(cases)==len(votes)
+    
+    x=np.array([100.0*votes[k] for k in rate.keys()])
+    y=np.array([100.0*rate[k] for k in rate.keys()])
+    w=np.array([total[k] for k in rate.keys()])
+    s=np.sqrt(w/1000.0)
 
-x=np.array([100.0*votes[k] for k in rate.keys()])
-y=np.array([100.0*rate[k] for k in rate.keys()])
-w=np.array([total[k] for k in rate.keys()])
-s=np.sqrt(w/1000.0)
-plt.scatter(x,y,s=s,color='tab:blue')
+    plt.scatter(x,y,s=s,color='tab:blue')
+    
+    for i in xrange(len(x)):
+        plt.text(x[i]+0.5,y[i]+0.5,rate.keys()[i])
+    
+    # Unweighted regression line
+    r=scipy.stats.linregress(x,y)
+    print r
+    gradient,intercept,r_value,p_value,std_err=r
+    
+    rx=np.linspace(min(x),max(x),100)
+    ry=gradient*rx+intercept
+    plt.plot(rx,ry,color='tab:orange')
+    
+    # Weighted regression line
+    coef=np.polyfit(x,y,1,w=w)
+    print coef
+    ry=coef[1]+coef[0]*rx  # Highest power first
+    plt.plot(rx,ry,color='tab:red')
+    rw_value=corr(x,y,w)
 
-for i in xrange(len(x)):
-    plt.text(x[i]+0.5,y[i]+0.5,rate.keys()[i])
+    what=['2016 Trump','2012 Obama','2008 Obama'][p]
+    plt.xlabel('{} vote'.format(what))
+    plt.ylabel('Daily % increase rate (last {} days)'.format(window))
+    
+    ax=plt.gca()
+    vals=ax.get_yticks()
+    ax.set_yticklabels(['{:,.1f}%'.format(x) for x in vals])
+    vals=ax.get_xticks()
+    ax.set_xticklabels(['{:,.1f}%'.format(x) for x in vals])
 
-# Unweighted regression line
-r=scipy.stats.linregress(x,y)
-print r
-gradient,intercept,r_value,p_value,std_err=r
+    plt.title('Virus cases growth rate vs. {} vote by state.\nRegression lines: weighted r={:.2f} (red), unweighted r={:.2f} (orange)'.format(what,rw_value,r_value))
 
-rx=np.linspace(min(x),max(x),100)
-ry=gradient*rx+intercept
-plt.plot(rx,ry,color='tab:orange')
+    plt.savefig('output/trumpton-{}.png'.format(['2016','2012','2008'][p]),dpi=96)
 
-# Weighted regression line
-coef=np.polyfit(x,y,1,w=w)
-print coef
-ry=coef[1]+coef[0]*rx  # Highest power first
-plt.plot(rx,ry,color='tab:red')
-rw_value=corr(x,y,w)
-
-
-plt.xlabel('Trump vote'.format(window))
-plt.ylabel('Daily % increase rate (last {} days)'.format(window))
-
-ax=plt.gca()
-vals=ax.get_yticks()
-ax.set_yticklabels(['{:,.1f}%'.format(x) for x in vals])
-vals=ax.get_xticks()
-ax.set_xticklabels(['{:,.1f}%'.format(x) for x in vals])
-
-plt.title('Virus cases growth rate vs. 2016 Trump vote by state.\nRegression lines: weighted r={:.2f} (red), unweighted r={:.2f} (orange)'.format(rw_value,r_value))
-
-plt.savefig('output/trumpton.png',dpi=96)
 plt.show()
