@@ -10,7 +10,7 @@ import numpy as np
 
 # Upper Tier Local Authorities (UTLA) and NHS Regions tab
 
-# 2020-03-21, dummy data
+# 2020-03-21, dummy data (no data Sunday yet)
 cases={
     'London'                   :[1965,2000],
     'South East'               :[ 492, 500],
