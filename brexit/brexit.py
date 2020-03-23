@@ -21,6 +21,10 @@ import scipy.stats
 # Referendum results from https://data.london.gov.uk/dataset/eu-referendum-results
 #   Downloaded https://data.london.gov.uk/download/eu-referendum-results/52dccf67-a2ab-4f43-a6ba-894aaeef169e/EU-referendum-result-data.csv
 
+# Lower tier to upper tier local authority info at
+# https://geoportal.statistics.gov.uk/datasets/lower-tier-local-authority-to-upper-tier-local-authority-december-2017-lookup-in-england-and-wales
+# (England and Wales only)
+
 def value(s):
     if s=='1 to 4':
         return 2.5
