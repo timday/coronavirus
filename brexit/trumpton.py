@@ -18,7 +18,6 @@ def cov(x, y, w):
 
 def corr(x, y, w):
     return cov(x, y, w) / np.sqrt(cov(x, x, w) * cov(y, y, w))
-
     
 stateCode={
     'Alabama'       :'AL',
