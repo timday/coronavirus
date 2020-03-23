@@ -58,7 +58,8 @@ news={
         ((2020,3,16),'Drastic action')
     ],
     'Italy':[
-        ((2020,3, 9),'National lockdown')
+        ((2020,3, 9),'National lockdown'),
+        ((2020,3,23),'Tighten restrictions')
     ],
     'Netherlands':[
         ((2020,3,16),'Closures')
