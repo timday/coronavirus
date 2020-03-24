@@ -32,5 +32,13 @@ for row in reader:
         timeseries[area]=[]
     timeseries[area].append(cases)
 
-for k in sorted(timeseries.keys(),key=lambda k: timeseries[k][-1]):
+print 'Top 10 case counts'
+for k in sorted(timeseries.keys(),key=lambda k: timeseries[k][-1],reverse=True)[:10]:
     print k,timeseries[k][-1]
+
+print
+
+growth={k:(timeseries[k][-1]/timeseries[k][-1-7])**(1.0/7.0) for k in timeseries.keys() if len(timeseries[k])>=8 and timeseries[k][-1-7]>0.0}
+print 'Top 10 growth'
+for k in sorted(growth.keys(),key=lambda k: growth[k],reverse=True)[:10]:
+    print k,100.0*(growth[k]-1.0)
