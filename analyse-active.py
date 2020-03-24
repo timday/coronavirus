@@ -57,10 +57,10 @@ for p in range(4):
     
     plt.title(
         {
-            0: 'Active cases ({} day window).  Lines from $\geq 30$ cases.  Log-scale.',
-            1: 'Active cases ({} day window).  Lines from $\geq 30$ cases.  Omits global total.',
-            2: 'Active cases ({} day window).  Lines from $\geq 30$ cases.  Proportion of population, log-scale.',
-            3: 'Active cases ({} day window).  Lines from $\geq 30$ cases.  Proportion of population.'
+            0: 'Active cases ({} day window) $\geq 30$.  Log-scale.',
+            1: 'Active cases ({} day window) $\geq 30$.  Omits global total.',
+            2: 'Active cases ({} day window) $\geq 30$.  Proportion of population, log-scale.',
+            3: 'Active cases ({} day window) $\geq 30$.  Proportion of population.'
         }[p].format(activeWindow)
     )
 
