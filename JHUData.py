@@ -55,8 +55,8 @@ news={
     'Other':[],
     'Total':[],
     'UK':[
-        ((2020,3,16),'Drastic action')
-        ((2020,3,23),'National Lockdown')
+        ((2020,3,16),'Drastic action'),
+        ((2020,3,24),'National Lockdown')
     ],
     'Italy':[
         ((2020,3, 9),'National lockdown'),
