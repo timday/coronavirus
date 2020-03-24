@@ -6,7 +6,8 @@ mkdir -p ${DST}
 rm -f ${DST}/*.png
 rm -r -f ${DST}/all
 
-cp output/growth.png ${DST}/
-cp output/aligned-*.png ${DST}/
+cp output/growth.png     ${DST}/
+cp output/aligned-*.png  ${DST}/
+cp output/active-log.png ${DST}/
 
 cp -r output/ ${DST}/all

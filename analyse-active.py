@@ -8,15 +8,15 @@ import numpy as np
 
 from JHUData import *
 
-timeseriesKeys,timeseries=getJHUData(True,True)
+activeWindow=21
+    
+timeseriesKeys,timeseries=getJHUData(False,True)  # Don't care about anything but cases now there's nothing but recovered.
 
 def active(k):
 
-    casesTotal=timeseries[0][k]
-    casesRecovered=timeseries[1][k]
-    casesFatal=timeseries[2][k]
+    casesTotal=timeseries[k]
     
-    casesActive=casesTotal-(casesRecovered+casesFatal)
+    casesActive=casesTotal-np.concatenate([np.zeros((activeWindow,)),casesTotal[:-activeWindow]])
     
     casesActive[casesActive<30.0]=np.nan
 
@@ -57,11 +57,11 @@ for p in range(4):
     
     plt.title(
         {
-            0: 'Active cases (from $\geq 30$), log-scale',
-            1: 'Active cases (from $\geq 30$); omits global total',
-            2: 'Active cases (from $\geq 30$), proportion of population, log-scale',
-            3: 'Active cases (from $\geq 30$), proportion of population'
-        }[p]
+            0: 'Active cases ({} day window).  Lines from $\geq 30$ cases.  Log-scale.',
+            1: 'Active cases ({} day window).  Lines from $\geq 30$ cases.  Omits global total.',
+            2: 'Active cases ({} day window).  Lines from $\geq 30$ cases.  Proportion of population, log-scale.',
+            3: 'Active cases ({} day window).  Lines from $\geq 30$ cases.  Proportion of population.'
+        }[p].format(activeWindow)
     )
 
     plt.legend(loc='upper left',fontsize='medium')
