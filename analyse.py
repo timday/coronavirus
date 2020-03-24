@@ -483,7 +483,7 @@ for k in timeseriesKeys:
             mdates.date2num(date),
             0.02,
             txt,
-            horizontalalignment='left',
+            horizontalalignment='center',
             verticalalignment='bottom',
             rotation=90,
             fontdict={'size':8,'alpha':0.8,'weight':'bold','color':colors[k]}

@@ -37,7 +37,7 @@ for chart in range(2):
 
     fig=plt.figure(figsize=(16,9))
     
-    timeseries=timeseriesAll[{0:0,1:2}[chart]]
+    timeseries=timeseriesAll[chart]
     common={0:1000.0,1:30.0}[chart]
     ignore={0:30.0,1:10.0}[chart]
 

@@ -7,8 +7,7 @@ import datetime
 import matplotlib.dates as mdates
 import numpy as np
 
-# csv file starts 2020-01-22, so zero pad, except for China which has a couple of extra days data on main tracker chart
-pyBasedate=datetime.datetime(2020,1,22)
+pyBasedate=datetime.datetime(2020,1,22)  # csv file starts 2020-01-22
 basedate=mdates.date2num(pyBasedate)
 
 descriptions={
@@ -227,9 +226,9 @@ def getJHUData(all,splitChina):
     else:
         timeseriesKeys.append('China')            
     
-    for what in {False:range(1),True:range(3)}[all]:
+    for what in {False:range(1),True:range(2)}[all]:
 
-        csvfile=open(['data/time_series_19-covid-Confirmed.csv','data/time_series_19-covid-Recovered.csv','data/time_series_19-covid-Deaths.csv'][what],'rb')
+        csvfile=open(['data/time_series_covid19_confirmed_global.csv','data/time_series_covid19_deaths_global.csv'][what],'rb')
         reader=csv.reader(csvfile)
         timeseries={}
         interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Canada','Iran','France','Germany','Spain','Portugal','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia','Brazil','Australia'])
@@ -284,11 +283,6 @@ def getJHUData(all,splitChina):
 
         results.append(timeseries)
 
-    assert results[0]['Japan'][15]==45.0   # Odd spike in Japan data
-    results[0]['Japan'][15]=24.0           # Average of neighbouring values
-    assert results[0]['Japan'][0]==2.0     # Odd spike in Japan data
-    results[0]['Japan'][0]=1.0             # Next value
-    
     if not all:
         results=results[0]
     

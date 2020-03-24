@@ -2,10 +2,10 @@
 
 DST=~/Dropbox/coronavirus/
 
-rm -r -f ${DST}
 mkdir -p ${DST}
+rm -f ${DST}/*.png
+rm -r -f ${DST}/all
 
-cp output/active-log.png ${DST}/
 cp output/growth.png ${DST}/
 cp output/aligned-*.png ${DST}/
 
