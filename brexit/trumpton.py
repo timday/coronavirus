@@ -7,6 +7,10 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats
 
+print '*** BROKEN - no state-level data available from JHU repo currently ***'
+# Waiting for files mentioned in https://github.com/CSSEGISandData/COVID-19/issues/1250
+exit()
+
 def value(x):
     if x=='':
         return 0
