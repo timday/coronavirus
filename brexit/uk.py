@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import csv
+import datetime
 import math
 import matplotlib
 import matplotlib.pyplot as plt
@@ -20,12 +21,19 @@ firstRow=True
 timeseries={}
 days=set()
 
+# NB Due to messing around in Wales switching between Local Authority and Health Board, probably can only trust stuff from the 21st March.
+# See https://github.com/tomwhite/covid-19-uk-data/blob/master/README.md
+
 for row in reader:
     if firstRow:
         firstRow=False
         continue
 
-    date=row[0]
+    ymd=map(int,row[0].split('-'))
+    date=datetime.date(*ymd)
+    if date<datetime.date(2020,3,21):
+        continue
+    
     area=row[3]
     cases=value(row[4])
 
@@ -37,8 +45,9 @@ for row in reader:
 
 days=sorted(list(days))
 
-days=days[-8:-1]
-assert len(days)==7
+window=4
+days=days[-1-window:-1]
+assert len(days)==window
 
 print 'Date range',days[0],days[-1]
 
@@ -61,8 +70,8 @@ for k in sorted(usable,key=lambda k: timeseries[k][days[-1]],reverse=True)[:10]:
 print
 
 growth={
-    k:(timeseries[k][days[-1]]/timeseries[k][days[0]])**(1.0/7.0)
-    for k in usable if len(timeseries[k])>=8 and timeseries[k][days[0]]>0.0
+    k:(timeseries[k][days[-1]]/timeseries[k][days[0]])**(1.0/window)
+    for k in usable if len(timeseries[k])>=window and timeseries[k][days[0]]>0.0
 }
 print 'Top 10 growth'
 for k in sorted(growth.keys(),key=lambda k: growth[k],reverse=True)[:10]:
