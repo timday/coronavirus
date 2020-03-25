@@ -472,7 +472,7 @@ for p in range(len(timeseriesKeys)):
     week_dates=date(np.arange(len(gain_weekly))+7.0/2.0)
     plt.plot(week_dates,gain_weekly,color=colors[timeseriesKeys[p]],linewidth=3.0*widthScale[timeseriesKeys[p]],label=descriptions[timeseriesKeys[p]])
 
-    plt.text(day_dates[-1]+1.5,gain_weekly[-1],descriptions[timeseriesKeys[p]],horizontalalignment='left',verticalalignment='center',fontdict={'size':8,'alpha':0.75,'weight':'bold','color':colors[timeseriesKeys[p]]})
+    plt.text(day_dates[-1]+1.0,gain_weekly[-1],descriptions[timeseriesKeys[p]],horizontalalignment='left',verticalalignment='center',fontdict={'size':8,'alpha':0.75,'weight':'bold','color':colors[timeseriesKeys[p]]})
 
 for k in timeseriesKeys:
     for item in news[k]:
@@ -489,7 +489,7 @@ for k in timeseriesKeys:
             fontdict={'size':8,'alpha':0.8,'weight':'bold','color':colors[k]}
         )
             
-plt.xlim(left=basedate,right=day_dates[-1]+1)
+plt.xlim(left=basedate-0.5,right=day_dates[-1]+0.75)
 plt.ylim(bottom=0.0)
 plt.yscale('symlog')
 plt.grid(True)
@@ -497,7 +497,6 @@ plt.yticks([1.0,2.0,3.0,4.0,5.0,7.5,10.0,20.0,30.0,40.0,50.0,75.0,100.0,200.0,30
 plt.ylabel('Daily % increase rate')
 plt.xticks(rotation=75,fontsize=10)
 plt.yticks(fontsize=10)
-plt.gca().set_xlim(left=basedate)
 plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=mdates.MO))
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
 plt.legend(loc='lower left',framealpha=0.9,fontsize='medium',bbox_to_anchor=(0.01,0.01)).set_zorder(200)   # Was xx-small, but that's too small.
