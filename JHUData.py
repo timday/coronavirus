@@ -36,7 +36,10 @@ descriptions={
     'Austria'    :'Austria'    ,
     'Malaysia'   :'Malaysia'   ,
     'Brazil'     :'Brazil'     ,
-    'Australia'  :'Australia'
+    'Australia'  :'Australia'  ,
+    'Israel'     :'Israel'     ,
+    'Turkey'     :'Turkey'     ,
+    'Czechia'    :'Czechia'
 }
 
 news={
@@ -118,6 +121,16 @@ news={
     'Australia':[
         # Borders closed 2020,3,20.
     ],
+    'Israel':[
+        ((2020,03,17),'Phone tracking')
+        # Lockdown anticipated
+    ],
+    'Turkey':[
+        ((2020,03,16),'Limited closures')
+    ],
+    'Czechia':[
+        ((2020,03,16),'National locldown')
+    ]
 }
 
 populations={
@@ -146,7 +159,10 @@ populations={
     'Austria'    :8.8e6,
     'Malaysia'   :3.2e7,
     'Brazil'     :2.1e8,
-    'Australia'  :2.5e7
+    'Australia'  :2.5e7,
+    'Israel'     :8.6e6,
+    'Turkey'     :8.1e7,
+    'Czechia'    :1.1e7
     }
 
 def rgb(r,g,b):
@@ -180,11 +196,14 @@ colors={
     'Netherlands':rgb(188,189, 34),
     'Belgium'    :rgb(247,182,210),
     'Austria'    :rgb(225,187,120),
+    'Czechia'    :rgb(225,187,120), # Same as Austria
     'Switzerland':rgb(197,176,213),
+    'Israel'     :rgb(197,176,213), # Same as Switzerland
 
     'South Korea':rgb(255,127, 14),
     'Japan'      :rgb(227,119,194),
     'Iran'       :rgb(148,103,189),
+    'Turkey'     :rgb(148,103,189), # Same as Iran
     'Malaysia'   :rgb(255,152,150)
     }
 
@@ -194,6 +213,9 @@ widthScale['Portugal']=0.5
 widthScale['Canada']=0.5
 widthScale['Brazil']=0.5
 widthScale['Australia']=0.5
+widthScale['Israel']=0.5
+widthScale['Turkey']=0.5
+widthScale['Czechia']=0.5
 
 # Recursive in case error spans more than one day
 def clean(a,where):
@@ -219,19 +241,22 @@ def getJHUData(all,splitChina):
 
     results=[]
 
-    timeseriesKeys=['Total','Other','Iran','South Korea','Italy','France','Spain','Portugal','Germany','US','Canada','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia','Brazil','Australia']
+    # Actual list
+    timeseriesKeys=['Total','Other','Iran','South Korea','Italy','France','Spain','Portugal','Germany','US','Canada','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia']
     if splitChina:
         timeseriesKeys.append('China:Hubei')
         timeseriesKeys.append('China:Other')
     else:
         timeseriesKeys.append('China')            
-    
+
+    # Names from the CSV file
+    interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Canada','Iran','France','Germany','Spain','Portugal','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia'])
+
     for what in {False:range(1),True:range(2)}[all]:
 
         csvfile=open(['data/time_series_covid19_confirmed_global.csv','data/time_series_covid19_deaths_global.csv'][what],'rb')
         reader=csv.reader(csvfile)
         timeseries={}
-        interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Canada','Iran','France','Germany','Spain','Portugal','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia','Brazil','Australia'])
         firstRow=True
         for row in reader:
         
