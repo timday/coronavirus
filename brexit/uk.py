@@ -65,7 +65,7 @@ usable=[k for k in sorted(timeseries.keys()) if not k in incomplete]
 
 print 'Top 10 case counts'
 for k in sorted(usable,key=lambda k: timeseries[k][days[-1]],reverse=True)[:10]:
-    print '  ',k,timeseries[k][days[-1]]
+    print '  {:32s}: {:d}'.format(k,int(timeseries[k][days[-1]]))
 
 print
 
@@ -75,4 +75,4 @@ growth={
 }
 print 'Top 10 growth'
 for k in sorted(growth.keys(),key=lambda k: growth[k],reverse=True)[:10]:
-    print '  ',k,100.0*(growth[k]-1.0)
+    print '  {:32s}: {:.1f}%'.format(k,100.0*(growth[k]-1.0))
