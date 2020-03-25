@@ -357,6 +357,13 @@ for p in range(len(timeseriesKeys)):
             fig4.canvas.draw()
         fig4.canvas.mpl_connect('resize_event',on_resize4)
 
+    if p==24:
+        fig5=plt.figure(figsize=(16,9))
+        def on_resize5(event):
+            fig5.tight_layout(pad=0.05)
+            fig5.canvas.draw()
+        fig5.canvas.mpl_connect('resize_event',on_resize5)
+
     plt.subplot(2,3,1+(p%6))
 
     results=probe(data,P,where)
