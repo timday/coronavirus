@@ -14,65 +14,72 @@ def value(s):
     else:
         return float(s)
 
-csvfile=open('data/covid-19-cases-uk.csv')  # Update from https://raw.githubusercontent.com/tomwhite/covid-19-uk-data/master/data/covid-19-cases-uk.csv
-reader=csv.reader(csvfile)
-firstRow=True
-
-timeseries={}
-days=set()
-
-# NB Due to messing around in Wales switching between Local Authority and Health Board, probably can only trust stuff from the 21st March.
+# NB Due to messing around in Wales switching between Local Authority and Health Board, probably can only trust stuff from the 21st March for Wales.
 # See https://github.com/tomwhite/covid-19-uk-data/blob/master/README.md
 
-for row in reader:
-    if firstRow:
-        firstRow=False
-        continue
+def getUK(nation,window):
 
-    ymd=map(int,row[0].split('-'))
-    date=datetime.date(*ymd)
-    if date<datetime.date(2020,3,21):
-        continue
+    csvfile=open('data/covid-19-cases-uk.csv')  # Update from https://raw.githubusercontent.com/tomwhite/covid-19-uk-data/master/data/covid-19-cases-uk.csv
+    reader=csv.reader(csvfile)
+    firstRow=True
+
+    timeseries={}
+    days=set()
+
+    for row in reader:
+        if firstRow:
+            firstRow=False
+            continue
+        
+        where=row[1]
+        if where!=nation and nation!=None:
+            continue
+
+        ymd=map(int,row[0].split('-'))
+        date=datetime.date(*ymd)
+            
+        area=row[3]
+        cases=value(row[4])
+
+        if not area in timeseries:
+            timeseries[area]={}
+        timeseries[area][date]=cases
+
+        days.add(date)
+
+    days=sorted(list(days))[-window:]
+    assert len(days)==window
     
-    area=row[3]
-    cases=value(row[4])
+    def trim(ts):
+        return [it[1] for it in sorted(ts.items(),key=lambda x: x[0])][-window:]
 
-    if not area in timeseries:
-        timeseries[area]={}
-    timeseries[area][date]=cases
+    timeseries={a:trim(timeseries[a]) for a in timeseries.keys()}
 
-    days.add(date)
+    timeseries={a:timeseries[a] for a in timeseries.keys() if len(timeseries[a])==window}
+        
+    return timeseries,days
+                    
+for what in [('England',14),('Scotland',14),('Wales',4),(None,4)]:
+    timeseries,days=getUK(*what)
 
-days=sorted(list(days))
+    print '------'
+    print what[0],days[0],days[-1],len(days)
 
-window=4
-days=days[-1-window:-1]
-assert len(days)==window
+    assert len(days)==what[1]
 
-print 'Date range',days[0],days[-1]
+    print 'Top 10 case counts'
+    for k in sorted(timeseries,key=lambda k: timeseries[k][-1],reverse=True)[:10]:
+        print '  {:32s}: {:d}'.format(k,int(timeseries[k][-1]))
+    
+    print
 
-incomplete=set()
-print 'Incomplete timeseries '.format(days)
-for k in timeseries.keys():
-    has=set(timeseries[k].keys()).intersection(days)
-    if len(has)!=len(days):
-        print '  ',k,'missing',sorted(list(set(days).difference(has)))
-        incomplete.add(k)
+    window=min(what[1],7)
+    growth={
+        k:(timeseries[k][-1]/timeseries[k][-window])**(1.0/window)
+        for k in timeseries if timeseries[k][-window]>0.0
+    }
+    print 'Top 10 growth ({} days)'.format(window)
+    for k in sorted(growth.keys(),key=lambda k: growth[k],reverse=True)[:10]:
+        print '  {:32s}: {:.1f}%'.format(k,100.0*(growth[k]-1.0))
 
-print
-
-usable=[k for k in sorted(timeseries.keys()) if not k in incomplete]
-
-print 'Top 10 case counts'
-for k in sorted(usable,key=lambda k: timeseries[k][days[-1]],reverse=True)[:10]:
-    print '  {:32s}: {:d}'.format(k,int(timeseries[k][days[-1]]))
-
-print
-
-growth={
-    k:(timeseries[k][days[-1]]/timeseries[k][days[0]])**(1.0/window)
-    for k in usable if len(timeseries[k])>=window and timeseries[k][days[0]]>0.0
-}
-print 'Top 10 growth'
-for k in sorted(growth.keys(),key=lambda k: growth[k],reverse=True)[:10]:
-    print '  {:32s}: {:.1f}%'.format(k,100.0*(growth[k]-1.0))
+    print
