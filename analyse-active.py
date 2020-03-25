@@ -8,18 +8,20 @@ import numpy as np
 
 from JHUData import *
 
-activeWindow=21
+activeWindowLo=14
+activeWindowHi=21
     
 timeseriesKeys,timeseries=getJHUData(False,True)  # Don't care about anything but cases now there's nothing but recovered.
+
+def sweep(cases,window):
+    return cases-np.concatenate([np.zeros((window,)),cases[:-window]])
 
 def active(k):
 
     casesTotal=timeseries[k]
-    
-    casesActive=casesTotal-np.concatenate([np.zeros((activeWindow,)),casesTotal[:-activeWindow]])
-    
-    casesActive[casesActive<30.0]=np.nan
+    casesActive=sum([sweep(casesTotal,w) for w in xrange(activeWindowLo,activeWindowHi+1)])/(1+activeWindowHi-activeWindowLo)
 
+    casesActive[casesActive<30.0]=np.nan
     return casesActive
     
 for p in range(4):
@@ -57,11 +59,11 @@ for p in range(4):
     
     plt.title(
         {
-            0: 'Active cases ({} day window) $\geq 30$.  Log-scale.',
-            1: 'Active cases ({} day window) $\geq 30$.  Omits global total.',
-            2: 'Active cases ({} day window) $\geq 30$.  Proportion of population, log-scale.',
-            3: 'Active cases ({} day window) $\geq 30$.  Proportion of population.'
-        }[p].format(activeWindow)
+            0: 'Active cases ({}-{} day window) $\geq 30$.  Log-scale.',
+            1: 'Active cases ({}-{} day window) $\geq 30$.  Omits global total.',
+            2: 'Active cases ({}-{} day window) $\geq 30$.  Proportion of population, log-scale.',
+            3: 'Active cases ({}-{} day window) $\geq 30$.  Proportion of population.'
+        }[p].format(activeWindowLo,activeWindowHi)
     )
 
     plt.legend(loc='upper left',fontsize='medium')
