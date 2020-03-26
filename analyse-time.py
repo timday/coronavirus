@@ -22,9 +22,12 @@ def computeWhen(data,k):
     elif data[0]<common:
         T=np.searchsorted(data,common,'right')-1
         assert data[T]<=common
-        assert common<data[T+1]
-        # Want to solve common=a[T]+t*(a[T+1]-a[T]) => t=(common-a[T])/(a[T+1]-a[T])
-        t=(common-data[T])/(data[T+1]-data[T])
+        if common==data[T]:
+            t=0.0
+        else:
+            assert common<data[T+1]
+            # Want to solve common=a[T]+t*(a[T+1]-a[T]) => t=(common-a[T])/(a[T+1]-a[T])
+            t=(common-data[T])/(data[T+1]-data[T])
         base=float(T)+t
     else:
         # Extrapolate the next month's data back.
