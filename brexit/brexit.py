@@ -33,26 +33,10 @@ def cov(x, y, w):
 def corr(x, y, w):
     return cov(x, y, w) / np.sqrt(cov(x, x, w) * cov(y, y, w))
 
-def getCodeRewrites():
+def getCodeRewrites(interesting):
 
     codes={}
-
-    codes['S12000015']='S08000029'  # Fife code in referendum data.
-
-    codes['E06000028']='E06000058'  # Somthing funny about Bournemouth
-
-    upperMod={
-        'E10000009':'E06000059',  # Change to Dorset code?
-        # Looking for
-        #'W11000023' # Betsi Cadwaladr
-        #'W11000024' # Powys
-        #'W11000025' # Hywel Dda
-        #'W11000028' # Aneurin Bevan
-        #'W11000029' # Cardiff and Vale
-        #'W11000030' # Cwm Taf
-        #'W11000031' # Swansea Bay
-        }
-
+    
     # First, read the England and Wales data
     csvfile=open('data/Lower_Tier_Local_Authority_to_Upper_Tier_Local_Authority_December_2017_Lookup_in_England_and_Wales.csv')
     reader=csv.reader(csvfile)
@@ -65,12 +49,16 @@ def getCodeRewrites():
         lower=row[0]
         upper=row[2]
 
-        if not lower==upper:
-            assert not lower in codes
-            if upper in upperMod:
-                upper=upperMod[upper]
-            codes[lower]=upper
+        if upper=='E10000009':
+            upper='E06000059'
 
+        if lower in interesting:
+            continue
+
+        if upper in interesting:
+            assert not lower in codes
+            codes[lower]=upper
+        
     # Now read the Scottish data
     csvfile=open('data/Datazone2011Lookup.csv','rb')
     reader=csv.reader(csvfile)
@@ -80,14 +68,23 @@ def getCodeRewrites():
             firstRow=False
             continue
 
-        council=row[5]
-        healthboard=row[6]
+        lower=row[5]
+        upper=row[6]
 
-        if council in codes:
-            assert codes[council]==healthboard  # Check no contradictions
-        else:
-            codes[council]=healthboard
+        if lower in interesting:
+            continue
+
+        if upper in interesting:
             
+            if lower in codes:
+                assert codes[lower]==upper  # Check no contradictions
+            else:
+                codes[lower]=upper
+
+    # Some overrides
+    codes['S12000015']='S08000029'  # Fife code in referendum data.    
+    codes['E06000028']='E06000058'  # Somthing funny about Bournemouth?
+
     return codes
 
 def getVotesLeave(codeRewrites,interesting):
@@ -106,16 +103,19 @@ def getVotesLeave(codeRewrites,interesting):
 
         code=row[3]
 
-        if code in codeRewrites and not code in interesting:
+        if code in codeRewrites:
             code=codeRewrites[code]
-        
-        votesTotal[code]+=int(row[10])
-        votesLeave[code]+=int(row[12])
+
+        if code in interesting:
+            votesTotal[code]+=int(row[10])
+            votesLeave[code]+=int(row[12])
 
     return votesTotal,votesLeave
 
-for what in [('England',7,'England'),('Scotland',7,'Scotland')]: #,('Wales',5,'Wales')]:
+plots=[('England',7,'England'),('Scotland',7,'Scotland'),('Wales',5,'Wales'),(None,5,'England, Scotland and Wales')]
+for p in range(0,4):
 
+    what=plots[p]
     print what[2]
 
     fig=plt.figure(figsize=(8,6))
@@ -125,11 +125,14 @@ for what in [('England',7,'England'),('Scotland',7,'Scotland')]: #,('Wales',5,'W
     timeseries,dates,codes=UKCovid19Data.getUKCovid19Data(what[0],window)
 
     print len(timeseries),'timeseries'
+    for c in timeseries.keys():
+        print '  ',c,codes[c],timeseries[c]
+
+    interesting=frozenset(timeseries.keys())
+    codeRewrites=getCodeRewrites(interesting)
+    votesTotal,votesLeave=getVotesLeave(codeRewrites,interesting)
     
-    codeRewrites=getCodeRewrites()
-    votesTotal,votesLeave=getVotesLeave(codeRewrites,frozenset(codes.keys()))
-    
-    for k in sorted(codes.keys()):
+    for k in sorted(timeseries.keys()):
         if not k in votesTotal:
             print 'No votes for',k,codes[k]
     
@@ -147,9 +150,9 @@ for what in [('England',7,'England'),('Scotland',7,'Scotland')]: #,('Wales',5,'W
     x=np.array([100.0*votesLeave[k]/votesTotal[k] for k in rate.keys()])
     y=np.array([100.0*rate[k] for k in rate.keys()])
     w=np.array([votesTotal[k] for k in rate.keys()])
-    s=np.sqrt(w/50.0)
+    s=np.sqrt(w/10.0)
 
-    plt.scatter(x,y,s=s,color='tab:blue',alpha=0.8)
+    plt.scatter(x,y,s=s,color='tab:blue',alpha=0.5)
     
     x=np.array([100.0*votesLeave[k]/votesTotal[k] for k in rate.keys()])
     y=np.array([100.0*rate[k] for k in rate.keys()])
@@ -180,8 +183,12 @@ for what in [('England',7,'England'),('Scotland',7,'Scotland')]: #,('Wales',5,'W
     vals=ax.get_xticks()
     ax.set_xticklabels(['{:,.1f}%'.format(x) for x in vals])
     
-    plt.title("{} UTLA's cases growth rate vs. 2016 Leave vote.\nRegression lines: weighted r={:.2f} (red), unweighted r={:.2f} (orange)".format(what[2],rw_value,r_value))
-    
-    plt.savefig('output/brexit-{}.png'.format(what[0]),dpi=96)
+    plt.title("{} area's case growth rate vs. 2016 Leave vote.\nRegression lines: weighted r={:.2f} (red), unweighted r={:.2f} (orange)".format(what[2],rw_value,r_value))
+
+    if p==3:
+        outputfile='output/brexit.png'.format(what[0])
+    else:
+        outputfile='output/brexit-{}.png'.format(what[0])
+    plt.savefig(outputfile,dpi=96)
 
 plt.show()

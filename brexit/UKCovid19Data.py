@@ -37,6 +37,9 @@ def getUKCovid19Data(nation,window):
         if code=='':
             continue
 
+        if len(code)>=3 and code[:3]=='W11':  # There are upper and lower tier reports mixed in.  Skip 'em.
+            continue
+
         ymd=map(int,row[0].split('-'))
         date=datetime.date(*ymd)
 
@@ -61,6 +64,8 @@ def getUKCovid19Data(nation,window):
     timeseries={a:trim(timeseries[a]) for a in timeseries.keys()}
 
     timeseries={a:timeseries[a] for a in timeseries.keys() if len(timeseries[a])==window}
-        
+
+    codes={c:codes[c] for c in timeseries.keys()}
+    
     return timeseries,days,codes
                     
