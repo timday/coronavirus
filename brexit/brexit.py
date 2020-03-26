@@ -9,6 +9,8 @@ import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats
 
+import UKCovid19Data
+
 # Dashboard at https://www.arcgis.com/apps/opsdashboard/index.html#/f94c3c90da5b4e9f9a0b19484dd4bb14
 # Seems to be some csv files at https://www.gov.uk/government/publications/covid-19-track-coronavirus-cases
 # Daily indicators contains nothing but today's data.
@@ -30,44 +32,6 @@ def cov(x, y, w):
 
 def corr(x, y, w):
     return cov(x, y, w) / np.sqrt(cov(x, x, w) * cov(y, y, w))
-
-def value(s):
-    if s=='1 to 4':
-        return 2.5
-    else:
-        return float(s)
-
-def getCases():
-    csvfile=open('data/covid-19-cases-uk.csv')  # Update from https://raw.githubusercontent.com/tomwhite/covid-19-uk-data/master/data/covid-19-cases-uk.csv
-    reader=csv.reader(csvfile)
-    timeseries=defaultdict(list)
-    areas=defaultdict(set)
-    firstRow=True
-    for row in reader:
-        if firstRow:
-            firstRow=False
-            continue
-
-        code=row[2]
-        area=row[3]
-        cases=value(row[4])
-
-        if code=='':
-            continue
-
-        if area=='Orkney':
-            assert code=='S08000024'
-            code='S08000025'
-
-        if area=='Western Isles':
-            assert code=='S08000030'
-            code='S08000028'
-        
-        timeseries[code].append(cases)
-
-        areas[code].add(area)
-
-    return areas,timeseries
 
 def getCodeRewrites():
 
@@ -145,77 +109,79 @@ def getVotesLeave(codeRewrites,interesting):
         if code in codeRewrites and not code in interesting:
             code=codeRewrites[code]
         
-        votesTotal[code]+=value(row[10])
-        votesLeave[code]+=value(row[12])
+        votesTotal[code]+=int(row[10])
+        votesLeave[code]+=int(row[12])
 
     return votesTotal,votesLeave
 
-areas,timeseries=getCases()
-#print areas
-#print timeseries
+for what in [('England',7,'England'),('Scotland',7,'Scotland')]: #,('Wales',5,'Wales')]:
 
-codeRewrites=getCodeRewrites()
-votesTotal,votesLeave=getVotesLeave(codeRewrites,frozenset(areas.keys()))
+    print what[2]
 
-for k in sorted(areas.keys()):
-    if not k in votesTotal:
-        print 'No votes for',k,areas[k]
+    fig=plt.figure(figsize=(8,6))
+    
+    window=what[1]
 
-window=7
+    timeseries,dates,codes=UKCovid19Data.getUKCovid19Data(what[0],window)
 
-rate={k:(timeseries[k][-1]/timeseries[k][-1-window])**(1.0/window)-1.0 for k in timeseries.keys() if len(timeseries[k])>=1+window and timeseries[k][-1-window]>0.0}
+    print len(timeseries),'timeseries'
+    
+    codeRewrites=getCodeRewrites()
+    votesTotal,votesLeave=getVotesLeave(codeRewrites,frozenset(codes.keys()))
+    
+    for k in sorted(codes.keys()):
+        if not k in votesTotal:
+            print 'No votes for',k,codes[k]
+    
+    rate={k:(timeseries[k][-1]/timeseries[k][-window])**(1.0/window)-1.0 for k in timeseries.keys() if timeseries[k][-window]>0.0}
 
-for k in rate.keys():
-    if rate[k]<0.0:
-        print 'Negative rate:',k,areas[k],rate[k]
-
-matplotlib.rcParams['font.sans-serif'] = "Comic Sans MS"
-matplotlib.rcParams['font.family'] = "sans-serif"
-
-fig=plt.figure(figsize=(8,6))
-
-for c in ['E','W','S']:
-
-    keys=[k for k in rate.keys() if k[0]==c]
-    x=np.array([100.0*votesLeave[k]/votesTotal[k] for k in keys])
-    y=np.array([100.0*rate[k] for k in keys])
-    w=np.array([votesTotal[k] for k in keys])
+    print len(rate),'rates computed'
+    
+    for k in rate.keys():
+        if rate[k]<0.0:
+            print 'Negative rate:',k,areas[k],rate[k]
+    
+    matplotlib.rcParams['font.sans-serif'] = "Comic Sans MS"
+    matplotlib.rcParams['font.family'] = "sans-serif"
+    
+    x=np.array([100.0*votesLeave[k]/votesTotal[k] for k in rate.keys()])
+    y=np.array([100.0*rate[k] for k in rate.keys()])
+    w=np.array([votesTotal[k] for k in rate.keys()])
     s=np.sqrt(w/50.0)
 
-    plt.scatter(x,y,s=s,color={'E':'tab:gray','W':'tab:green','S':'tab:blue'}[c],label={'E':'England','W':'Wales','S':'Scotland'}[c])
-
-plt.legend(loc='upper left')
-
-keys=rate.keys()
-x=np.array([100.0*votesLeave[k]/votesTotal[k] for k in keys])
-y=np.array([100.0*rate[k] for k in keys])
-w=np.array([votesTotal[k] for k in keys])
-
-# Unweighted regression line
-r=scipy.stats.linregress(x,y)
-gradient,intercept,r_value,p_value,std_err=r
-
-rx=np.linspace(min(x),max(x),100)
-ry=gradient*rx+intercept
-plt.plot(rx,ry,color='tab:orange')
-
-# Weighted regression line
-coef=np.polyfit(x,y,1,w=w)
-ry=coef[1]+coef[0]*rx  # Highest power first
-plt.plot(rx,ry,color='tab:red')
-rw_value=corr(x,y,w)
-
-plt.xlabel('Leave vote')
-plt.ylabel('Daily % increase rate (last {} days)'.format(window))
-
-ax=plt.gca()
-vals=ax.get_yticks()
-ax.set_yticklabels(['{:,.1f}%'.format(x) for x in vals])
-vals=ax.get_xticks()
-ax.set_xticklabels(['{:,.1f}%'.format(x) for x in vals])
-
-plt.title('NHS Health Boards: virus cases growth rate vs. 2016 Leave vote.\nRegression lines: weighted r={:.2f} (red), unweighted r={:.2f} (orange)'.format(rw_value,r_value))
-
-plt.savefig('output/brexit.png',dpi=96)
+    plt.scatter(x,y,s=s,color='tab:blue',alpha=0.8)
+    
+    x=np.array([100.0*votesLeave[k]/votesTotal[k] for k in rate.keys()])
+    y=np.array([100.0*rate[k] for k in rate.keys()])
+    w=np.array([votesTotal[k] for k in rate.keys()])
+    
+    # Unweighted regression line
+    r=scipy.stats.linregress(x,y)
+    gradient,intercept,r_value,p_value,std_err=r
+    print 'Unweighted',gradient,intercept
+    
+    rx=np.linspace(min(x),max(x),100)
+    ry=gradient*rx+intercept
+    plt.plot(rx,ry,color='tab:orange')
+    
+    # Weighted regression line
+    coef=np.polyfit(x,y,1,w=w)
+    print 'Weighted',coef[0],coef[1]
+    ry=coef[1]+coef[0]*rx  # Highest power first
+    plt.plot(rx,ry,color='tab:red')
+    rw_value=corr(x,y,w)
+    
+    plt.xlabel('Leave vote')
+    plt.ylabel('Daily % increase rate (last {} days)'.format(window))
+    
+    ax=plt.gca()
+    vals=ax.get_yticks()
+    ax.set_yticklabels(['{:,.1f}%'.format(x) for x in vals])
+    vals=ax.get_xticks()
+    ax.set_xticklabels(['{:,.1f}%'.format(x) for x in vals])
+    
+    plt.title("{} UTLA's cases growth rate vs. 2016 Leave vote.\nRegression lines: weighted r={:.2f} (red), unweighted r={:.2f} (orange)".format(what[2],rw_value,r_value))
+    
+    plt.savefig('output/brexit-{}.png'.format(what[0]),dpi=96)
 
 plt.show()

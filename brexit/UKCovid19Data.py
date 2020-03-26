@@ -29,13 +29,17 @@ def getUKCovid19Data(nation,window):
             continue
         
         where=row[1]
+        
         if where!=nation and nation!=None:
+            continue
+
+        code=row[2]
+        if code=='':
             continue
 
         ymd=map(int,row[0].split('-'))
         date=datetime.date(*ymd)
 
-        code=row[2]
         area=row[3]
 
         codes[code]=area  # Taking the last one seems to be OK.  Some instability earlier.  https://github.com/tomwhite/covid-19-uk-data/issues/15
