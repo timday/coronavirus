@@ -17,8 +17,8 @@ for what in [('England',7),('Scotland',7),('Wales',5),(None,5)]:
 
     assert len(days)==what[1]
 
-    print 'Top 10 case counts'
-    for k in sorted(timeseries,key=lambda k: timeseries[k][-1],reverse=True)[:10]:
+    print 'Top 20 case counts'
+    for k in sorted(timeseries,key=lambda k: timeseries[k][-1],reverse=True)[:20]:
         print '  {:32s}: {:d}'.format(codes[k],int(timeseries[k][-1]))
     
     print
@@ -28,8 +28,8 @@ for what in [('England',7),('Scotland',7),('Wales',5),(None,5)]:
         k:(timeseries[k][-1]/timeseries[k][-window])**(1.0/window)
         for k in timeseries if timeseries[k][-window]>0.0
     }
-    print 'Top 10 growth ({} days)'.format(window)
-    for k in sorted(growth.keys(),key=lambda k: growth[k],reverse=True)[:10]:
+    print 'Top growth ({} days)'.format(window)
+    for k in sorted(growth.keys(),key=lambda k: growth[k],reverse=True):
         print '  {:32s}: {:.1f}%'.format(codes[k],100.0*(growth[k]-1.0))
 
     print
