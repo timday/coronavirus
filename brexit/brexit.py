@@ -163,7 +163,7 @@ def getDemographics(codeRewrites,interesting):
         if code in interesting:
             print row
             populationTotal[code]+=float(row[3])
-            populationAged[code]+=sum([float(row[i]) for i in xrange(13,23) if row[i]!=''])
+            populationAged[code]+=sum([float(row[i]) for i in xrange(14,23) if row[i]!=''])
 
     return populationTotal,populationAged
 
@@ -257,6 +257,22 @@ for p in range(0,4):
         outputfile='output/brexit.png'.format(what[0])
     else:
         outputfile='output/brexit-{}.png'.format(what[0])
+    plt.savefig(outputfile,dpi=96)
+
+    x=np.array([100.0*oldies[k] for k in rate.keys()])
+    w=np.array([populationTotal[k] for k in rate.keys()])
+    s=np.sqrt(w/10.0)
+
+    r,rw=plot(x,y,w,s)
+
+    plt.xlabel('% Population >=50 in 2011 census')
+    plt.ylabel('Daily % increase rate')
+    plt.title("{}\nAreas' case growth rates {} to {} vs. demographics.\nRegression lines: weighted r={:.2f} (red), unweighted r={:.2f} (orange)".format(what[2],dates[0],dates[-1],rw,r))
+
+    if p==3:
+        outputfile='output/oldies.png'.format(what[0])
+    else:
+        outputfile='output/oldies-{}.png'.format(what[0])
     plt.savefig(outputfile,dpi=96)
 
 plt.show()
