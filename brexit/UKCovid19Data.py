@@ -13,6 +13,16 @@ def value(s):
 # NB Due to messing around in Wales switching between Local Authority and Health Board, probably can only trust stuff from the 21st March for Wales.
 # See https://github.com/tomwhite/covid-19-uk-data/blob/master/README.md
 
+# Wales areas we want are
+#  W11000028 Aneurin Bevan
+#  W11000023 Betsi Cadwaladr
+#  W11000029 Cardiff and Vale
+#  W11000030 Cwm Taf Morgannwg
+#  W11000025 Hywel Dda
+#  W11000024 Powys
+#  W11000031 Swansea Bay
+
+
 def getUKCovid19Data(nation,window):
 
     csvfile=open('data/covid-19-cases-uk.csv')  # Update from https://raw.githubusercontent.com/tomwhite/covid-19-uk-data/master/data/covid-19-cases-uk.csv
@@ -37,9 +47,6 @@ def getUKCovid19Data(nation,window):
         if code=='':
             continue
 
-        if len(code)>=3 and code[:3]=='W11':  # There are upper and lower tier reports mixed in.  Skip 'em.
-            continue
-
         ymd=map(int,row[0].split('-'))
         date=datetime.date(*ymd)
 
@@ -59,7 +66,7 @@ def getUKCovid19Data(nation,window):
     assert len(days)==window
     
     def trim(ts):
-        return [it[1] for it in sorted(ts.items(),key=lambda x: x[0])][-window:]
+        return [ts[d] for d in days if d in ts]
 
     timeseries={a:trim(timeseries[a]) for a in timeseries.keys()}
 
