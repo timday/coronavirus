@@ -151,6 +151,7 @@ def getDemographics(codeRewrites,interesting):
             assert row[1]=='Code'
             assert row[3]=='All Residents'
             assert row[13]=='Age 45 to 49'
+            assert row[14]=='Age 50 to 54'
             assert row[22]=='Age 90 and Over'
             firstRow=False
             continue
@@ -233,7 +234,10 @@ for p in range(0,4):
             print 'No votes for',k,codes[k]
         if not k in oldies:
             print 'No demographics for',k,codes[k]
-            
+
+    for c in sorted(oldies.keys(),key=lambda c: oldies[c],reverse=True):
+        print c,codes[c],oldies[c]
+    
     rate={k:(timeseries[k][-1]/timeseries[k][-1-window])**(1.0/(window))-1.0 for k in timeseries.keys() if timeseries[k][-1-window]>0.0}
 
     print len(rate),'rates computed'
@@ -254,14 +258,14 @@ for p in range(0,4):
     plt.title("{}\nAreas' case growth rates {} to {} vs. 2016 Leave vote.\nRegression lines: weighted r={:.2f} (red), unweighted r={:.2f} (orange)".format(what[2],dates[0],dates[-1],rw,r))
 
     if p==3:
-        outputfile='output/brexit.png'.format(what[0])
+        outputfile='output/brexit-all.png'.format(what[0])
     else:
         outputfile='output/brexit-{}.png'.format(what[0])
     plt.savefig(outputfile,dpi=96)
 
     x=np.array([100.0*oldies[k] for k in rate.keys()])
     w=np.array([populationTotal[k] for k in rate.keys()])
-    s=np.sqrt(w/10.0)
+    s=np.sqrt(w/50.0)
 
     r,rw=plot(x,y,w,s)
 
@@ -270,9 +274,24 @@ for p in range(0,4):
     plt.title("{}\nAreas' case growth rates {} to {} vs. demographics.\nRegression lines: weighted r={:.2f} (red), unweighted r={:.2f} (orange)".format(what[2],dates[0],dates[-1],rw,r))
 
     if p==3:
-        outputfile='output/oldies.png'.format(what[0])
+        outputfile='output/oldies-all.png'.format(what[0])
     else:
         outputfile='output/oldies-{}.png'.format(what[0])
     plt.savefig(outputfile,dpi=96)
 
+    y=np.array([100.0*votesLeave[k]/votesTotal[k] for k in rate.keys()])
+    
+    r,rw=plot(x,y,w,s)
+
+    plt.xlabel('% Population >=50 in 2011 census')
+    plt.ylabel('Leave vote')
+    plt.title("{}\nAreas' 2016 Leave vote vs. demographics.\nRegression lines: weighted r={:.2f} (red), unweighted r={:.2f} (orange)".format(what[2],rw,r))
+
+    if p==3:
+        outputfile='output/oldies-vote-all.png'.format(what[0])
+    else:
+        outputfile='output/oldies-vote-{}.png'.format(what[0])
+    plt.savefig(outputfile,dpi=96)
+
+    
 plt.show()
