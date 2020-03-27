@@ -27,6 +27,10 @@ import UKCovid19Data
 # https://geoportal.statistics.gov.uk/datasets/lower-tier-local-authority-to-upper-tier-local-authority-december-2017-lookup-in-england-and-wales
 # (England and Wales only)
 
+# Wales from
+# https://geoportal.statistics.gov.uk/datasets/unitary-authority-to-local-health-board-april-2019-lookup-in-wales
+# https://geoportal.statistics.gov.uk/datasets/unitary-authority-to-local-health-board-april-2019-lookup-in-wales
+
 def cov(x, y, w):
     return np.sum(w * (x - np.average(x, weights=w)) * (y - np.average(y, weights=w))) / np.sum(w)
 
@@ -81,6 +85,28 @@ def getCodeRewrites(interesting):
             else:
                 codes[lower]=upper
 
+    # Now read the Welsh data
+    csvfile=open('data/Unitary_Authority_to_Local_Health_Board_April_2019_Lookup_in_Wales.csv','rb')
+    reader=csv.reader(csvfile)
+    firstRow=True
+    for row in reader:
+        if firstRow:
+            firstRow=False
+            continue
+
+        lower=row[0]
+        upper=row[2]
+
+        if lower in interesting:
+            continue
+
+        if upper in interesting:
+            
+            if lower in codes:
+                assert codes[lower]==upper  # Check no contradictions
+            else:
+                codes[lower]=upper    
+                
     # Some overrides
     codes['S12000015']='S08000029'  # Fife code in referendum data.    
     codes['E06000028']='E06000058'  # Somthing funny about Bournemouth?
@@ -142,7 +168,7 @@ for p in range(0,4):
     
     for k in rate.keys():
         if rate[k]<0.0:
-            print 'Negative rate:',k,areas[k],rate[k]
+            print 'Negative rate:',k,codes[k],rate[k]
     
     matplotlib.rcParams['font.sans-serif'] = "Comic Sans MS"
     matplotlib.rcParams['font.family'] = "sans-serif"
