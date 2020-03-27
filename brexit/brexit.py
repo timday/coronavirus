@@ -148,7 +148,7 @@ for p in range(0,4):
     
     window=what[1]
 
-    timeseries,dates,codes=UKCovid19Data.getUKCovid19Data(what[0],window)
+    timeseries,dates,codes=UKCovid19Data.getUKCovid19Data(what[0],window+1)   # Need 8 days to get 7 growth rates.
 
     print len(timeseries),'timeseries'
     for c in timeseries.keys():
@@ -162,7 +162,7 @@ for p in range(0,4):
         if not k in votesTotal:
             print 'No votes for',k,codes[k]
     
-    rate={k:(timeseries[k][-1]/timeseries[k][-window])**(1.0/window)-1.0 for k in timeseries.keys() if timeseries[k][-window]>0.0}
+    rate={k:(timeseries[k][-1]/timeseries[k][-1-window])**(1.0/(window))-1.0 for k in timeseries.keys() if timeseries[k][-1-window]>0.0}
 
     print len(rate),'rates computed'
     
@@ -201,7 +201,7 @@ for p in range(0,4):
     rw_value=corr(x,y,w)
     
     plt.xlabel('Leave vote')
-    plt.ylabel('Daily % increase rate (last {} days)'.format(window))
+    plt.ylabel('Daily % increase rate')
     
     ax=plt.gca()
     vals=ax.get_yticks()
@@ -209,7 +209,7 @@ for p in range(0,4):
     vals=ax.get_xticks()
     ax.set_xticklabels(['{:,.1f}%'.format(x) for x in vals])
     
-    plt.title("{} area's case growth rate vs. 2016 Leave vote.\nRegression lines: weighted r={:.2f} (red), unweighted r={:.2f} (orange)".format(what[2],rw_value,r_value))
+    plt.title("{}\nAreas' case growth rates {} to {} vs. 2016 Leave vote.\nRegression lines: weighted r={:.2f} (red), unweighted r={:.2f} (orange)".format(what[2],dates[0],dates[-1],rw_value,r_value))
 
     if p==3:
         outputfile='output/brexit.png'.format(what[0])
