@@ -164,7 +164,7 @@ def getDemographics(codeRewrites,interesting):
         if code in interesting:
             print row
             populationTotal[code]+=float(row[3])
-            populationAged[code]+=sum([float(row[i]) for i in xrange(14,23) if row[i]!=''])
+            populationAged[code]+=sum([float(row[i]) for i in xrange(14,23) if row[i]!=''])  # 14: works; >=50
 
     return populationTotal,populationAged
 
