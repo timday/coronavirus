@@ -138,51 +138,43 @@ def getVotesLeave(codeRewrites,interesting):
 
     return votesTotal,votesLeave
 
-plots=[('England',7,'England'),('Scotland',7,'Scotland'),('Wales',5,'Wales'),(None,5,'England, Scotland and Wales')]
-for p in range(0,4):
+def getDemographics(codeRewrites,interesting):
+    csvfile=open('data/census.csv')
+    reader=csv.reader(csvfile)
 
-    what=plots[p]
-    print what[2]
+    populationTotal=defaultdict(float)
+    populationAged=defaultdict(float)
+
+    firstRow=True
+    for row in reader:
+        if firstRow:
+            assert row[1]=='Code'
+            assert row[3]=='All Residents'
+            assert row[13]=='Age 45 to 49'
+            assert row[22]=='Age 90 and Over'
+            firstRow=False
+            continue
+    
+        code=row[1]
+
+        if code in codeRewrites and not code in interesting:
+            code=codeRewrites[code]
+
+        if code in interesting:
+            print row
+            populationTotal[code]+=float(row[3])
+            populationAged[code]+=sum([float(row[i]) for i in xrange(13,23) if row[i]!=''])
+
+    return populationTotal,populationAged
+
+matplotlib.rcParams['font.sans-serif'] = "Comic Sans MS"
+matplotlib.rcParams['font.family'] = "sans-serif"
+
+def plot(x,y,w,s):
 
     fig=plt.figure(figsize=(8,6))
-    
-    window=what[1]
-
-    timeseries,dates,codes=UKCovid19Data.getUKCovid19Data(what[0],window+1)   # Need 8 days to get 7 growth rates.
-
-    print len(timeseries),'timeseries'
-    for c in timeseries.keys():
-        print '  ',c,codes[c],timeseries[c]
-
-    interesting=frozenset(timeseries.keys())
-    codeRewrites=getCodeRewrites(interesting)
-    votesTotal,votesLeave=getVotesLeave(codeRewrites,interesting)
-    
-    for k in sorted(timeseries.keys()):
-        if not k in votesTotal:
-            print 'No votes for',k,codes[k]
-    
-    rate={k:(timeseries[k][-1]/timeseries[k][-1-window])**(1.0/(window))-1.0 for k in timeseries.keys() if timeseries[k][-1-window]>0.0}
-
-    print len(rate),'rates computed'
-    
-    for k in rate.keys():
-        if rate[k]<0.0:
-            print 'Negative rate:',k,codes[k],rate[k]
-    
-    matplotlib.rcParams['font.sans-serif'] = "Comic Sans MS"
-    matplotlib.rcParams['font.family'] = "sans-serif"
-    
-    x=np.array([100.0*votesLeave[k]/votesTotal[k] for k in rate.keys()])
-    y=np.array([100.0*rate[k] for k in rate.keys()])
-    w=np.array([votesTotal[k] for k in rate.keys()])
-    s=np.sqrt(w/10.0)
 
     plt.scatter(x,y,s=s,color='tab:blue',alpha=0.5)
-    
-    x=np.array([100.0*votesLeave[k]/votesTotal[k] for k in rate.keys()])
-    y=np.array([100.0*rate[k] for k in rate.keys()])
-    w=np.array([votesTotal[k] for k in rate.keys()])
     
     # Unweighted regression line
     r=scipy.stats.linregress(x,y)
@@ -198,18 +190,68 @@ for p in range(0,4):
     print 'Weighted',coef[0],coef[1]
     ry=coef[1]+coef[0]*rx  # Highest power first
     plt.plot(rx,ry,color='tab:red')
-    rw_value=corr(x,y,w)
-    
-    plt.xlabel('Leave vote')
-    plt.ylabel('Daily % increase rate')
+    rw=corr(x,y,w)
     
     ax=plt.gca()
     vals=ax.get_yticks()
     ax.set_yticklabels(['{:,.1f}%'.format(x) for x in vals])
     vals=ax.get_xticks()
     ax.set_xticklabels(['{:,.1f}%'.format(x) for x in vals])
+
+    return r.rvalue,rw
+
+plots=[('England',7,'England'),('Scotland',7,'Scotland'),('Wales',5,'Wales'),(None,5,'England, Scotland and Wales')]
+for p in range(0,4):
+
+    what=plots[p]
+    print what[2]
+
+    window=what[1]
+
+    timeseries,dates,codes=UKCovid19Data.getUKCovid19Data(what[0],window+1)   # Need 8 days to get 7 growth rates.
+
+    print len(timeseries),'timeseries'
+    for c in timeseries.keys():
+        print '  ',c,codes[c],timeseries[c]
+
+    interesting=frozenset(timeseries.keys())
+    codeRewrites=getCodeRewrites(interesting)
+    votesTotal,votesLeave=getVotesLeave(codeRewrites,interesting)
+
+    # Couple of fixups to census data
+    codeRewrites['E06000048']='E06000057' # Northumberland
+    codeRewrites['E08000020']='E08000037' # Gateshead
     
-    plt.title("{}\nAreas' case growth rates {} to {} vs. 2016 Leave vote.\nRegression lines: weighted r={:.2f} (red), unweighted r={:.2f} (orange)".format(what[2],dates[0],dates[-1],rw_value,r_value))
+    populationTotal,populationAged=getDemographics(codeRewrites,interesting)
+    oldies={k:populationAged[k]/populationTotal[k] for k in populationTotal.keys()}
+
+    print len(votesTotal),'votes'
+    print len(oldies),'demographics'
+    
+    for k in sorted(timeseries.keys()):
+        if not k in votesTotal:
+            print 'No votes for',k,codes[k]
+        if not k in oldies:
+            print 'No demographics for',k,codes[k]
+            
+    rate={k:(timeseries[k][-1]/timeseries[k][-1-window])**(1.0/(window))-1.0 for k in timeseries.keys() if timeseries[k][-1-window]>0.0}
+
+    print len(rate),'rates computed'
+    
+    for k in rate.keys():
+        if rate[k]<0.0:
+            print 'Negative rate:',k,codes[k],rate[k]
+    
+    x=np.array([100.0*votesLeave[k]/votesTotal[k] for k in rate.keys()])
+    y=np.array([100.0*rate[k] for k in rate.keys()])
+    w=np.array([votesTotal[k] for k in rate.keys()])
+    s=np.sqrt(w/10.0)
+
+    r,rw=plot(x,y,w,s)
+
+    plt.xlabel('Leave vote')
+    plt.ylabel('Daily % increase rate')
+    plt.title("{}\nAreas' case growth rates {} to {} vs. 2016 Leave vote.\nRegression lines: weighted r={:.2f} (red), unweighted r={:.2f} (orange)".format(what[2],dates[0],dates[-1],rw,r))
 
     if p==3:
         outputfile='output/brexit.png'.format(what[0])
