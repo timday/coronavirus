@@ -31,6 +31,9 @@ import UKCovid19Data
 # https://geoportal.statistics.gov.uk/datasets/unitary-authority-to-local-health-board-april-2019-lookup-in-wales
 # https://geoportal.statistics.gov.uk/datasets/unitary-authority-to-local-health-board-april-2019-lookup-in-wales
 
+# Population from 2011 census from https://www.kaggle.com/electoralcommission/brexit-results#census.csv
+# in data/census.csv
+
 def cov(x, y, w):
     return np.sum(w * (x - np.average(x, weights=w)) * (y - np.average(y, weights=w))) / np.sum(w)
 
