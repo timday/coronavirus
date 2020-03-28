@@ -70,15 +70,22 @@ def probe(filename,column,what):
     vals=ax.get_yticks()
     ax.set_yticklabels(['{:,.1f}%'.format(x) for x in vals])
 
-    plt.ylabel('Daily % increase rate ({:d} days)'.format(window))
+    plt.ylabel('Daily % increase rate\n({} to {})'.format(dates[0],dates[-1]))
     plt.xlabel(what)
 
-    plt.title('Deprivation: {}\nr={:.2f}'.format(what,r_value))
+    plt.title('Deprivation: {}\nr={:.3f}'.format(what,r_value))
 
+    plt.savefig('output/deprivation-{}.png'.format(filename),dpi=96)
+    
 probe('Education',4,'Education, Skills and Training - Average score')
 probe('Health',4,'Health Deprivation and Disability - Average score')
 probe('Employment',4,'Employment - Average score')
+probe('Living',4,'Living Environment - Average score')
+probe('IDACI',4,'IDACI - Average score')   # Income Deprivation Affecting Children Index
+probe('IMD',4,'IMD - Average score')
 probe('Barriers',4,'Barriers to Housing and Services - Average score')
+probe('Income',4,'Income - Average score')
 probe('Crime',4,'Crime - Average score')
+probe('IDAOPI',4,'IDAOPI - Average score')   # Income Deprivation Affecting Older People Index
 
 plt.show()
