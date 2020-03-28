@@ -1,15 +1,19 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import argparse
 import csv
 import math
 import matplotlib.pyplot as plt
 import numpy as np
 import scipy.stats
 
-print '*** BROKEN - no state-level data available from JHU repo currently ***'
-# Waiting for files mentioned in https://github.com/CSSEGISandData/COVID-19/issues/1250
-exit()
+# Use data from https://github.com/coviddata/covid-api 'cos JHU seem to have abandoned US states in timeseries.
+# Contrary to changes mentioned in https://github.com/CSSEGISandData/COVID-19/issues/1250
+
+parser=argparse.ArgumentParser(description='Analyse coronavirus data.')
+parser.add_argument('--nodc',action='store_true',default=False,help='Exclude DC datapoint.')
+args=parser.parse_args()
 
 def value(x):
     if x=='':
@@ -78,7 +82,7 @@ stateCode={
 }
 
 def getCases():
-    csvfile=open('../data/time_series_19-covid-Confirmed.csv')
+    csvfile=open('data/cases.csv')
     reader=csv.reader(csvfile)
     timeseries={}
     firstRow=True
@@ -87,7 +91,7 @@ def getCases():
             firstRow=False
             continue
 
-        if row[1]=='US' and not 'Princess' in row[0] and not ', ' in row[0]:
+        if row[1]=='United States' and row[0] in stateCode:
     
             where=row[0]
     
@@ -96,9 +100,9 @@ def getCases():
                 where=stateCode[where]
                 
                 if not where in timeseries:
-                    timeseries[where]=np.zeros(len(row[4:]))
+                    timeseries[where]=np.zeros(len(row[2:]))
     
-                timeseries[where]+=np.array(map(lambda x: value(x),row[4:]),dtype=np.float64)
+                timeseries[where]+=np.array(map(lambda x: value(x),row[2:]),dtype=np.float64)
     
     assert len(timeseries)==51  # Should be 5
 
@@ -137,7 +141,7 @@ window=7
 
 for p in range(3):
 
-    fig=plt.figure()
+    fig=plt.figure(figsize=(8,6))
     
     votes,total=getVotes(p)
     
@@ -145,6 +149,9 @@ for p in range(3):
     print 'Not enough history for',[k for k in cases.keys() if cases[k][-1-window]==0.0]
     
     assert len(cases)==len(votes)
+
+    if args.nodc:
+        del rate['DC']
     
     x=np.array([100.0*votes[k] for k in rate.keys()])
     y=np.array([100.0*rate[k] for k in rate.keys()])
