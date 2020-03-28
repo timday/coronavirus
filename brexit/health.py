@@ -92,7 +92,7 @@ def probe(column,what,desc):
     plt.ylabel('Daily % increase rate\n({} to {})'.format(dates[0],dates[-1]))
     plt.xlabel(desc)
 
-    plt.title("England UTLAs: {}\nr={:.3f}".format(desc,r_value))
+    plt.title("England UTLAs: Virus case-count growth rate vs. {}\nr={:.3f}".format(desc,r_value))
 
     plt.savefig('output/health-{}.png'.format(desc),dpi=96)
 
