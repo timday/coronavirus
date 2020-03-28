@@ -42,6 +42,8 @@ def getDeprivation(filename,column,what):
 
     return result
 
+correlation={}
+
 def probe(filename,column,what):
     
     deprivation=getDeprivation(filename,column,what)
@@ -76,6 +78,8 @@ def probe(filename,column,what):
     plt.title('Deprivation: {}\nr={:.3f}'.format(what,r_value))
 
     plt.savefig('output/deprivation-{}.png'.format(filename),dpi=96)
+
+    correlation[what]=r_value
     
 probe('Education',4,'Education, Skills and Training - Average score')
 probe('Health',4,'Health Deprivation and Disability - Average score')
@@ -87,5 +91,11 @@ probe('Barriers',4,'Barriers to Housing and Services - Average score')
 probe('Income',4,'Income - Average score')
 probe('Crime',4,'Crime - Average score')
 probe('IDAOPI',4,'IDAOPI - Average score')   # Income Deprivation Affecting Older People Index
+
+print
+
+print 'Correlations, highest to lowest'
+for k in sorted(correlation.keys(),key=lambda k: correlation[k],reverse=True):
+    print '  {:40s}: {:.3f}'.format(k.replace('- Average score',''),correlation[k]);
 
 plt.show()
