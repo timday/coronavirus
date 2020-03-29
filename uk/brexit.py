@@ -130,8 +130,8 @@ def plot(x,y,w,s):
     
     return r.rvalue,rw
 
-plots=[('England',7,'England'),('Scotland',7,'Scotland'),('Wales',5,'Wales'),(None,5,'England, Scotland and Wales')]
-for p in range(0,4):
+plots=[('England',7,'England'),(None,7,'England, Scotland and Wales')]   #,('Scotland',7,'Scotland'),('Wales',5,'Wales')
+for p in range(len(plots)):
 
     what=plots[p]
     print what[2]
@@ -170,6 +170,8 @@ for p in range(0,4):
     rate={k:(timeseries[k][-1]/timeseries[k][-1-window])**(1.0/(window))-1.0 for k in timeseries.keys() if timeseries[k][-1-window]>0.0}
 
     print len(rate),'rates computed'
+    for k in sorted(rate.keys(),key=lambda k: rate[k],reverse=True):
+        print '  {} {:32s}: {:.1f}%'.format(k,codes[k],100.0*rate[k])
     
     for k in rate.keys():
         if rate[k]<0.0:
