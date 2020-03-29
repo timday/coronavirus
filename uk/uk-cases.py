@@ -18,7 +18,7 @@ mdayshi=None
 for what in [('England',None,datetime.date(2020,3,7)),('Scotland',None,datetime.date(2020,3,7)),('Wales',None,datetime.date(2020,3,21))]:
     
     timeseries,days,codes=UKCovid19Data.getUKCovid19Data(*what)
-    
+
     mdays=[mdates.date2num(d) for d in days]
 
     if mdayslo==None:
@@ -54,5 +54,7 @@ plt.ylim(bottom=0.0)
 plt.gca().set_ylabel('Cumulative cases')
 
 plt.title('Cases by UTLA')
+
+plt.savefig('output/cases.png',dpi=96)
 
 plt.show()
