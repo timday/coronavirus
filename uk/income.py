@@ -24,6 +24,12 @@ import scipy.stats
 
 import UKCovid19Data
 
+def cov(x, y, w):
+    return np.sum(w * (x - np.average(x, weights=w)) * (y - np.average(y, weights=w))) / np.sum(w)
+
+def corr(x, y, w):
+    return cov(x, y, w) / np.sqrt(cov(x, x, w) * cov(y, y, w))
+
 window=7
 
 timeseries,dates,codes=UKCovid19Data.getUKCovid19Data(None,window+1,None)   # Need 8 days to get 7 growth rates.
@@ -117,11 +123,16 @@ def probe(filename,column,what,lowerTierPopulation):
     
     rx=np.linspace(min(x),max(x),100)
     ry=gradient*rx+intercept
-    plt.plot(rx,ry,color='tab:red',label='Linear regression')
+    plt.plot(rx,ry,color='tab:orange',label='Linear regression (unweighted)')
 
-    coef=np.polyfit(x,y,2)
+    coef=np.polyfit(x,y,1,w=w)
+    ry=coef[1]+coef[0]*rx
+    plt.plot(rx,ry,color='tab:red',label='Linear regression (weighted)')
+    rw=corr(x,y,w)
+
+    coef=np.polyfit(x,y,2,w=w)
     qy=coef[2]+coef[1]*rx+coef[0]*rx**2
-    plt.plot(rx,qy,color='tab:green',label='Quadratic best fit')
+    plt.plot(rx,qy,color='tab:green',label='Quadratic best fit (weighted)')
 
     ax=plt.gca()
     vals=ax.get_yticks()
@@ -134,7 +145,7 @@ def probe(filename,column,what,lowerTierPopulation):
 
     plt.legend(loc='upper right')
 
-    plt.title('England, Scotland and Wales UTLAs: {}\nr={:.3f}'.format(filename,r_value))
+    plt.title('England, Scotland and Wales UTLAs: {}\nr={:.3f} (weighted), r={:.3f} (unweighted),'.format(filename,rw,r_value))
 
     plt.savefig('output/income-{}.png'.format(filename),dpi=96)
 
