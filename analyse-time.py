@@ -17,8 +17,10 @@ def computeWhen(data,k):
         #Extrapolate the last month's data forward.
         growth=(data[-1]/data[-1-extrapolationWindow])**(1.0/extrapolationWindow)
         # Solve common = data[-1]*growth**base => ln(common) = ln(data[-1]+ln(growth)*base
-        base= len(data)+(math.log(common)-math.log(data[-1]))/math.log(growth)
-        print k,growth,base
+        if growth==1.0:
+            base=0.0
+        else:
+            base= len(data)+(math.log(common)-math.log(data[-1]))/math.log(growth)
     elif data[0]<common:
         T=np.searchsorted(data,common,'right')-1
         assert data[T]<=common
@@ -76,7 +78,11 @@ for chart in range(2):
     plt.gca().xaxis.set_major_locator(matplotlib.ticker.MultipleLocator(7.0))
     plt.grid(True)
     plt.yscale('symlog')
-    plt.legend(loc='lower right',framealpha=0.9)
+    if chart==0:
+        plt.legend(loc='lower left',framealpha=0.9)
+    else:
+        plt.legend(loc='lower right',framealpha=0.9)
+        
     plt.title('{} aligned on {:d}.\nTimes +/- ahead/behind Italy.\nLines start from {}'.format(what,int(common),int(ignore)))
 
     plt.savefig(

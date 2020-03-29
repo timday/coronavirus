@@ -40,7 +40,8 @@ descriptions={
     'Israel'     :'Israel'     ,
     'Turkey'     :'Turkey'     ,
     'Czechia'    :'Czechia'    ,
-    'Ireland'    :'Ireland'
+    'Ireland'    :'Ireland'    ,
+    'Singapore'  :'Singapore'
 }
 
 news={
@@ -134,6 +135,8 @@ news={
     ],
     'Ireland':[
         ((2020,03,16),'Limited closures')
+    ],
+    'Singapore':[
     ]
 }
 
@@ -167,7 +170,8 @@ populations={
     'Israel'     :8.6e6,
     'Turkey'     :8.1e7,
     'Czechia'    :1.1e7,
-    'Ireland'    :6.6e6
+    'Ireland'    :6.6e6,
+    'Singapore'  :5.6e6
     }
 
 def rgb(r,g,b):
@@ -210,7 +214,8 @@ colors={
     'Japan'      :rgb(227,119,194),
     'Iran'       :rgb(148,103,189),
     'Turkey'     :rgb(148,103,189), # Same as Iran
-    'Malaysia'   :rgb(255,152,150)
+    'Malaysia'   :rgb(255,152,150),
+    'Singapore'  :rgb(255,152,150)  # Same as Malaysia
     }
 
 widthScale=defaultdict(lambda: 1.0)
@@ -223,6 +228,7 @@ widthScale['Israel']=0.5
 widthScale['Turkey']=0.5
 widthScale['Czechia']=0.5
 widthScale['Ireland']=0.5
+widthScale['Singapore']=0.5
 
 # Recursive in case error spans more than one day
 def clean(a,where):
@@ -249,7 +255,7 @@ def getJHUData(all,splitChina):
     results=[]
 
     # Actual list
-    timeseriesKeys=['Total','Other','Iran','South Korea','Italy','France','Spain','Portugal','Germany','US','Canada','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland']
+    timeseriesKeys=['Total','Other','Iran','South Korea','Italy','France','Spain','Portugal','Germany','US','Canada','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore']
     if splitChina:
         timeseriesKeys.append('China:Hubei')
         timeseriesKeys.append('China:Other')
@@ -257,7 +263,7 @@ def getJHUData(all,splitChina):
         timeseriesKeys.append('China')            
 
     # Names from the CSV file
-    interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Canada','Iran','France','Germany','Spain','Portugal','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland'])
+    interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Canada','Iran','France','Germany','Spain','Portugal','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore'])
 
     for what in {False:range(1),True:range(2)}[all]:
 

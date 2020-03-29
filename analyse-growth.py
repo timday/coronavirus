@@ -29,7 +29,7 @@ for p in range(len(timeseriesKeys)):
     gain_weekly[data[7:]<30.0]=np.nan
 
     day_dates=date(np.arange(len(gain_daily))+0.5)
-    plt.scatter(day_dates,gain_daily,s=9.0,color=colors[timeseriesKeys[p]])
+    plt.scatter(day_dates,gain_daily,s=9.0*widthScale[timeseriesKeys[p]],color=colors[timeseriesKeys[p]])
     week_dates=date(np.arange(len(gain_weekly))+7.0/2.0)
     plt.plot(week_dates,gain_weekly,color=colors[timeseriesKeys[p]],linewidth=3.0*widthScale[timeseriesKeys[p]],label=descriptions[timeseriesKeys[p]])
 
