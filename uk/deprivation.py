@@ -60,14 +60,20 @@ def probe(filename,column,what):
     x=np.array([deprivation[k] for k in rate.keys()])
     
     fig=plt.figure(figsize=(8,6))
-    plt.scatter(x,y,color='tab:blue',alpha=0.5)
+    plt.scatter(x,y,color='tab:blue',alpha=0.5,label='UTLAs')
     r=scipy.stats.linregress(x,y)
     gradient,intercept,r_value,p_value,std_err=r
     
     rx=np.linspace(min(x),max(x),100)
     ry=gradient*rx+intercept
-    plt.plot(rx,ry,color='tab:red')
+    plt.plot(rx,ry,color='tab:red',label='Linear regression')
 
+    coef=np.polyfit(x,y,2)
+    qy=coef[2]+coef[1]*rx+coef[0]*rx**2
+    plt.plot(rx,qy,color='tab:green',label='Quadratic best fit')
+
+    plt.legend(loc='upper left')
+    
     ax=plt.gca()
     vals=ax.get_yticks()
     ax.set_yticklabels(['{:,.1f}%'.format(x) for x in vals])

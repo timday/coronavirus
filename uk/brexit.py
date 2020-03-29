@@ -178,7 +178,7 @@ def plot(x,y,w,s):
 
     fig=plt.figure(figsize=(8,6))
 
-    plt.scatter(x,y,s=s,color='tab:blue',alpha=0.5)
+    plt.scatter(x,y,s=s,color='tab:blue',alpha=0.5,label='UTLAs')
     
     # Unweighted regression line
     r=scipy.stats.linregress(x,y)
@@ -187,13 +187,13 @@ def plot(x,y,w,s):
     
     rx=np.linspace(min(x),max(x),100)
     ry=gradient*rx+intercept
-    plt.plot(rx,ry,color='tab:orange')
+    plt.plot(rx,ry,color='tab:orange',label='Linear regression (unweighted)')
     
     # Weighted regression line
     coef=np.polyfit(x,y,1,w=w)
     print 'Weighted',coef[0],coef[1]
     ry=coef[1]+coef[0]*rx  # Highest power first
-    plt.plot(rx,ry,color='tab:red')
+    plt.plot(rx,ry,color='tab:red',label='Linear regression (weighted by total votes)')
     rw=corr(x,y,w)
     
     ax=plt.gca()
@@ -202,6 +202,8 @@ def plot(x,y,w,s):
     vals=ax.get_xticks()
     ax.set_xticklabels(['{:,.1f}%'.format(x) for x in vals])
 
+    plt.legend(loc='upper left')
+    
     return r.rvalue,rw
 
 plots=[('England',7,'England'),('Scotland',7,'Scotland'),('Wales',5,'Wales'),(None,5,'England, Scotland and Wales')]
