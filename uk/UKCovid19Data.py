@@ -23,7 +23,7 @@ def value(s):
 #  W11000031 Swansea Bay
 
 
-def getUKCovid19Data(nation,window):
+def getUKCovid19Data(nation,window,startdate):
 
     csvfile=open('data/covid-19-cases-uk.csv')  # Update from https://raw.githubusercontent.com/tomwhite/covid-19-uk-data/master/data/covid-19-cases-uk.csv
     reader=csv.reader(csvfile)
@@ -50,27 +50,32 @@ def getUKCovid19Data(nation,window):
         ymd=map(int,row[0].split('-'))
         date=datetime.date(*ymd)
 
-        area=row[3]
-
-        codes[code]=area  # Taking the last one seems to be OK.  Some instability earlier.  https://github.com/tomwhite/covid-19-uk-data/issues/15
+        if startdate==None or date>=startdate:
         
-        cases=value(row[4])
-
-        if not code in timeseries:
-            timeseries[code]={}
-        timeseries[code][date]=cases
-
-        days.add(date)
-
-    days=sorted(list(days))[-window:]
-    assert len(days)==window
+            area=row[3]
     
+            codes[code]=area  # Taking the last one seems to be OK.  Some instability earlier.  https://github.com/tomwhite/covid-19-uk-data/issues/15
+            
+            cases=value(row[4])
+    
+            if not code in timeseries:
+                timeseries[code]={}
+            timeseries[code][date]=cases
+    
+            days.add(date)
+
+    days=sorted(list(days))
+    if window!=None:
+        assert len(days)>=window
+        days=days[-window:]
+        assert len(days)==window
+        
     def trim(ts):
         return [ts[d] for d in days if d in ts]
 
     timeseries={a:trim(timeseries[a]) for a in timeseries.keys()}
 
-    timeseries={a:timeseries[a] for a in timeseries.keys() if len(timeseries[a])==window}
+    timeseries={a:timeseries[a] for a in timeseries.keys() if len(timeseries[a])==len(days)}
 
     codes={c:codes[c] for c in timeseries.keys()}
     

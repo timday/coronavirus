@@ -17,7 +17,7 @@ import UKCovid19Data
 
 window=7
 
-timeseries,dates,codes=UKCovid19Data.getUKCovid19Data('England',8)   # Need 8 days to get 7 growth rates.
+timeseries,dates,codes=UKCovid19Data.getUKCovid19Data('England',window+1,None)   # Need 8 days to get 7 growth rates.
 
 rate={k:(timeseries[k][-1]/timeseries[k][-1-window])**(1.0/(window))-1.0 for k in timeseries.keys() if timeseries[k][-1-window]>0.0}
 
