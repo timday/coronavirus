@@ -74,6 +74,8 @@ for chart in [0,1,2]:
     
     mdayslo=None
     mdayshi=None
+
+    texts=[]
     
     for what in [('England',None,datetime.date(2020,3,7)),('Scotland',None,datetime.date(2020,3,7)),('Wales',None,datetime.date(2020,3,21))]:
         
@@ -88,10 +90,9 @@ for chart in [0,1,2]:
             if chart==2:
                 base=computeWhen(cases,common)
                 if what[0]=='Wales':
-                    base+=14.0
+                    base+=14.0  # Starts 14 days after England and Scotland
             else:
                 base=0.0
-
             
             if chart>=1:
                 cases[cases<10.0]=np.nan
@@ -110,10 +111,12 @@ for chart in [0,1,2]:
             
             plt.plot([d-base for d in mdays],cases,color=colorsByRegion[region],alpha=0.75,linewidth=3.0,zorder=z)
             if not np.isnan(cases[-1]):
-                plt.text(mdays[-1]+0.05,cases[-1],codes[k],horizontalalignment='left',verticalalignment='center',fontdict={'size':8,'alpha':0.75,'weight':'bold','color':colorsByRegion[region]},zorder=z)
-
+                texts.append((cases[-1],codes[k],colorsByRegion[region],z))
             z+=1
-        
+
+    for txt in texts:
+        plt.text(mdayshi+0.05,txt[0],txt[1],horizontalalignment='left',verticalalignment='center',fontdict={'size':8,'alpha':0.75,'weight':'bold','color':txt[2]},zorder=txt[3])
+            
     legends=[matplotlib.patches.Patch(color=colorsByRegion[k],label=k.replace('Wales','Wales (from 2020-03-21)')) for k in sorted(colorsByRegion.keys())]
     plt.legend(handles=legends)
     
@@ -124,9 +127,10 @@ for chart in [0,1,2]:
     plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=mdates.MO))
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
     plt.xticks(rotation=75,fontsize=10)
-    
-    if chart!=2:
-        plt.xlim(left=mdayslo,right=mdayshi)
+
+    if chart==2:
+        mdayslo+=21 # Fudge, as most of it's not interesting
+    plt.xlim(left=mdayslo,right=mdayshi)
     plt.ylim(bottom={0:0.0,1:10.0,2:10.0}[chart])
     plt.gca().set_ylabel('Cumulative cases')
     if chart>=1:
