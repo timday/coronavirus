@@ -76,6 +76,8 @@ for chart in [0,1,2]:
     mdayshi=None
 
     texts=[]
+    totalbase=0.0
+    numbase=0
     
     for what in [('England',None,datetime.date(2020,3,7)),('Scotland',None,datetime.date(2020,3,7)),('Wales',None,datetime.date(2020,3,21))]:
         
@@ -87,10 +89,13 @@ for chart in [0,1,2]:
         for k in sorted(timeseries.keys(),key=lambda k: timeseries[k][-1],reverse=False):   # Plot highest current case counts with higher z
             cases=np.array([y for y in timeseries[k]])
 
+            assert len(days)==len(cases)
+
             if chart==2:
                 base=computeWhen(cases,common)
                 if what[0]=='Wales':
                     base+=14.0  # Starts 14 days after England and Scotland
+                print '{:20s} {:40s}: {:+.1f}'.format(what[0],codes[k],-base)
             else:
                 base=0.0
             
@@ -111,11 +116,18 @@ for chart in [0,1,2]:
             
             plt.plot([d-base for d in mdays],cases,color=colorsByRegion[region],alpha=0.75,linewidth=3.0,zorder=z)
             if not np.isnan(cases[-1]):
-                texts.append((cases[-1],codes[k],colorsByRegion[region],z))
+                totalbase+=base
+                numbase+=1
+                texts.append((cases[-1],codes[k],base,colorsByRegion[region],z))  # TODO: include timeshift on chart 2.
             z+=1
 
+    averagebase=totalbase/numbase
+
     for txt in texts:
-        plt.text(mdayshi+0.05,txt[0],txt[1],horizontalalignment='left',verticalalignment='center',fontdict={'size':8,'alpha':0.75,'weight':'bold','color':txt[2]},zorder=txt[3])
+        msg=txt[1]
+        if chart==2 and txt[2]!=0.0:
+            msg=msg+(' ({:+.1f} days)'.format(-(txt[2]-averagebase)))
+        plt.text(mdayshi+0.1,txt[0],msg,horizontalalignment='left',verticalalignment='center',fontdict={'size':8,'alpha':0.75,'weight':'bold','color':txt[3]},zorder=txt[4]) 
             
     legends=[matplotlib.patches.Patch(color=colorsByRegion[k],label=k.replace('Wales','Wales (from 2020-03-21)')) for k in sorted(colorsByRegion.keys())]
     plt.legend(handles=legends)
@@ -123,11 +135,18 @@ for chart in [0,1,2]:
     plt.legend(loc='upper left')
         
     plt.subplots_adjust(right=0.8)
-    
-    plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=mdates.MO))
-    plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-    plt.xticks(rotation=75,fontsize=10)
 
+    if chart==2:
+        def relativedate(x,pos=None):
+            return '{:+.0f}'.format(x-mdates.date2num(datetime.date(2020,3,7)))
+        
+        plt.gca().xaxis.set_major_locator(mdates.DayLocator())
+        plt.gca().xaxis.set_major_formatter(matplotlib.ticker.FuncFormatter(relativedate))
+    else:
+        plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=mdates.MO))
+        plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
+    plt.xticks(rotation=75,fontsize=10)
+        
     if chart==2:
         mdayslo+=21 # Fudge, as most of it's not interesting
     plt.xlim(left=mdayslo,right=mdayshi)
