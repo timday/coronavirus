@@ -95,7 +95,6 @@ for chart in [0,1,2]:
                 base=computeWhen(cases,common)
                 if what[0]=='Wales':
                     base+=14.0  # Starts 14 days after England and Scotland
-                print '{:20s} {:40s}: {:+.1f}'.format(what[0],codes[k],-base)
             else:
                 base=0.0
             
@@ -114,7 +113,7 @@ for chart in [0,1,2]:
             else:
                 mdayshi=max(mdayshi,mdays[-1]-base)
             
-            plt.plot([d-base for d in mdays],cases,color=colorsByRegion[region],alpha=0.75,linewidth=3.0,zorder=z)
+            plt.plot([d-base for d in mdays],cases,color=colorsByRegion[region],alpha=0.8,linewidth=3.0,zorder=z)
             if not np.isnan(cases[-1]):
                 totalbase+=base
                 numbase+=1
@@ -122,12 +121,13 @@ for chart in [0,1,2]:
             z+=1
 
     averagebase=totalbase/numbase
-
+    
     for txt in texts:
         msg=txt[1]
         if chart==2 and txt[2]!=0.0:
             msg=msg+(' ({:+.1f} days)'.format(-(txt[2]-averagebase)))
-        plt.text(mdayshi+0.1,txt[0],msg,horizontalalignment='left',verticalalignment='center',fontdict={'size':8,'alpha':0.75,'weight':'bold','color':txt[3]},zorder=txt[4]) 
+            print msg
+        plt.text(mdayshi+0.1,txt[0],msg,horizontalalignment='left',verticalalignment='center',fontdict={'size':8,'alpha':0.8,'weight':'bold','color':txt[3]},zorder=txt[4]) 
             
     legends=[matplotlib.patches.Patch(color=colorsByRegion[k],label=k.replace('Wales','Wales (from 2020-03-21)')) for k in sorted(colorsByRegion.keys())]
     plt.legend(handles=legends)
@@ -160,7 +160,7 @@ for chart in [0,1,2]:
     elif chart==1:
         plt.title('Cases by UTLA (log scale) from $\geq10$')
     else:
-        plt.title('Cases by UTLA (log scale) from $\geq10$ aligned on {} cases'.format(common))
+        plt.title('Cases by UTLA (log scale) from $\geq10$ aligned on {} cases\nTimes +/- ahead/behind average'.format(common))
     
     plt.savefig(
         {
