@@ -126,14 +126,12 @@ for chart in [0,1,2]:
         msg=txt[1]
         if chart==2 and txt[2]!=0.0:
             msg=msg+(' ({:+.1f} days)'.format(-(txt[2]-averagebase)))
-            print msg
+            print '{:6d} '.format(int(txt[0]))+msg
         plt.text(mdayshi+0.1,txt[0],msg,horizontalalignment='left',verticalalignment='center',fontdict={'size':8,'alpha':0.8,'weight':'bold','color':txt[3]},zorder=txt[4]) 
             
     legends=[matplotlib.patches.Patch(color=colorsByRegion[k],label=k.replace('Wales','Wales (from 2020-03-21)')) for k in sorted(colorsByRegion.keys())]
-    plt.legend(handles=legends)
-    
-    plt.legend(loc='upper left')
-        
+    plt.legend(handles=legends,loc='upper left')
+            
     plt.subplots_adjust(right=0.8)
 
     if chart==2:
@@ -148,7 +146,7 @@ for chart in [0,1,2]:
     plt.xticks(rotation=75,fontsize=10)
         
     if chart==2:
-        mdayslo+=21 # Fudge, as most of it's not interesting
+        mdayslo+=14 # Fudge, as most of it's not interesting
     plt.xlim(left=mdayslo,right=mdayshi)
     plt.ylim(bottom={0:0.0,1:10.0,2:10.0}[chart])
     plt.gca().set_ylabel('Cumulative cases')
