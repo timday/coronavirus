@@ -78,12 +78,15 @@ for chart in range(2):
     plt.gca().xaxis.set_major_locator(matplotlib.ticker.MultipleLocator(7.0))
     plt.grid(True)
     plt.yscale('symlog')
+
+    plt.ylim(bottom=ignore)
+    
     if chart==0:
         plt.legend(loc='lower left',framealpha=0.9)
     else:
         plt.legend(loc='lower right',framealpha=0.9)
         
-    plt.title('{} aligned on {:d}.\nTimes +/- ahead/behind Italy.\nLines start from {}'.format(what,int(common),int(ignore)))
+    plt.title('{} aligned on {:d}.\nTimes +/- ahead/behind Italy.\nLines from $\geq{}$'.format(what,int(common),int(ignore)))
 
     plt.savefig(
         'output/'+['aligned-cases.png','aligned-deaths.png'][chart],
