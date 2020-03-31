@@ -21,6 +21,14 @@ def GDPvalue(x):
         assert x[0]=='$'
         return float(x[1:].replace(',',''))
 
+gdpRewrites={
+    'South Korea'             :'Korea, South',
+    'United States'           :'US',
+    'DR Congo'                :'Congo (Kinshasa)',
+    'Congo (Brazzaville)'     :'Congo (Brazzaville)',
+    'Czech Republic (Czechia)':'Czechia',
+    }
+    
 def getGDPPerHead(ppp):   # ppp=True for Purchasing Power Parity
 
     gdp={}
@@ -31,6 +39,10 @@ def getGDPPerHead(ppp):   # ppp=True for Purchasing Power Parity
     for row in reader:
         
         where=row[1].strip()
+
+        if where in gdpRewrites:
+            where=gdpRewrites[where]
+        
         if ppp:
             v=GDPvalue(row[2].strip())
         else:
@@ -67,10 +79,22 @@ def getJHUData(deaths):
     return timeseries
 
 gdp=getGDPPerHead(True)
-timeseries=getJHUData(False)
-    
-for k in timeseries:
-    if not k in gdp:
-        print 'No gdp for',k
+timeseries=getJHUData(True)
 
+window=7
+
+growth={k:100.0*((timeseries[k][-1]/timeseries[k][-1-window])**(1.0/window)-1.0) for k in timeseries.keys() if timeseries[k][-1-window]>0.0}
+
+#print 'Odd growth:'
+#for k in growth.keys():
+#    if growth[k]<=0.0:
+#        print k,growth[k],timeseries[k]
+
+plottable=[k for k in growth.keys() if k in gdp and growth[k]>0.0]
+
+x=[gdp[k] for k in plottable]
+y=[growth[k] for k in plottable]
         
+plt.scatter(x,y)
+
+plt.show()
