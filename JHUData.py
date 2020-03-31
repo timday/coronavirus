@@ -76,7 +76,8 @@ news={
         ((2020,3,16),'Closures')
     ],
     'Spain':[
-        ((2020,3,16),'National lockdown')
+        ((2020,3,16),'National lockdown'),
+        ((2020,3,30),'Tighten restrictions')
     ],
     'Portugal':[
         ((2020,3,19),'State of Emergency')

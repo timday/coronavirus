@@ -146,7 +146,9 @@ for p in range(3):
     votes,total=getVotes(p)
     
     rate={k:(cases[k][-1]/cases[k][-1-window])**(1.0/window)-1.0 for k in cases.keys() if cases[k][-1-window]>0.0}
-    print 'Not enough history for',[k for k in cases.keys() if cases[k][-1-window]==0.0]
+    nohistory=[k for k in cases.keys() if cases[k][-1-window]==0.0]
+    if (len(nohistory))>0:
+        print 'Not enough history for',nohistory
     
     assert len(cases)==len(votes)
 
@@ -165,7 +167,7 @@ for p in range(3):
     
     # Unweighted regression line
     r=scipy.stats.linregress(x,y)
-    print r
+    #print r
     gradient,intercept,r_value,p_value,std_err=r
     
     rx=np.linspace(min(x),max(x),100)
@@ -174,7 +176,7 @@ for p in range(3):
     
     # Weighted regression line
     coef=np.polyfit(x,y,1,w=w)
-    print coef
+    #print coef
     ry=coef[1]+coef[0]*rx  # Highest power first
     plt.plot(rx,ry,color='tab:red')
     rw_value=corr(x,y,w)

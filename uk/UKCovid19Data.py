@@ -155,3 +155,55 @@ def getUKCodeRewrites(interesting):
     codes['E06000028']='E06000058'  # Somthing funny about Bournemouth?
 
     return codes
+
+# Get higher-level regions for UTLAs (just England)
+# File from http://geoportal.statistics.gov.uk/datasets/local-authority-district-to-county-april-2019-lookup-in-england
+# Specifically http://geoportal.statistics.gov.uk/datasets/local-authority-district-to-region-april-2019-lookup-in-england
+
+def getUKRegions():
+    
+    csvfile=open('data/Local_Authority_District_to_Region_April_2019_Lookup_in_England.csv','rb')
+    reader=csv.reader(csvfile)
+    firstRow=True
+
+    regions={}
+    
+    for row in reader:
+        if firstRow:
+            firstRow=False
+            continue
+
+        code=row[0]
+        region=row[3]
+
+        regions[code]=region
+
+
+    # Hmmm... seems to have quite a lot missing
+    # Check at e.g http://statistics.data.gov.uk/atlas/resource?uri=http://statistics.data.gov.uk/id/statistical-geography/E10000011
+
+    for k in ['E10000021','E10000024','E10000007','E10000018','E10000019']:
+        regions[k]='East Midlands'
+
+    for k in ['E10000028','E10000034','E10000031']:
+        regions[k]='West Midlands'
+
+    for k in ['E10000020','E10000015','E10000029','E10000003','E10000012']:
+        regions[k]='East of England'
+
+    for k in ['E10000023']:
+        regions[k]='Yorkshire and The Humber'
+
+    for k in ['E10000011','E10000025','E10000032','E10000030','E10000002','E10000014','E10000016','E10000017']:
+        regions[k]='South East'
+
+    for k in ['E10000008','E10000013']:
+        regions[k]='South West'
+
+    for k in ['E10000006']:
+        regions[k]='North West'
+
+    for k in ['E10000027']:
+        regions[k]='South West'
+
+    return regions

@@ -12,7 +12,7 @@ timeseriesKeys,timeseriesAll=getJHUData(True,True)
 
 extrapolationWindow=7
 
-def computeWhen(data,k):
+def computeWhen(data,common):
     if data[-1]<common:
         #Extrapolate the last month's data forward.
         growth=(data[-1]/data[-1-extrapolationWindow])**(1.0/extrapolationWindow)
@@ -48,13 +48,13 @@ for chart in range(2):
 
     what={0:'Total confirmed cases',1:'Total deaths'}[chart]
 
-    whenItaly=computeWhen(timeseries['Italy'],'Italy')
+    whenItaly=computeWhen(timeseries['Italy'],common)
     
     for k in timeseriesKeys:
     
         data=np.array(timeseries[k])
     
-        base=computeWhen(data,k)
+        base=computeWhen(data,common)
         
         # print k,T,t,base,data[T],data[T+1]
     
@@ -78,12 +78,15 @@ for chart in range(2):
     plt.gca().xaxis.set_major_locator(matplotlib.ticker.MultipleLocator(7.0))
     plt.grid(True)
     plt.yscale('symlog')
+
+    plt.ylim(bottom=ignore)
+    
     if chart==0:
         plt.legend(loc='lower left',framealpha=0.9)
     else:
         plt.legend(loc='lower right',framealpha=0.9)
         
-    plt.title('{} aligned on {:d}.\nTimes +/- ahead/behind Italy.\nLines start from {}'.format(what,int(common),int(ignore)))
+    plt.title('{} aligned on {:d}.\nTimes +/- ahead/behind Italy.\nLines from $\geq{}$'.format(what,int(common),int(ignore)))
 
     plt.savefig(
         'output/'+['aligned-cases.png','aligned-deaths.png'][chart],
