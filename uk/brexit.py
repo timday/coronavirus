@@ -188,8 +188,8 @@ for p in range(len(plots)):
     plt.ylabel('Daily % increase rate')
     plt.title("{}\nAreas' case growth rates {} to {} vs. 2016 Leave vote.\nRegression lines: weighted r={:.3f} (red), unweighted r={:.3f} (orange)".format(what[2],dates[0],dates[-1],rw,r))
 
-    if p==3:
-        outputfile='output/brexit-all.png'.format(what[0])
+    if what[0]==None:
+        outputfile='output/brexit-all.png'
     else:
         outputfile='output/brexit-{}.png'.format(what[0])
     plt.savefig(outputfile,dpi=96)
@@ -204,8 +204,8 @@ for p in range(len(plots)):
     plt.ylabel('Daily % increase rate')
     plt.title("{}\nAreas' case growth rates {} to {} vs. demographics.\nRegression lines: weighted r={:.3f} (red), unweighted r={:.3f} (orange)".format(what[2],dates[0],dates[-1],rw,r))
 
-    if p==3:
-        outputfile='output/oldies-all.png'.format(what[0])
+    if what[0]==None:
+        outputfile='output/oldies-all.png'
     else:
         outputfile='output/oldies-{}.png'.format(what[0])
     plt.savefig(outputfile,dpi=96)
@@ -218,8 +218,8 @@ for p in range(len(plots)):
     plt.ylabel('Leave vote')
     plt.title("{}\nAreas' 2016 Leave vote vs. demographics.\nRegression lines: weighted r={:.3f} (red), unweighted r={:.3f} (orange)".format(what[2],rw,r))
 
-    if p==3:
-        outputfile='output/oldies-vote-all.png'.format(what[0])
+    if what[0]==None:
+        outputfile='output/oldies-vote-all.png'
     else:
         outputfile='output/oldies-vote-{}.png'.format(what[0])
     plt.savefig(outputfile,dpi=96)
