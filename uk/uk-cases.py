@@ -19,6 +19,8 @@ def whichRegion(code):
         return 'Wales'
     elif code[0]=='S':
         return 'Scotland'
+    elif code[0]=='N':
+        return 'Northern Ireland'
     else:
         assert False
         return '???'
@@ -34,7 +36,8 @@ colorsByRegion={
     'West Midlands'            :'tab:green',
     'Yorkshire and The Humber' :'tab:brown',
     'Wales'                    :'tab:red',
-    'Scotland'                 :'tab:blue'
+    'Scotland'                 :'tab:blue',
+    'Northern Ireland'         :'purple'
 }
 
 extrapolationWindow=7
@@ -79,7 +82,7 @@ for chart in [0,1,2]:
     totalbase=0.0
     numbase=0
     
-    for what in [('England',None,datetime.date(2020,3,7)),('Scotland',None,datetime.date(2020,3,7)),('Wales',None,datetime.date(2020,3,21))]:
+    for what in [('England',None,datetime.date(2020,3,7)),('Scotland',None,datetime.date(2020,3,7)),('Wales',None,datetime.date(2020,3,21))]:   # TODO: Northern Ireland data starts 26th March... but gappy 28th&29th?
         
         timeseries,days,codes=UKCovid19Data.getUKCovid19Data(*what)
 
