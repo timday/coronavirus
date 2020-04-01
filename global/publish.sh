@@ -12,5 +12,7 @@ cp output/projections-0.png ${DST}/
 cp output/projections-1.png ${DST}/
 
 mkdir -p ${DST}/small
-for f in growth.png aligned-cases.png aligned-deaths.png active-log.png ; do convert -geometry 50% ${DST}/${f} ${DST}/small/${f} ; done
 
+# Use -define png:exclude-chunks=date to stop trivial rebuilds from spamming git
+# see https://imagemagick.org/discourse-server/viewtopic.php?t=21711
+( cd ${DST} ; for f in *.png ; do convert -define png:exclude-chunks=date -geometry 50% ${f} small/${f} ; done )

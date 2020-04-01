@@ -1,7 +1,7 @@
 #ArmchairEpidemiology
 =====================
 
-Some daft experiments with coronavirus data.
+Some dubious charts with coronavirus data.
 
 Global
 ======
@@ -27,4 +27,7 @@ Some projections of case-counts for worst affected countries, simply by fitting 
 [![Projections](img/global/small/projections-1.png)](img/global/projections-1.png)
 
 Note: Model parameters are constrained to only allow growth rates to fall, because it never occurred to me that they'd do anything else!
+
+USA
+===
 
