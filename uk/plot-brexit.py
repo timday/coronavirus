@@ -3,6 +3,7 @@
 
 from collections import defaultdict
 import csv
+import distutils.dir_util
 import math
 import matplotlib
 import matplotlib.pyplot as plt
@@ -192,6 +193,7 @@ for p in range(len(plots)):
         outputfile='output/brexit-all.png'
     else:
         outputfile='output/brexit-{}.png'.format(what[0])
+    distutils.dir_util.mkpath('output')
     plt.savefig(outputfile,dpi=96)
 
     x=np.array([100.0*oldies[k] for k in rate.keys()])

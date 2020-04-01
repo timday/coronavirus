@@ -89,6 +89,7 @@ for chart in range(2):
         
     plt.title('{} aligned on {:d}.\nTimes +/- ahead/behind Italy.\nLines from $\geq{}$'.format(what,int(common),int(ignore)))
 
+    distutils.dir_util.mkpath('output')
     plt.savefig(
         'output/'+['aligned-cases.png','aligned-deaths.png'][chart],
         dpi=96,

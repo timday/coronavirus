@@ -4,6 +4,7 @@
 import argparse
 import datetime
 from ddeint import ddeint
+import distutils.dir_util
 import math
 import numpy as np
 import scipy.optimize
@@ -456,6 +457,7 @@ for p in range(len(timeseriesKeys)):
         plt.tight_layout(pad=0.05)
 
     if p%6==5 or p==len(timeseriesKeys)-1:
+        distutils.dir_util.mkpath('output')
         plt.savefig(
             'output/projections-{}.png'.format(p/6),
             dpi=96
@@ -491,6 +493,7 @@ plt.title("Benford's Law compliance - daily cases")
 
 plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
 
+distutils.dir_util.mkpath('output')
 plt.savefig(
     'output/benford.png',
     dpi=96

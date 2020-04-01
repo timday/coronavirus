@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import distutils.dir_util
 import math
 import matplotlib
 import matplotlib.dates as mdates
@@ -162,7 +163,8 @@ for chart in [0,1,2]:
         plt.title('Cases by UTLA (log scale) from $\geq10$')
     else:
         plt.title('Cases by UTLA (log scale) from $\geq10$ aligned on {} cases\nTimes +/- ahead/behind average'.format(common))
-    
+
+    distutils.dir_util.mkpath('output')
     plt.savefig(
         {
             0:'output/cases.png',

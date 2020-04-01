@@ -5,6 +5,7 @@
 
 import csv
 import datetime
+import distutils.dir_util
 import math
 import matplotlib
 import matplotlib.dates as mdates
@@ -133,6 +134,8 @@ for k in growth.keys():
 
 plottable=[k for k in growth.keys() if k in gdp and k in population and growth[k]>0.0] # and k!='China'
 
+fig=plt.figure(figsize=(8,6))
+
 x=np.array([np.log10(gdp[k]) for k in plottable])
 y=np.array([growth[k] for k in plottable])
 w=np.array([population[k] for k in plottable])
@@ -163,4 +166,8 @@ qy=coef[2]+coef[1]*rx+coef[0]*rx**2
 plt.plot(rx,qy,color='tab:green',label='Quadratic best fit')
 
 plt.legend(loc='upper right')
+
+distutils.dir_util.mkpath('output')
+plt.savefig('output/gdp.png',dpi=96)
+
 plt.show()

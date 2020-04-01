@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 import datetime
+import distutils.dir_util
 import math
 import numpy as np
 import scipy.special
@@ -66,6 +67,7 @@ plt.title('Daily % increase rate and 1-week window\nStarts when >=30 cases')
 vals = ax.get_yticks()
 ax.set_yticklabels(['{:,.1f}%'.format(x) for x in vals])
 
+distutils.dir_util.mkpath('output')
 plt.savefig(
     'output/growth.png',
     dpi=96

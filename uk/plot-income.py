@@ -7,6 +7,7 @@
 
 from collections import defaultdict
 import csv
+import distutils.dir_util
 import math
 import matplotlib
 import matplotlib.pyplot as plt
@@ -147,6 +148,7 @@ def probe(filename,column,what,lowerTierPopulation):
 
     plt.title('England, Scotland and Wales UTLAs: {}\nr={:.3f} (weighted), r={:.3f} (unweighted),'.format(filename,rw,r_value))
 
+    distutils.dir_util.mkpath('output')
     plt.savefig('output/income-{}.png'.format(filename),dpi=96)
 
     correlation[what]=r_value

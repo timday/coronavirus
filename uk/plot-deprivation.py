@@ -7,6 +7,7 @@
 # https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019
 
 import csv
+import distutils.dir_util
 import math
 import matplotlib
 import matplotlib.pyplot as plt
@@ -83,6 +84,7 @@ def probe(filename,column,what):
 
     plt.title('Deprivation: {}\nr={:.3f}'.format(what,r_value))
 
+    distutils.dir_util.mkpath('output')
     plt.savefig('output/deprivation-{}.png'.format(filename),dpi=96)
 
     correlation[what]=r_value

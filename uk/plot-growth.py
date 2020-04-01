@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import distutils.dir_util
 import math
 import numpy as np
 
@@ -31,3 +32,5 @@ for what in [('England',7,None),('Scotland',7,None),('Wales',7,None),(None,7,Non
         print '  {:32s}: {:.1f}%'.format(codes[k],100.0*(growth[k]-1.0))
 
     print
+
+print 'No plots yet, just numbers'

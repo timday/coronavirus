@@ -5,6 +5,8 @@ Under construction.  Wanted to use github pages.  Needs tidying up.
 Contents
 ========
 
+Selected output at <https://timday.github.io/coronavirus/>
+
 Focus on different regions:
 
 * global

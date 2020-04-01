@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import distutils.dir_util
 import math
 import matplotlib.pyplot as plt
 import matplotlib.ticker
@@ -72,6 +73,7 @@ for p in range(4):
 
     plt.legend(loc='upper left',fontsize='medium')
 
+    distutils.dir_util.mkpath('output')
     plt.savefig(
         'output/'+['active-log.png','active-lin.png','active-prop-log.png','active-prop-lin.png'][p],
         dpi=96,

@@ -6,6 +6,7 @@
 # 2017 release from 2015 data.
 
 import csv
+import distutils.dir_util
 import math
 import matplotlib
 import matplotlib.pyplot as plt
@@ -100,6 +101,7 @@ def probe(column,what,desc):
 
     plt.title("England UTLAs: Virus case-count growth rate vs. {}\nr={:.3f}".format(desc,r_value))
 
+    distutils.dir_util.mkpath('output')
     plt.savefig('output/health-{}.png'.format(desc),dpi=96)
 
     correlation[desc]=r_value
