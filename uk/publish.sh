@@ -15,3 +15,4 @@ done
 mkdir -p ${DST}/small
 
 ( cd ${DST} ; for f in *.png ; do ${CP} -geometry 50% "${f}" "small/${f}" ; done )
+

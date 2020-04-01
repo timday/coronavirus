@@ -93,7 +93,7 @@ A snapshot of the correlations with all the various deprivation metrics (using l
   Crime                                   :  0.087
   IDAOPI                                  : -0.061
 ```
-Note that while for most of these "deprivation index" numbers a higher score implies more deprivation, that appears to be reversed for the "Living Environment" score.  I'm not sure of the interpretation of the "Barriers to Housing and Services" score either, but a high number seems to be frequently associated with wealthy (=unaffordable) areas.
+Note that while for most of these "deprivation index" numbers a higher score implies more deprivation, that appears to be reversed for the "Living Environment" score.  I'm not sure of the interpretation of the "Barriers to Housing and Services" score either, but a high number seems to be frequently associated with wealthy ( and therefore unaffordable) areas.
 
 ### Brexit
 
@@ -127,4 +127,4 @@ Unsurprisingly, the chart is pretty much flipped left-right for the 2012 & 2008 
 [![Case growth rate vs. 2012 vote](img/usa/small/president-2012.png)](img/usa/president-2012.png)
 [![Case growth rate vs. 2008 vote](img/usa/small/president-2008.png)](img/usa/president-2008.png)
 
-Not particularly convincing trend-lines though.
+Not particularly convincing looking trend-lines though.
