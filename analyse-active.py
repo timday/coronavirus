@@ -21,7 +21,6 @@ def active(k):
     casesTotal=timeseries[k]
     casesActive=sum([sweep(casesTotal,w) for w in xrange(activeWindowLo,activeWindowHi+1)])/(1+activeWindowHi-activeWindowLo)
 
-    casesActive[casesActive<30.0]=np.nan
     return casesActive
     
 for p in range(4):
@@ -51,6 +50,11 @@ for p in range(4):
 
     if p==0 or p==2:
        plt.yscale('log')
+       
+    if p==0 or p==1:
+        plt.gca().set_ylim(bottom=1.0)
+    else:
+        plt.gca().set_ylim(bottom=1e-7)
 
     plt.xticks(rotation=75,fontsize=10)
     plt.gca().set_xlim(left=basedate)
@@ -59,19 +63,19 @@ for p in range(4):
     
     plt.title(
         {
-            0: 'Active cases ({}-{} day window) $\geq 30$.  Log-scale.',
-            1: 'Active cases ({}-{} day window) $\geq 30$.  Omits global total.',
-            2: 'Active cases ({}-{} day window) $\geq 30$.  Proportion of population, log-scale.',
-            3: 'Active cases ({}-{} day window) $\geq 30$.  Proportion of population.'
+            0: 'Active cases ({}-{} day window).  Log-scale.',
+            1: 'Active cases ({}-{} day window).  Omits global total.',
+            2: 'Active cases ({}-{} day window).  Proportion of population, log-scale.',
+            3: 'Active cases ({}-{} day window).  Proportion of population.'
         }[p].format(activeWindowLo,activeWindowHi)
     )
 
     plt.legend(loc='upper left',fontsize='medium')
 
-    plt.savefig(
-        'output/'+['active-log.png','active-lin.png','active-prop-log.png','active-prop-lin.png'][p],
-        dpi=96,
-    )
+    #plt.savefig(
+    #    'output/'+['active-log.png','active-lin.png','active-prop-log.png','active-prop-lin.png'][p],
+    #    dpi=96,
+    #)
 
 #def on_resize(event):
 #    fig.tight_layout()
