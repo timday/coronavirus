@@ -51,30 +51,52 @@ Aligning all those on a constant number of cases:
 
 Correlations
 ------------
-From the ONS, there is some UTLA-level data available (for England) various health and deprivation metrics.
+From the ONS, there is some UTLA-level data available (for England) various health and deprivation metrics.  Is there some correlation between these measures and the rate that virus case-counts are growing at?
 
-From the "deprivation index" data, the score most correlated with the virus case-count growth rate appears to be "Education, Skills and Training" (higher score = worse!):
+### Health
 
-[![UK case counts vs. Education deprivation](img/uk/small/deprivation-Education.png)](img/uk/deprivation-Education.png)
-
-From the health data, the score most correlated with the virus case-count growth rate appears to be the area's obesity rate:
+From the health data (from <https://www.ons.gov.uk/peoplepopulationandcommunity/healthandsocialcare/healthinequalities/datasets/indicatorsoflifestylesandwidercharacteristicslinkedtohealthylifeexpectancyinengland>, a 2017 release of 2015 data?), the score most correlated with the virus case-count growth rate appears to be the area's obesity rate:
 
 [![UK case counts vs. Education deprivation](img/uk/small/health-Obesity rate percentage.png)](img/uk/health-Obesity rate percentage.png)
 
-For interest, a snapshot of the correlations with all the various health metrics (using last week's case-count growth rates as of 1st April 2020):
+A snapshot of the correlations with all the various health metrics (using last week's case-count growth rates as of 1st April 2020):
 ```
-  Obesity rate (%)                                  : 0.421
+  Obesity rate (%)                                  :  0.421
   Physically active adults (%)                      : -0.272
-  Preventable Mortality (deaths per 100,000)        : 0.232
-  Smoking prevalence (%)                            : 0.230
-  Alcohol-related admissions (per 100,000)          : 0.221
+  Preventable Mortality (deaths per 100,000)        :  0.232
+  Smoking prevalence (%)                            :  0.230
+  Alcohol-related admissions (per 100,000)          :  0.221
   Employment rate (%)                               : -0.128
-  Economically inactive (%)                         : 0.121
-  Unemployment rate (%)                             : 0.107
+  Economically inactive (%)                         :  0.121
+  Unemployment rate (%)                             :  0.107
   Adults eating 5-a-day (%)                         : -0.091
 ```
 
 So - probably unsurprisingly - a general picture of unhealthy things being associated with faster case-count growth, and more health-positive things like physical activity, employment and even "5-a-day" being assocated with slower growth.
+
+### Deprivation
+
+From the "deprivation index" data (from <https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019
+>, the score most correlated with the virus case-count growth rate appears to be "Education, Skills and Training" (higher score = worse!):
+
+[![UK case counts vs. Education deprivation](img/uk/small/deprivation-Education.png)](img/uk/deprivation-Education.png)
+
+A snapshot of the correlations with all the various deprivation metrics (using last week's case-count growth rates as of 1st April 2020):
+```
+  Education, Skills and Training          :  0.395
+  Barriers to Housing and Services        : -0.332
+  Living Environment                      : -0.308
+  Employment                              :  0.300
+  Health Deprivation and Disability       :  0.282
+  IMD                                     :  0.205
+  Income                                  :  0.183
+  IDACI                                   :  0.162
+  Crime                                   :  0.087
+  IDAOPI                                  : -0.061
+```
+Note that while for most of these "deprivation index" numbers a higher score implies more deprivation, that appears to be reversed for the "Living Environment" score.  I'm not sure of the interpretation of the "Barriers to Housing and Services" score either, but a high number seems to be frequently associated with wealthy (=unaffordable) areas.
+
+### Brexit
 
 Plotting case-count growth against the 2016 Leave vote also shows some correlation:
 
@@ -87,6 +109,8 @@ However against demographics from the 2011 census, there seems to be very little
 which is a little surprising when there is actually a very large correlation between the same demographic measure and the Leave vote!
 
 [![Leave vote vs. demographics](img/uk/small/oldies-vote-England.png)](img/uk/oldies-vote-England.png)
+
+### Income
 
 Finally, case-count growth rate vs. GDHI ("gross disposable household income per head")
 
