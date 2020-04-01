@@ -6,6 +6,7 @@ mkdir -p ${DST}
 
 cp output/president-2016.png     ${DST}/
 cp output/president-2012.png     ${DST}/
+cp output/president-2008.png     ${DST}/
 
 mkdir -p ${DST}/small
 

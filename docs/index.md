@@ -11,7 +11,7 @@ Global
 Plots created from the JHU tracker's data (available at <https://github.com/CSSEGISandData/COVID-19>).
 Click images for full-resolution version.
 
-Case-count growth rates by country (China split Hubei/non-Hubei).  Day-to-day points, and over a 1-week window.  
+Case-count growth rates by country (China split Hubei/non-Hubei).  Day-to-day increases plotted as points, with the lines showing growth over a 1-week window (this smooths out quite volatile daily rates and should remove any quirks of case reporting at weekends).  
 
 [![Country's growth](img/global/small/growth.png)](img/global/growth.png)
 
@@ -24,7 +24,7 @@ A couple of aligned plots of cumulative case and death count curves.
 [![Aligned cases](img/global/small/aligned-cases.png)](img/global/aligned-cases.png)
 [![Aligned deaths](img/global/small/aligned-deaths.png)](img/global/aligned-deaths.png)
 
-Some projections of case-counts for worst affected countries, simply by fitting (least squares) some simple models to the data so far.
+Some simple (and very naive) next-month projections of case-counts for worst affected countries, simply by fitting (least squares) some simple models to the data so far.
 
 [![Projections](img/global/small/projections-0.png)](img/global/projections-0.png)
 [![Projections](img/global/small/projections-1.png)](img/global/projections-1.png)
@@ -43,6 +43,7 @@ A plot of coronavirus cases growth rate over the last week vs. each state's 2016
 
 [![Case growth rate vs. 2016 vote](img/usa/small/president-2016.png)](img/usa/president-2016.png)
 
-Unsurprisingly, the chart is pretty much flipped left-right for the 2012 Obama vote (a 2008 looks much the same).
+Unsurprisingly, the chart is pretty much flipped left-right for the 2012 & 2008 Obama votes.
 
 [![Case growth rate vs. 2012 vote](img/usa/small/president-2012.png)](img/usa/president-2012.png)
+[![Case growth rate vs. 208 vote](img/usa/small/president-2008.png)](img/usa/president-2008.png)
