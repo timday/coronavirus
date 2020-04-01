@@ -3,6 +3,7 @@
 
 import argparse
 import csv
+import distutils.dir_util
 import math
 import matplotlib.pyplot as plt
 import numpy as np
@@ -193,6 +194,7 @@ for p in range(3):
 
     plt.title('Virus cases growth rate vs. {} vote by state.\nRegression lines: weighted r={:.2f} (red), unweighted r={:.2f} (orange)'.format(what,rw_value,r_value))
 
+    distutils.dir_util.mkpath('output')
     plt.savefig('output/trumpton-{}.png'.format(['2016','2012','2008'][p]),dpi=96)
 
 plt.show()
