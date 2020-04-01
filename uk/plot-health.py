@@ -102,7 +102,7 @@ def probe(column,what,desc):
     plt.title("England UTLAs: Virus case-count growth rate vs. {}\nr={:.3f}".format(desc,r_value))
 
     distutils.dir_util.mkpath('output')
-    plt.savefig('output/health-{}.png'.format(desc),dpi=96)
+    plt.savefig('output/health-{}.png'.format(desc.replace('(%)','percentage')),dpi=96)
 
     correlation[desc]=r_value
 
