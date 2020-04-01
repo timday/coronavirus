@@ -2,6 +2,18 @@ WIP
 ===
 Under construction.  Wanted to use github pages.  Needs tidying up.
 
+Contents
+========
+
+Focus on different regions:
+
+* global
+* uk
+* usa
+
+* docs - content for GitHub Pages website at <https://timday.github.io/coronavirus/>
+* experiments - Mainly playing around with DDEs for model-fitting projections.
+
 Data sources
 ============
 Out of date/incomplete.  See code and various `fetch.sh` scripts for for details.
