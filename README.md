@@ -15,3 +15,8 @@ Out of date/incomplete.  See code and various `fetch.sh` scripts for for details
 
 * JHU tracker data change issue
     * Recovered/active cases workround issue <https://github.com/CSSEGISandData/COVID-19/issues/1250#issuecomment-603255860>
+
+Notes
+=====
+
+https repo access: Avoid username prompt with `git remote set-url origin https://<username>@github.com/timday/coronavirus.git`
