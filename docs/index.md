@@ -46,4 +46,4 @@ A plot of coronavirus cases growth rate over the last week vs. each state's 2016
 Unsurprisingly, the chart is pretty much flipped left-right for the 2012 & 2008 Obama votes.
 
 [![Case growth rate vs. 2012 vote](img/usa/small/president-2012.png)](img/usa/president-2012.png)
-[![Case growth rate vs. 208 vote](img/usa/small/president-2008.png)](img/usa/president-2008.png)
+[![Case growth rate vs. 2008 vote](img/usa/small/president-2008.png)](img/usa/president-2008.png)
