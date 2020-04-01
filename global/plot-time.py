@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
+import distutils.dir_util
 import math
 import matplotlib.pyplot as plt
 import matplotlib.ticker

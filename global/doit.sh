@@ -1,9 +1,11 @@
 #!/bin/sh
 
-./analyse-growth.py &
+./plot-growth.py &
 sleep 1
-./analyse-active.py &
+./plot-active.py &
 sleep 1
-./analyse-time.py &
+./plot-time.py &
 sleep 1
-./analyse.py &
+./plot-gdp.py &
+sleep 1
+./plot-projections.py &
