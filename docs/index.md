@@ -51,7 +51,7 @@ Aligning all those on a constant number of cases:
 
 Correlations
 ------------
-From the ONS, there is some UTLA-level data available (for England) health and deprivation levels.
+From the ONS, there is some UTLA-level data available (for England) various health and deprivation metrics.
 
 From the "deprivation index" data, the score most correlated with the virus case-count growth rate appears to be "Education, Skills and Training" (higher score = worse!):
 
@@ -59,7 +59,7 @@ From the "deprivation index" data, the score most correlated with the virus case
 
 From the health data, the score most correlated with the virus case-count growth rate appears to be the area's obesity rate:
 
-[![UK case counts vs. Education deprivation](img/uk/small/health-Obesity rate (%).png)](img/uk/health-Obesity rate (%).png)
+[![UK case counts vs. Education deprivation](img/uk/small/health-Obesity rate percentage.png)](img/uk/health-Obesity rate percentage.png)
 
 For interest, a snapshot of the correlations with all the various health metrics (using last week's case-count growth rates as of 1st April 2020):
 ```
