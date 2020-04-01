@@ -76,8 +76,7 @@ So - probably unsurprisingly - a general picture of unhealthy things being assoc
 
 ### Deprivation
 
-From the "deprivation index" data (from <https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019
->, the score most correlated with the virus case-count growth rate appears to be "Education, Skills and Training" (higher score = worse!):
+From the "deprivation index" data (from <https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019>, the score most correlated with the virus case-count growth rate appears to be "Education, Skills and Training" (higher score = worse!):
 
 [![UK case counts vs. Education deprivation](img/uk/small/deprivation-Education.png)](img/uk/deprivation-Education.png)
 
