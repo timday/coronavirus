@@ -3,7 +3,7 @@
 
 Some dubious charts with coronavirus data.  Code (Python, matplotlib) at <https://github.com/timday/coronavirus>.
 
-Sections for [global](global), [UK](uk) and [USA](usa) data.
+Sections for [global](#global), [UK](#uk) and [USA](#usa) data.
 
 Global
 ======
