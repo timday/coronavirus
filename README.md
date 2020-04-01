@@ -4,6 +4,7 @@ Under construction.  Wanted to use github pages.  Needs tidying up.
 
 Data sources
 ============
+Out of date/incomplete.  See code and various `fetch.sh` scripts for for details.
 
 * JHU tracker <https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6>
 
