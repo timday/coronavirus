@@ -7,7 +7,7 @@ Sections on this page for [global](#global), [UK](#uk) and [USA](#usa) data.
 
 Images can be clicked-through to full-resolution versions.
 
-Note that most (all?) charts are log-scale on the y-axis.  Straight lines are actually exponential growth!
+Note that most (all?) the non-scatterplot charts are log-scale on the y-axis.  Straight lines are actually exponential growth!
 
 Code (Python, matplotlib) at <https://github.com/timday/coronavirus>.
 
@@ -103,3 +103,5 @@ Unsurprisingly, the chart is pretty much flipped left-right for the 2012 & 2008 
 
 [![Case growth rate vs. 2012 vote](img/usa/small/president-2012.png)](img/usa/president-2012.png)
 [![Case growth rate vs. 2008 vote](img/usa/small/president-2008.png)](img/usa/president-2008.png)
+
+Not particularly convincing trend-lines though.
