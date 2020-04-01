@@ -1,15 +1,20 @@
 #ArmchairEpidemiology
 =====================
 
-Some dubious charts with coronavirus data.  Code (Python, matplotlib) at <https://github.com/timday/coronavirus>.
+Some dubious charts with coronavirus data.
 
-Sections for [global](#global), [UK](#uk) and [USA](#usa) data.
+Sections on this page for [global](#global), [UK](#uk) and [USA](#usa) data.
+
+Images can be clicked-through to full-resolution versions.
+
+Note that most (all?) charts are log-scale on the y-axis.  Straight lines are actually exponential growth!
+
+Code (Python, matplotlib) at <https://github.com/timday/coronavirus>.
 
 Global
 ======
 
 Plots created from the JHU tracker's data (available at <https://github.com/CSSEGISandData/COVID-19>).
-Click images for full-resolution version.
 
 Case-count growth rates by country (China split Hubei/non-Hubei).  Day-to-day increases plotted as points, with the lines showing growth over a 1-week window (this smooths out quite volatile daily rates and should remove any quirks of case reporting at weekends).  
 
@@ -34,12 +39,63 @@ Note: Model parameters are constrained to only allow growth rates to fall, becau
 UK
 ==
 
-Under construction.
+Data from the [PHE tracker](https://www.arcgis.com/apps/opsdashboard/index.html#/f94c3c90da5b4e9f9a0b19484dd4bb14) as curated into `.csv` file timeseries by <https://github.com/tomwhite/covid-19-uk-data>.
+
+A messy plot of all the individual UTLAs/health-boards case counts:
+
+[![UK case counts](img/uk/small/cases-log.png)](img/uk/cases-log.png)
+
+Aligning all those on a constant number of cases:
+
+[![UK case counts aligned](img/uk/small/cases-aligned-log.png)](img/uk/cases-aligned-log.png)
+
+Correlations
+------------
+From the ONS, there is some UTLA-level data available (for England) health and deprivation levels.
+
+From the "deprivation index" data, the score most correlated with the virus case-count growth rate appears to be "Education, Skills and Training" (higher score = worse!):
+
+[![UK case counts vs. Education deprivation](img/uk/small/deprivation-Education.png)](img/uk/deprivation-Education.png)
+
+From the health data, the score most correlated with the virus case-count growth rate appears to be the area's obesity rate:
+
+[![UK case counts vs. Education deprivation](img/uk/small/health-Obesity rate (%).png)](img/uk/health-Obesity rate (%).png)
+
+For interest, a snapshot of the correlations with all the various health metrics (using last week's case-count growth rates as of 1st April 2020):
+```
+  Obesity rate (%)                                  : 0.421
+  Physically active adults (%)                      : -0.272
+  Preventable Mortality (deaths per 100,000)        : 0.232
+  Smoking prevalence (%)                            : 0.230
+  Alcohol-related admissions (per 100,000)          : 0.221
+  Employment rate (%)                               : -0.128
+  Economically inactive (%)                         : 0.121
+  Unemployment rate (%)                             : 0.107
+  Adults eating 5-a-day (%)                         : -0.091
+```
+
+So - probably unsurprisingly - a general picture of unhealthy things being associated with faster case-count growth, and more health-positive things like physical activity, employment and even "5-a-day" being assocated with slower growth.
+
+Plotting case-count growth against the 2016 Leave vote also shows some correlation:
+
+[![UK case counts vs. 2016 Leave vote](img/uk/small/brexit-England.png)](img/uk/brexit-England.png)
+
+However against demographics from the 2011 census, there seems to be very little:
+
+[![UK case counts vs. demographics](img/uk/small/oldies-England.png)](img/uk/oldies-England.png)
+
+which is a little surprising when there is actually a very large correlation between the same demographic measure and the Leave vote!
+
+[![Leave vote vs. demographics](img/uk/small/oldies-vote-England.png)](img/uk/oldies-vote-England.png)
+
+Finally, case-count growth rate vs. GDHI ("gross disposable household income per head")
+
+[![Leave vote vs. demographics](img/uk/small/income-GDHI per head.png)](img/uk/income-GDHI per head.png)
 
 USA
 ===
 
-A plot of coronavirus cases growth rate over the last week vs. each state's 2016 Trump vote (sized/weighted by total vote).
+A plot of coronavirus cases growth rate over the last week (JHU's data again) vs. each state's 2016 Trump vote (sized/weighted by total vote).
 
 [![Case growth rate vs. 2016 vote](img/usa/small/president-2016.png)](img/usa/president-2016.png)
 
