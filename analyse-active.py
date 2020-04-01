@@ -72,10 +72,10 @@ for p in range(4):
 
     plt.legend(loc='upper left',fontsize='medium')
 
-    #plt.savefig(
-    #    'output/'+['active-log.png','active-lin.png','active-prop-log.png','active-prop-lin.png'][p],
-    #    dpi=96,
-    #)
+    plt.savefig(
+        'output/'+['active-log.png','active-lin.png','active-prop-log.png','active-prop-lin.png'][p],
+        dpi=96,
+    )
 
 #def on_resize(event):
 #    fig.tight_layout()
