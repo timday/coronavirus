@@ -1,24 +1,11 @@
 #ArmchairEpidemiology
 =====================
 
-Some dubious charting with coronavirus data.
+Some dubious charting with coronavirus data.  Images can be clicked-through to full-resolution versions.  Note that most (all?) the non-scatterplot charts are log-scale on the y-axis.  Straight lines are actually exponential growth!
 
-Sections on this page for [global](#global), [UK](#uk) and [USA](#usa) data.
-
-Images can be clicked-through to full-resolution versions.  Note that most (all?) the non-scatterplot charts are log-scale on the y-axis.  Straight lines are actually exponential growth!
+Sections on this page for [global](#global), [UK](#uk) and [USA](#usa) data, and some [Links](#links) to much better pages than this one.
 
 Code (Python, matplotlib) which generated these plots at <https://github.com/timday/coronavirus>.
-
-Links
------
-* If you're not running the Covid-19 Symptom Tracker app... why not?  <https://covid.joinzoe.com/>.  Also available for the USA at <https://covid.joinzoe.com/us>.
-* FT is doing some of the most interesting charting: <https://www.ft.com/coronavirus-latest>.
-* And Information Is Beautiful some of the best looking: <https://informationisbeautiful.net/visualizations/covid-19-coronavirus-infographic-datapack/>
-* Various "dashboard" pages:
-    * [JHU's global page.](https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6)
-    * [Worldometer's large collection of data.](https://www.worldometers.info/coronavirus/)
-    * [PHE's UK page.](https://www.arcgis.com/apps/opsdashboard/index.html#/f94c3c90da5b4e9f9a0b19484dd4bb14)
-    * [A page tracking Scotland.](https://www.travellingtabby.com/scotland-coronavirus-tracker/)
 
 Global
 ======
@@ -49,7 +36,7 @@ Some simple (and very naive) next-month projections of case-counts for worst aff
 [![Projections](img/global/small/projections-0.png)](img/global/projections-0.png)
 [![Projections](img/global/small/projections-1.png)](img/global/projections-1.png)
 
-Note: Model parameters are constrained to only allow growth rates to fall, because it never occurred to me that they'd do anything else!  So the best-fit "straight exponential growth" line (purple) acts as an upper limit, and the variable-rate models can't flex above it.  
+Note: Model parameters are constrained to only allow growth rates to fall, because it never occurred to me that they'd do anything else!  So the best-fit "straight exponential growth" line (green) acts as an upper limit, and the variable-rate models can't flex above it.  
 
 UK
 ==
@@ -143,3 +130,16 @@ Unsurprisingly, the chart is pretty much flipped left-right for the 2012 & 2008 
 [![Case growth rate vs. 2008 vote](img/usa/small/president-2008.png)](img/usa/president-2008.png)
 
 Not particularly convincing looking trend-lines though.
+
+Links
+=====
+
+* If you're not running the Covid-19 Symptom Tracker app... why not?  <https://covid.joinzoe.com/>.
+    * Also available for the USA at <https://covid.joinzoe.com/us>.
+* The FT is doing some interesting charting: <https://www.ft.com/coronavirus-latest>.
+* But Information Is Beautiful has the best looking: <https://informationisbeautiful.net/visualizations/covid-19-coronavirus-infographic-datapack/>
+* Various "dashboard" pages:
+    * [JHU's global page.](https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6)
+    * [Worldometer's large collection of data.](https://www.worldometers.info/coronavirus/)
+    * [PHE's UK page.](https://www.arcgis.com/apps/opsdashboard/index.html#/f94c3c90da5b4e9f9a0b19484dd4bb14)
+    * [A page tracking Scotland.](https://www.travellingtabby.com/scotland-coronavirus-tracker/)
