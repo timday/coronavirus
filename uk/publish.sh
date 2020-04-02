@@ -16,3 +16,4 @@ mkdir -p ${DST}/small
 
 ( cd ${DST} ; for f in *.png ; do convert -geometry 50% -define png:exclude-chunks=date "${f}" "small/${f}" ; done )
 
+( cd ${DST}/small ; for f in *.png ; do mogrify -define png:exclude-chunks=date "${f}" ; done )
