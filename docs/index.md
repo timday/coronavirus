@@ -1,20 +1,32 @@
 #ArmchairEpidemiology
 =====================
 
-Some dubious charts with coronavirus data.
+Some dubious charting with coronavirus data.
 
 Sections on this page for [global](#global), [UK](#uk) and [USA](#usa) data.
 
-Images can be clicked-through to full-resolution versions.
+Images can be clicked-through to full-resolution versions.  Note that most (all?) the non-scatterplot charts are log-scale on the y-axis.  Straight lines are actually exponential growth!
 
-Note that most (all?) the non-scatterplot charts are log-scale on the y-axis.  Straight lines are actually exponential growth!
+Code (Python, matplotlib) which generated these plots at <https://github.com/timday/coronavirus>.
 
-Code (Python, matplotlib) at <https://github.com/timday/coronavirus>.
+Links
+-----
+* If you're not running the Covid-19 Symptom Tracker app... why not?  <https://covid.joinzoe.com/>.  Also available for the USA at <https://covid.joinzoe.com/us>.
+* FT is doing some of the most interesting charting: <https://www.ft.com/coronavirus-latest>.
+* And Information Is Beautiful some of the best looking: <https://informationisbeautiful.net/visualizations/covid-19-coronavirus-infographic-datapack/>
+* Various "dashboard" pages:
+    * [JHU's global page.](https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6)
+    * [Worldometer's large collection of data.](https://www.worldometers.info/coronavirus/)
+    * [PHE's UK page.](https://www.arcgis.com/apps/opsdashboard/index.html#/f94c3c90da5b4e9f9a0b19484dd4bb14)
+    * [A page tracking Scotland.](https://www.travellingtabby.com/scotland-coronavirus-tracker/)
 
 Global
 ======
 
 Plots created from the JHU tracker's data (available at <https://github.com/CSSEGISandData/COVID-19>).
+
+Cases
+-----
 
 Case-count growth rates by country (China split Hubei/non-Hubei).  Day-to-day increases plotted as points, with the lines showing growth over a 1-week window (this smooths out quite volatile daily rates and should remove any quirks of case reporting at weekends).  
 
@@ -28,6 +40,9 @@ A couple of aligned plots of cumulative case and death count curves.
 
 [![Aligned cases](img/global/small/aligned-cases.png)](img/global/aligned-cases.png)
 [![Aligned deaths](img/global/small/aligned-deaths.png)](img/global/aligned-deaths.png)
+
+Projections
+-----------
 
 Some simple (and very naive) next-month projections of case-counts for worst affected countries, simply by fitting (least squares) some simple models to the data so far.
 
