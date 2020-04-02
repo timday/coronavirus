@@ -21,6 +21,15 @@ args=parser.parse_args()
 
 timeseriesKeys,timeseries=getJHUData(False,False)
 
+# Return a figure with tight redrawing on resize
+def tightfig():
+    fig=plt.figure(figsize=(16,9))
+    def on_resize(event):
+        fig.tight_layout(pad=0.05)
+        fig.canvas.draw()
+    fig.canvas.mpl_connect('resize_event',on_resize)
+    return fig
+
 # Straight exponential growth
 # DSolve[x'[t] == k*x[t], x[t], t]
 # x[t] = C*e^kt
@@ -329,41 +338,9 @@ for p in range(len(timeseriesKeys)):
     P=populations[timeseriesKeys[p]]
 
     print 'Data:',data
-    
-    if p==0:
-        fig1=plt.figure(figsize=(16,9))
-        def on_resize1(event):
-            fig1.tight_layout(pad=0.05)
-            fig1.canvas.draw()
-        fig1.canvas.mpl_connect('resize_event',on_resize1)
 
-    if p==6:
-        fig2=plt.figure(figsize=(16,9))
-        def on_resize2(event):
-            fig2.tight_layout(pad=0.05)
-            fig2.canvas.draw()
-        fig2.canvas.mpl_connect('resize_event',on_resize2)
-
-    if p==12:
-        fig3=plt.figure(figsize=(16,9))
-        def on_resize3(event):
-            fig3.tight_layout(pad=0.05)
-            fig3.canvas.draw()
-        fig3.canvas.mpl_connect('resize_event',on_resize3)
-
-    if p==18:
-        fig4=plt.figure(figsize=(16,9))
-        def on_resize4(event):
-            fig4.tight_layout(pad=0.05)
-            fig4.canvas.draw()
-        fig4.canvas.mpl_connect('resize_event',on_resize4)
-
-    if p==24:
-        fig5=plt.figure(figsize=(16,9))
-        def on_resize5(event):
-            fig5.tight_layout(pad=0.05)
-            fig5.canvas.draw()
-        fig5.canvas.mpl_connect('resize_event',on_resize5)
+    if p%6==0:
+        fig=tightfig()
 
     plt.subplot(2,3,1+(p%6))
 
