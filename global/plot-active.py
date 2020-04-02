@@ -74,7 +74,7 @@ for p in range(4):
 
     plt.legend(loc='upper left',fontsize='medium')
 
-    plt.subplots_adjust(right=0.8)
+    plt.subplots_adjust(right=0.9)
     
     distutils.dir_util.mkpath('output')
     plt.savefig(
