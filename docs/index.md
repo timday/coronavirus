@@ -31,12 +31,17 @@ A couple of aligned plots of cumulative case and death count curves.
 Projections
 -----------
 
-Some simple (and very naive) next-month projections of case-counts for worst affected countries, simply by fitting (least squares) some simple models to the data so far.  In the chart legends there are 1-3 tick marks against the top 3 models best fitting the data.
+Some simple (and very naive) next-month projections of case-counts (and derived "active cases") for the worst affected countries, simply by fitting (least squares) some simple models to the data so far.
+Models include straight exponential growth, variants with the growth rate decaying linearly or exponentially, with or without a constant floor, the logistic equation and linear decay to zero growth at a given time.
+In the chart legends there are 1-3 tick marks against the top 3 models best fitting the data.
+The best 3 models are also shown rendered as "active cases" (assuming each new case then has a uniform duration of 2-3 weeks of being "active" before it is resolved).
 
 [![Projections](img/global/small/projections-0.png)](img/global/projections-0.png)
 [![Projections](img/global/small/projections-1.png)](img/global/projections-1.png)
+[![Projections](img/global/small/projections-2.png)](img/global/projections-2.png)
+[![Projections](img/global/small/projections-3.png)](img/global/projections-3.png)
 
-Note: Model parameters are constrained to only allow growth rates to fall, because it never occurred to me that they'd do anything else!  So the best-fit "straight exponential growth" line (green) acts as an upper limit, and the variable-rate models can't flex above it.
+Note: Model parameters are constrained to only allow growth rates to fall, because it never occurred to me that they'd do anything else!  So the best-fit "straight exponential growth" line (green) acts as an upper limit, and the variable-rate models can't actually flex above it even if that was a better fit.  Of course in practice, "case counts" must be at least as much a function of test and diagnostic capacity and policies as they are of any actual underlying growth of the disease itself.
 
 UK
 ==

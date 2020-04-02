@@ -19,6 +19,17 @@ parser=argparse.ArgumentParser(description='Analyse coronavirus data.')
 parser.add_argument('--dde',action='store_true',default=False,help='Include slow DDE modelling.')
 args=parser.parse_args()
 
+activeWindowLo=14
+activeWindowHi=21
+    
+def sweep(cases,window):
+    shifted=np.concatenate([np.zeros((window,)),cases])
+    return cases-shifted[:len(cases)]
+
+def active(casesTotal):
+    casesActive=sum([sweep(casesTotal,w) for w in xrange(activeWindowLo,activeWindowHi+1)])/(1+activeWindowHi-activeWindowLo)
+    return casesActive
+
 timeseriesKeys,timeseries=getJHUData(False,False)
 
 # Return a decent sized figure with tight redrawing on resize
@@ -372,20 +383,25 @@ for p in range(len(timeseriesKeys)):
                     return len(scores)-j
             return 0
         
-        def poplimit(a):
+        def munge(a):
             r=np.array(a)
             r[a>P]=np.nan
+
+            if chart==1:  # Convert to active cases
+                r=active(r)
+                
             return r
         
         def date(t):
             return [basedate+x for x in t]
-                    
-        plt.plot(date(np.arange(len(data))+start),data,linewidth=4,color='red',label='Observed ; {} days $\geq 30$ cases'.format(len(data)),zorder=100)
+
+        plt.plot(date(np.arange(len(data))+start),munge(data),linewidth=4,color='red',label='Observed ; {} days $\geq 30$ cases'.format(len(data)),zorder=100)
     
         alldata_nonzero=np.array(alldata)
         alldata_nonzero[alldata==0.0]=np.nan
-        plt.plot(date(np.arange(len(alldata))),alldata_nonzero,linewidth=1,color='red',zorder=101)
-        
+        if chart==0:
+            plt.plot(date(np.arange(len(alldata))),alldata_nonzero,linewidth=1,color='red',zorder=101)
+                    
         t=np.arange(60+len(data))
 
         # For the active cases chart, just plot the top 3 models.
@@ -396,45 +412,45 @@ for p in range(len(timeseriesKeys)):
     
         if ok[0]:
             label0='$\\frac{dx}{dt} = k.x$'+(' ; $x_0={:.1f}, k={:.2f}$'.format(k[0][0],k[0][1]))+' '+tickmarks(0)
-            plt.plot(date(t+start),poplimit(model0(k[0],t)),color='green',label=label0,zorder=priority(0),linewidth=2)
+            plt.plot(date(t+start),munge(model0(k[0],t)),color='green',label=label0,zorder=priority(0),linewidth=2)
     
         if ok[1]:
             label1='$\\frac{dx}{dt} = \\frac{k}{1+a.t}.x$'+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k[1][0],k[1][1],k[1][2]))+' '+tickmarks(1)
-            plt.plot(date(t+start),poplimit(model1(k[1],t)),color='black',label=label1,zorder=priority(1),linewidth=2)
+            plt.plot(date(t+start),munge(model1(k[1],t)),color='black',label=label1,zorder=priority(1),linewidth=2)
     
         if ok[2]:
             label2='$\\frac{dx}{dt} = \\frac{k}{e^{a.t}}.x$ '+(' ; $x_0={:.1f}, k={:.2f}, a={:.2f}$'.format(k[2][0],k[2][1],k[2][2]))+' '+tickmarks(2)
-            plt.plot(date(t+start),poplimit(model2(k[2],t)),color='blue',label=label2,zorder=priority(2),linewidth=2)
+            plt.plot(date(t+start),munge(model2(k[2],t)),color='blue',label=label2,zorder=priority(2),linewidth=2)
     
         if ok[3]:
             label3='$\\frac{dx}{dt} = k.x.(1-\\frac{x}{P})$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, P={:.2g}$'.format(k[3][0],k[3][1],k[3][2]))+' '+tickmarks(3)
-            plt.plot(date(t+start),poplimit(model3(k[3],t)),color='orange',label=label3,zorder=priority(3),linewidth=2)
+            plt.plot(date(t+start),munge(model3(k[3],t)),color='orange',label=label3,zorder=priority(3),linewidth=2)
     
         if ok[4]:
             label4='$\\frac{dx}{dt} = (k+\\frac{j}{1+a.t}).x$'+(' ; $x_0={:.1f}, k={:.2f}, j={:.2f}, a={:.2f}$'.format(k[4][0],k[4][1],k[4][2],k[4][3]))+' '+tickmarks(4)
-            plt.plot(date(t+start),poplimit(model4(k[4],t)),color='grey',label=label4,zorder=priority(4),linewidth=2)
+            plt.plot(date(t+start),munge(model4(k[4],t)),color='grey',label=label4,zorder=priority(4),linewidth=2)
         
         if ok[5]:
             label5='$\\frac{dx}{dt} = (k+\\frac{j}{e^{a.t}}).x$'+(' ; $x_0={:.1f}, k={:.2f}, j={:.2f}, a={:.2f}$'.format(k[5][0],k[5][1],k[5][2],k[5][3]))+' '+tickmarks(5)
-            plt.plot(date(t+start),poplimit(model5(k[5],t)),color='skyblue',label=label5,zorder=priority(5),linewidth=2)
+            plt.plot(date(t+start),munge(model5(k[5],t)),color='skyblue',label=label5,zorder=priority(5),linewidth=2)
     
         if ok[6]:
             label6='$\\frac{dx}{dt} = k.(1-\\frac{t}{T}).x$ for $t \\leq T$, else $0$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, T={:.1f}$'.format(k[6][0],k[6][1],k[6][2]))+' '+tickmarks(6)
-            plt.plot(date(t+start),poplimit(model6(k[6],t)),color='purple',label=label6,zorder=priority(6),linewidth=2)
+            plt.plot(date(t+start),munge(model6(k[6],t)),color='purple',label=label6,zorder=priority(6),linewidth=2)
     
         if ok[7]:
             label7='$\\frac{dx}{dt} = (k+j.(1-\\frac{t}{T})).x$ for $t \\leq T$, else $k.x$'+(' ; $x_{{0}}={:.1f}, k={:.2f}, j={:.2f}, T={:.1f}$'.format(k[7][0],k[7][1],k[7][2],k[7][3]))+' '+tickmarks(7)
-            plt.plot(date(t+start),poplimit(model7(k[7],t)),color='pink',label=label7,zorder=priority(7),linewidth=2)
+            plt.plot(date(t+start),munge(model7(k[7],t)),color='pink',label=label7,zorder=priority(7),linewidth=2)
     
         if ok[8]:
             label8='${DDE}_0$'+(' ; $i={:.1f}, j={:.1f}, k={:.1f}, T_0={:.1f}, T_i={:.1f}, T_c={:.1f}$'.format(k[8][0],k[8][1],k[8][2],-k[8][3],k[8][4],k[8][5]))+' '+tickmarks(8)
-            plt.plot(date(t+start),poplimit(model8(k[8],t,P)),color='lawngreen',label=label8,zorder=priority(8),linewidth=2)
+            plt.plot(date(t+start),munge(model8(k[8],t,P)),color='lawngreen',label=label8,zorder=priority(8),linewidth=2)
             
         plt.yscale('symlog')
-        plt.xticks(rotation=75,fontsize=8)
-        plt.yticks(fontsize=8)
+        plt.xticks(rotation=75,fontsize=6)
+        plt.yticks(fontsize=6)
         plt.gca().set_xlim(left=basedate)
-        plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=mdates.MO))
+        plt.gca().xaxis.set_major_locator(mdates.MonthLocator())
         plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
         plt.grid(True)
     
@@ -445,7 +461,7 @@ for p in range(len(timeseriesKeys)):
             plt.title(where+': cumulative cases')
             plt.ylabel('Confirmed cases')
         else:
-            plt.title(where+': active cases')
+            plt.title(where+': active cases (uniform 14-21 day duration)')
             plt.ylabel('Active cases')
         
     if p%3==2 or p==len(timeseriesKeys)-1:
