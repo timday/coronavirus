@@ -470,7 +470,7 @@ for p in range(len(timeseriesKeys)):
     if p%3==2 or p==len(timeseriesKeys)-1:
         distutils.dir_util.mkpath('output')
         plt.savefig(
-            'output/projections-{}.png'.format(p/6),
+            'output/projections-{}.png'.format(p/3),
             dpi=96
         )
         
