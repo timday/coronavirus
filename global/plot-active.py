@@ -30,7 +30,7 @@ for p in range(4):
 
     for k in timeseriesKeys:
 
-        if p==1 and ( k=='Other' or k=='Total' ):
+        if p==1 and k=='Total':  # Skip global total on linear plot
             continue
 
         casesActive=active(k)

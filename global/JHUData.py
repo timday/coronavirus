@@ -14,7 +14,6 @@ descriptions={
     'China'      :'Mainland China',
     'China:Hubei':'China (Hubei province)',
     'China:Other':'China (Other provinces)',
-    'Other'      :'Global ex-China',
     'Total'      :'Global Total',
     'UK'         :'UK',
     'Italy'      :'Italy',
@@ -56,7 +55,6 @@ news={
         ((2020,2,20),'Hubei Lockdown inc. schools'),
     ],
     'China:Other':[],
-    'Other':[],
     'Total':[],
     'UK':[
         ((2020,3,16),'Drastic action'),
@@ -145,7 +143,6 @@ populations={
     'China'      :1.4e9,
     'China:Hubei':5.8e7,
     'China:Other':1.4e9-5.8e7,
-    'Other'      :7.7e9-1.4e9,
     'Total'      :7.7e9,
     'UK'         :6.6e7,
     'Italy'      :6e7,
@@ -178,14 +175,13 @@ populations={
 def rgb(r,g,b):
     return (r/255.0,g/255.0,b/255.0)
 
-# Tableau20 looks useful (bookmarked goodstuff).  Unused .
+# Tableau20 looks useful (bookmarked goodstuff).  Unused rgb(127,127,127),  # Or 199x3
 colors={
     'China'      :rgb(214, 39, 40),
     'China:Hubei':rgb(214, 39, 40),
     'China:Other':rgb(214, 39, 40),
     
-    'Other'      :rgb(  0,  0,  0),
-    'Total'      :rgb(127,127,127),  # Or 199x3
+    'Total'      :rgb(  0,  0,  0),
 
     'US'         :rgb( 31,119,180),
     'Canada'     :rgb( 31,119,180),  # Same as US
@@ -256,7 +252,7 @@ def getJHUData(all,splitChina):
     results=[]
 
     # Actual list
-    timeseriesKeys=['Total','Other','Iran','South Korea','Italy','France','Spain','Portugal','Germany','US','Canada','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore']
+    timeseriesKeys=['Total','Iran','South Korea','Italy','France','Spain','Portugal','Germany','US','Canada','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore']
     if splitChina:
         timeseriesKeys.append('China:Hubei')
         timeseriesKeys.append('China:Other')
@@ -300,17 +296,11 @@ def getJHUData(all,splitChina):
                 if not where in timeseries:
                     timeseries[where]=np.zeros(len(row[4:]))
                 timeseries[where]+=np.array(map(lambda x: value(x),row[4:]),dtype=np.float64)
-        
-            if where.split(':')[0]!='China':
-                if not 'Other' in timeseries:
-                    timeseries['Other']=np.zeros(len(row[4:]))
-                timeseries['Other']+=np.array(map(lambda x: value(x),row[4:]),dtype=np.float64)
 
-        if splitChina:
-            timeseries['Total']=timeseries['China:Hubei']+timeseries['China:Other']+timeseries['Other']
-        else:
-            timeseries['Total']=timeseries['China']+timeseries['Other']
-
+            if not 'Total' in timeseries:
+                timeseries['Total']=np.zeros(len(row[4:]))
+            timeseries['Total']+=np.array(map(lambda x: value(x),row[4:]),dtype=np.float64)
+            
         #for k in timeseriesKeys:
         #    timeseries[k]=clean(timeseries[k],k)
 

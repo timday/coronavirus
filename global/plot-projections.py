@@ -463,40 +463,4 @@ for p in range(len(timeseriesKeys)):
             dpi=96
         )
         
-plt.figure(figsize=(9,4.5))
-
-def frequency(s):
-    c=np.array([len([n for n in s if str(int(n))[0]==str(m)]) for m in range(1,10)],dtype=np.float64)
-    return c/np.sum(c)
-
-ax=plt.subplot(1,2,1)
-width=0.25
-plt.bar(np.arange(1,10)-width,np.log10(1.0+1.0/np.arange(1,10)),width,color='green',label='Expected')
-plt.bar(np.arange(1,10)      ,frequency(timeseries['China']),width,color='red',label='Mainland China')
-plt.bar(np.arange(1,10)+width,frequency(timeseries['Other']),width,color='blue',label='Other locations')
-plt.legend(loc='upper right',fontsize='xx-small')
-plt.ylabel('Frequency')
-plt.xlabel('Leading digit')
-plt.xticks(np.arange(1,10))
-plt.title("Benford's Law compliance - total cases")
-
-ax=plt.subplot(1,2,2)
-width=0.25
-plt.bar(np.arange(1,10)-width,np.log10(1.0+1.0/np.arange(1,10)),width,color='green',label='Expected')
-plt.bar(np.arange(1,10)      ,frequency(timeseries['China'][1:]-timeseries['China'][:-1]),width,color='red',label='Mainland China')
-plt.bar(np.arange(1,10)+width,frequency(timeseries['Other'][1:]-timeseries['Other'][:-1]),width,color='blue',label='Other locations')
-plt.legend(loc='upper right',fontsize='xx-small')
-plt.ylabel('Frequency')
-plt.xlabel('Leading digit')
-plt.xticks(np.arange(1,10))
-plt.title("Benford's Law compliance - daily cases")
-
-plt.subplots_adjust(left=0.05, right=0.95, top=0.95, bottom=0.05)
-
-distutils.dir_util.mkpath('output')
-plt.savefig(
-    'output/benford.png',
-    dpi=96
-)
-
 plt.show()
