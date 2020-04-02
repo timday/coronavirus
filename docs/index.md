@@ -89,7 +89,7 @@ A snapshot of the correlations with all the various deprivation metrics (using l
   Living Environment                      : -0.308
   Employment                              :  0.300
   Health Deprivation and Disability       :  0.282
-  IMD                                     :  0.205  - An "Index of Multiple Deprivation" aggregate of the other measures.
+  IMD                                     :  0.205  - "Index of Multiple Deprivations" (an aggregate score?)
   Income                                  :  0.183
   IDACI                                   :  0.162  - Income Deprivation Affecting Children Index
   Crime                                   :  0.087
