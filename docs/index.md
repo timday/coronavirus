@@ -31,12 +31,12 @@ A couple of aligned plots of cumulative case and death count curves.
 Projections
 -----------
 
-Some simple (and very naive) next-month projections of case-counts for worst affected countries, simply by fitting (least squares) some simple models to the data so far.
+Some simple (and very naive) next-month projections of case-counts for worst affected countries, simply by fitting (least squares) some simple models to the data so far.  In the chart legends there are 1-3 tick marks against the top 3 models best fitting the data.
 
 [![Projections](img/global/small/projections-0.png)](img/global/projections-0.png)
 [![Projections](img/global/small/projections-1.png)](img/global/projections-1.png)
 
-Note: Model parameters are constrained to only allow growth rates to fall, because it never occurred to me that they'd do anything else!  So the best-fit "straight exponential growth" line (green) acts as an upper limit, and the variable-rate models can't flex above it.  
+Note: Model parameters are constrained to only allow growth rates to fall, because it never occurred to me that they'd do anything else!  So the best-fit "straight exponential growth" line (green) acts as an upper limit, and the variable-rate models can't flex above it.
 
 UK
 ==
@@ -53,7 +53,7 @@ Aligning all those on a constant number of cases:
 
 Correlations
 ------------
-From the ONS, there is some UTLA-level data available (for England) various health and deprivation metrics.  Is there some correlation between these measures and the rate that virus case-counts are growing at?
+From the ONS, there is some UTLA-level data available (for England) for various health and deprivation metrics.  Is there some correlation between these measures and the rate that virus case-counts are growing at?
 
 ### Health
 
