@@ -41,7 +41,8 @@ descriptions={
     'Czechia'    :'Czechia'    ,
     'Ireland'    :'Ireland'    ,
     'Singapore'  :'Singapore'  ,
-    'Russia'     :'Russia'
+    'Russia'     :'Russia'     ,
+    'Chile'      :'Chile'
 }
 
 news={
@@ -140,6 +141,9 @@ news={
     ],
     'Russia':[
         ((2020,03,30),'Stay-at-home regimes')
+    ],
+    'Chile':[
+        ((2020,03,26),'School closures, Santiago lockdown')
     ]
 }
 
@@ -174,6 +178,7 @@ populations={
     'Czechia'    :1.1e7,
     'Ireland'    :6.6e6,
     'Russia'     :1.45e8,
+    'Chile'      :1.8e7,
     'Singapore'  :5.6e6,
     }
 
@@ -192,11 +197,12 @@ colors={
     'Canada'     :rgb( 31,119,180),  # Same as US
 
     'UK'         :rgb( 23,190,207),
-    'Australia'  :rgb( 23,190,207),
+    'Australia'  :rgb( 23,190,207),  # Same as UK
     
     'France'     :rgb(140, 86, 75),
     'Ireland'    :rgb(140, 86, 75),  # Same as France
     'Germany'    :rgb(196,156,148),
+    'Chile'      :rgb(196,156,148),  # Same as Germany
     'Spain'      :rgb(152,223,138),
     'Portugal'   :rgb(152,223,138),  # Same as Spain
     'Italy'      :rgb( 44,160, 44),
@@ -217,7 +223,7 @@ colors={
     'Iran'       :rgb(148,103,189),
     'Turkey'     :rgb(148,103,189), # Same as Iran
     'Malaysia'   :rgb(255,152,150),
-    'Singapore'  :rgb(255,152,150),  # Same as Malaysia
+    'Singapore'  :rgb(255,152,150), # Same as Malaysia
 
     'Russia'     :rgb(127,127,127)
     }
@@ -233,6 +239,7 @@ widthScale['Turkey']=0.5
 widthScale['Czechia']=0.5
 widthScale['Ireland']=0.5
 widthScale['Singapore']=0.5
+widthScale['Chile']=0.5
 
 # Recursive in case error spans more than one day
 def clean(a,where):
@@ -259,7 +266,7 @@ def getJHUData(all,splitChina):
     results=[]
 
     # Actual list
-    timeseriesKeys=['Total','Iran','South Korea','Italy','France','Spain','Portugal','Germany','US','Canada','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore','Russia']
+    timeseriesKeys=['Total','Iran','South Korea','Italy','France','Spain','Portugal','Germany','US','Canada','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore','Russia','Chile']
     if splitChina:
         timeseriesKeys.append('China:Hubei')
         timeseriesKeys.append('China:Other')
@@ -267,7 +274,7 @@ def getJHUData(all,splitChina):
         timeseriesKeys.append('China')            
 
     # Names from the CSV file
-    interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Canada','Iran','France','Germany','Spain','Portugal','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore','Russia'])
+    interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Canada','Iran','France','Germany','Spain','Portugal','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore','Russia','Chile'])
 
     for what in {False:range(1),True:range(2)}[all]:
 
