@@ -74,7 +74,7 @@ A snapshot of the correlations with all the various health metrics (using last w
   Adults eating 5-a-day (%)                         : -0.091
 ```
 
-So - probably unsurprisingly - a general picture of unhealthy things being associated with faster case-count growth, and more health-positive things like physical activity, employment and even "5-a-day" being assocated with slower growth.
+So - probably unsurprisingly - a general picture of unhealthy things being associated with faster case-count growth, and more health-positive things like physical activity, employment and even "5-a-day" being weakly linked with slower growth.
 
 ### Deprivation
 
@@ -89,25 +89,27 @@ A snapshot of the correlations with all the various deprivation metrics (using l
   Living Environment                      : -0.308
   Employment                              :  0.300
   Health Deprivation and Disability       :  0.282
-  IMD                                     :  0.205
+  IMD                                     :  0.205  - An "Index of Multiple Deprivation" aggregate of the other measures.
   Income                                  :  0.183
-  IDACI                                   :  0.162
+  IDACI                                   :  0.162  - Income Deprivation Affecting Children Index
   Crime                                   :  0.087
-  IDAOPI                                  : -0.061
+  IDAOPI                                  : -0.061  - Income Deprivation Affecting Older People Index
 ```
 Note that while for most of these "deprivation index" numbers a higher score implies more deprivation, that appears to be reversed for the "Living Environment" score.  I'm not sure of the interpretation of the "Barriers to Housing and Services" score either, but a high number seems to be frequently associated with wealthy ( and therefore unaffordable) areas.
 
-### Brexit
+### Brexit and demographics
 
 Plotting case-count growth against the 2016 Leave vote also shows some correlation:
 
 [![UK case counts vs. 2016 Leave vote](img/uk/small/brexit-England.png)](img/uk/brexit-England.png)
 
-However against demographics from the 2011 census, there seems to be very little:
+Reminder: correlation is not causation! And calling COVID-19 "The Brexit Disease" or "Leave Fever" would just be silly.
+
+However, perhaps surprisingly, plotting case-count growth against demographics from the 2011 census there seems to be very little connection:
 
 [![UK case counts vs. demographics](img/uk/small/oldies-England.png)](img/uk/oldies-England.png)
 
-which is a little surprising when there is actually a very large correlation between the same demographic measure and the Leave vote!
+which seems all the more surprising considering that there is actually a rather large correlation between the same demographic measure and the Leave vote:
 
 [![Leave vote vs. demographics](img/uk/small/oldies-vote-England.png)](img/uk/oldies-vote-England.png)
 
@@ -116,6 +118,8 @@ which is a little surprising when there is actually a very large correlation bet
 Finally, case-count growth rate vs. GDHI ("gross disposable household income per head")
 
 [![Leave vote vs. demographics](img/uk/small/income-GDHI per head.png)](img/uk/income-GDHI per head.png)
+
+Money is quite an effective anti-viral it seems.
 
 USA
 ===
@@ -135,7 +139,8 @@ Links
 =====
 
 * If you're not running the Covid-19 Symptom Tracker app... why not?  <https://covid.joinzoe.com/>.
-    * Also available for the USA at <https://covid.joinzoe.com/us>.
+    * Updates and webinars by the team behind this app at <https://covid.joinzoe.com/blog>.
+    * App now also available for the USA at <https://covid.joinzoe.com/us>.
 * The FT is doing some interesting charting: <https://www.ft.com/coronavirus-latest>.
 * But Information Is Beautiful has the best looking: <https://informationisbeautiful.net/visualizations/covid-19-coronavirus-infographic-datapack/>
 * Various "dashboard" pages:
