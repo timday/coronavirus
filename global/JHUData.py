@@ -11,10 +11,10 @@ pyBasedate=datetime.datetime(2020,1,22)  # csv file starts 2020-01-22
 basedate=mdates.date2num(pyBasedate)
 
 descriptions={
+    'Total'      :'Global Total',
     'China'      :'Mainland China',
     'China:Hubei':'China (Hubei province)',
     'China:Other':'China (Other provinces)',
-    'Total'      :'Global Total',
     'UK'         :'UK',
     'Italy'      :'Italy',
     'Netherlands':'Netherlands',
@@ -40,7 +40,8 @@ descriptions={
     'Turkey'     :'Turkey'     ,
     'Czechia'    :'Czechia'    ,
     'Ireland'    :'Ireland'    ,
-    'Singapore'  :'Singapore'
+    'Singapore'  :'Singapore'  ,
+    'Russia'     :'Russia'
 }
 
 news={
@@ -130,12 +131,15 @@ news={
         ((2020,03,16),'Limited closures')
     ],
     'Czechia':[
-        ((2020,03,16),'National locldown')
+        ((2020,03,16),'National lockdown')
     ],
     'Ireland':[
         ((2020,03,16),'Limited closures')
     ],
     'Singapore':[
+    ],
+    'Russia':[
+        ((2020,03,30),'Stay-at-home regimes')
     ]
 }
 
@@ -169,13 +173,14 @@ populations={
     'Turkey'     :8.1e7,
     'Czechia'    :1.1e7,
     'Ireland'    :6.6e6,
-    'Singapore'  :5.6e6
+    'Russia'     :1.45e8,
+    'Singapore'  :5.6e6,
     }
 
 def rgb(r,g,b):
     return (r/255.0,g/255.0,b/255.0)
 
-# Tableau20 looks useful (bookmarked goodstuff).  Unused rgb(127,127,127),  # Or 199x3
+# Tableau20 looks useful (bookmarked goodstuff).  Unused.  199x3?
 colors={
     'China'      :rgb(214, 39, 40),
     'China:Hubei':rgb(214, 39, 40),
@@ -212,7 +217,9 @@ colors={
     'Iran'       :rgb(148,103,189),
     'Turkey'     :rgb(148,103,189), # Same as Iran
     'Malaysia'   :rgb(255,152,150),
-    'Singapore'  :rgb(255,152,150)  # Same as Malaysia
+    'Singapore'  :rgb(255,152,150),  # Same as Malaysia
+
+    'Russia'     :rgb(127,127,127)
     }
 
 widthScale=defaultdict(lambda: 1.0)
@@ -252,7 +259,7 @@ def getJHUData(all,splitChina):
     results=[]
 
     # Actual list
-    timeseriesKeys=['Total','Iran','South Korea','Italy','France','Spain','Portugal','Germany','US','Canada','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore']
+    timeseriesKeys=['Total','Iran','South Korea','Italy','France','Spain','Portugal','Germany','US','Canada','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore','Russia']
     if splitChina:
         timeseriesKeys.append('China:Hubei')
         timeseriesKeys.append('China:Other')
@@ -260,7 +267,7 @@ def getJHUData(all,splitChina):
         timeseriesKeys.append('China')            
 
     # Names from the CSV file
-    interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Canada','Iran','France','Germany','Spain','Portugal','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore'])
+    interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Canada','Iran','France','Germany','Spain','Portugal','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore','Russia'])
 
     for what in {False:range(1),True:range(2)}[all]:
 
