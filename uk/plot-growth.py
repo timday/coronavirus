@@ -25,7 +25,7 @@ for what in [('England',7,None),('Scotland',7,None),('Wales',7,None),(None,7,Non
     window=what[1]
     growth={
         k:(timeseries[k][-1]/timeseries[k][-1-window])**(1.0/window)
-        for k in timeseries if timeseries[k][-window]>0.0
+        for k in timeseries if timeseries[k][-1-window]>0.0
     }
     print 'Top growth ({} days, {} to {})'.format(window,days[0],days[-1])
     for k in sorted(growth.keys(),key=lambda k: growth[k],reverse=True):
