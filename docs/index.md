@@ -31,7 +31,7 @@ A couple of aligned plots of cumulative case and death count curves.
 Projections
 -----------
 
-Some simple (and very naive) next-month projections of case-counts (and derived "active cases") for the worst affected countries, simply by fitting (least squares) some simple models to the data so far.
+Some simple (and very naive) next two months projections of case-counts (and derived "active cases") for the worst affected countries, simply by fitting (least squares) some simple models to the data so far.
 Models include straight exponential growth, variants with the growth rate decaying linearly or exponentially, with or without a constant floor, the logistic equation and linear decay to zero growth at a given time.
 In the chart legends there are 1-3 tick marks against the top 3 models best fitting the data.
 The best 3 models are also shown rendered as "active cases" (assuming each new case then has a uniform duration of 2-3 weeks of being "active" before it is resolved).
