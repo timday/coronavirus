@@ -3,7 +3,8 @@
 
 # Constituency to UTLA from http://geoportal.statistics.gov.uk/datasets/b7435625a4d442bcb331d610f16aacde_0
 
-# Election data from https://commonslibrary.parliament.uk/research-briefings/cbp-8749/ (the accompanying results by constituency csv)
+# 2019 Election data from https://commonslibrary.parliament.uk/research-briefings/cbp-8749/ (the accompanying results by constituency csv)
+# 2017 Election data from https://commonslibrary.parliament.uk/research-briefings/cbp-7979/
 
 # Look at votes for con, lab, non-mainstream (including libdem!?), green?, brexit?
 
@@ -107,7 +108,6 @@ def getAreas(interesting):
 
     return dict(areas)
 
-
 window=7
 
 timeseries,dates,codes=UKCovid19Data.getUKCovid19Data('England',window+1,None)
@@ -163,6 +163,7 @@ for party in ['Con','Lab','LibDem','Brexit','Green']:
     plt.plot(rx,ry,color='tab:red',label='Linear regression (weighted by total votes)')
     rw=corr(x,y,w)
     
+    # Weighted quadratic regression line
     coef=np.polyfit(x,y,2,w=w)
     qy=coef[2]+coef[1]*rx+coef[0]*rx**2
     plt.plot(rx,qy,color='tab:green',label='Quadratic best fit (weighted)')
@@ -170,7 +171,3 @@ for party in ['Con','Lab','LibDem','Brexit','Green']:
     plt.title('Case-count growth rate vs. {} vote share'.format(party))
     
 plt.show()
-
-# So covid case data has E06000036 in it.
-# Ward data has e.g E05002273,E14000586,E06000036 under it.
-# Votes data has the second one.
