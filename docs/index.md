@@ -106,17 +106,23 @@ Note that while for most of these "deprivation index" numbers a higher score imp
 
 Plotting case-count growth against the 2016 Leave vote also shows some correlation:
 
-[![UK case counts vs. 2016 Leave vote](img/uk/small/brexit-England.png)](img/uk/brexit-England.png)
+[![UK case count growth rate vs. 2016 Leave vote](img/uk/small/brexit-England.png)](img/uk/brexit-England.png)
 
 Reminder: correlation is not causation! And calling COVID-19 "The Brexit Disease" or "Leave Fever" would just be silly.
 
 However, perhaps surprisingly, plotting case-count growth against demographics from the 2011 census there seems to be very little connection:
 
-[![UK case counts vs. demographics](img/uk/small/oldies-England.png)](img/uk/oldies-England.png)
+[![UK case count growth rate vs. demographics](img/uk/small/oldies-England.png)](img/uk/oldies-England.png)
 
 which seems all the more surprising considering that there is actually a rather large correlation between the same demographic measure and the Leave vote:
 
 [![Leave vote vs. demographics](img/uk/small/oldies-vote-England.png)](img/uk/oldies-vote-England.png)
+
+### Elections
+
+Perhaps unsurprisingly given the previous section's results, the highest correlation I can find with 2017-2018 election data (England only) is the swing from the Conservative+UKIP vote share in 2017 to the Conservative+Brexit party vote share in 2019:
+
+[![England case count growth rate vs. swing to Con+Brexit](img/uk/small/election-SwingConBrexit.png)](img/uk/election-SwingConBrexit.png)
 
 ### Income
 

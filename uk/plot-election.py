@@ -19,6 +19,9 @@ import scipy.stats
 
 import UKCovid19Data
 
+matplotlib.rcParams['font.sans-serif'] = "Comic Sans MS"
+matplotlib.rcParams['font.family'] = "sans-serif"
+
 def cov(x, y, w):
     return np.sum(w * (x - np.average(x, weights=w)) * (y - np.average(y, weights=w))) / np.sum(w)
 
@@ -29,23 +32,34 @@ def value(x):
     return float(x)
 
 # Accumulate votes into the areas given (wards and constituencies).  No translation of areas.
-def getRawVotes():
+def getRawVotes(year):
 
     votes={}
 
-    csvfile=open('data/HoC-2019GE-results-by-constituency.csv')
+    filename={
+        2019:'data/HoC-2019GE-results-by-constituency.csv',
+        2017:'data/HoC-GE2017-constituency-results.csv'
+        }[year]
+
+    # Less colunms in the 2017 data
+    offset={
+        2019:0,
+        2017:3
+        }[year]
+
+    csvfile=open(filename)
     reader=csv.reader(csvfile)
     firstRow=True
     for row in reader:
         if firstRow:
             assert row[0]=='ons_id'
-            assert row[15]=='valid_votes'
-            assert row[18]=='con'
-            assert row[19]=='lab'
-            assert row[20]=='ld'
-            assert row[21]=='brexit'
-            assert row[22]=='green'
-            assert row[23]=='snp'
+            assert row[15-offset]=='valid_votes'
+            assert row[18-offset]=='con'
+            assert row[19-offset]=='lab'
+            assert row[20-offset]=='ld'
+            assert row[21-offset]=={2019:'brexit',2017:'ukip'}[year]
+            assert row[22-offset]=='green'
+            assert row[23-offset]=='snp'
             firstRow=False
             continue
 
@@ -57,12 +71,12 @@ def getRawVotes():
             if not where in votes:
                 votes[where]=defaultdict(float)
         
-            votes[where]['Total']+=value(row[15])
-            votes[where]['Con']+=value(row[18])
-            votes[where]['Lab']+=value(row[19])
-            votes[where]['LibDem']+=value(row[20])
-            votes[where]['Brexit']+=value(row[21])
-            votes[where]['Green']+=value(row[22])
+            votes[where]['Total'] +=value(row[15-offset])
+            votes[where]['Con']   +=value(row[18-offset])
+            votes[where]['Lab']   +=value(row[19-offset])
+            votes[where]['LibDem']+=value(row[20-offset])
+            votes[where]['Brexit']+=value(row[21-offset])
+            votes[where]['Green'] +=value(row[22-offset])
 
     return votes
 
@@ -114,35 +128,46 @@ timeseries,dates,codes=UKCovid19Data.getUKCovid19Data('England',window+1,None)
 
 rate={k:(timeseries[k][-1]/timeseries[k][-1-window])**(1.0/(window))-1.0 for k in timeseries.keys() if timeseries[k][-1-window]>0.0}
 interesting=frozenset(rate.keys())
-
-rawvotes=getRawVotes()
+print len(interesting),'interesting areas (from growth rate)'
 areas=getAreas(interesting)
 
-votes={}
+rawvotes={2017:getRawVotes(2017),2019:getRawVotes(2019)}
 
-for c in interesting:
+votes={2017:{},2019:{}}
+
+for year in [2017,2019]:
+    for c in interesting:
+        
+        if not c in votes[year]:
+            votes[year][c]=defaultdict(float)
     
-    if not c in votes:
-        votes[c]=defaultdict(float)
-
-    for a in areas[c]:
-        if a in rawvotes:
-            for k in rawvotes[a]:
-                votes[c][k]+=rawvotes[a][k]
+        for a in areas[c]:
+            if a in rawvotes[year]:
+                for k in rawvotes[year][a]:
+                    votes[year][c][k]+=rawvotes[year][a][k]
             
-print len(interesting),'interesting'
-novotes=[k for k in interesting if votes[k]['Total']==0.0]
-print 'No votes for',len(novotes),':',novotes
+    novotes=[k for k in interesting if votes[year][k]['Total']==0.0]
+    print 'No',year,'votes for',len(novotes),':',novotes
 
-for party in ['Con','Lab','LibDem','Brexit','Green']:
+for party in ['Con','Lab','LibDem','Brexit','Green','SwingCon','SwingBrexit','SwingConBrexit','SwingGreen']:
 
     fig=plt.figure(figsize=(8,6))
 
-    print 'Top 5 for',party,sorted([(100.0*votes[k][party]/votes[k]['Total'],k) for k in rate.keys()],key=lambda it: it[0],reverse=True)[:5]
-    
+    print 'Top 5 for',party,sorted([(100.0*votes[year][k][party]/votes[year][k]['Total'],k) for k in rate.keys()],key=lambda it: it[0],reverse=True)[:5]
+
+    if party=='SwingCon':
+        x=np.array([100.0*votes[2019][k]['Con']/votes[2019][k]['Total'] - 100.0*votes[2017][k]['Con']/votes[2017][k]['Total'] for k in rate.keys()])
+    elif party=='SwingBrexit':
+        x=np.array([100.0*votes[2019][k]['Brexit']/votes[2019][k]['Total'] - 100.0*votes[2017][k]['Brexit']/votes[2017][k]['Total'] for k in rate.keys()])
+    elif party=='SwingConBrexit':
+        x=np.array([100.0*(votes[2019][k]['Con']+votes[2019][k]['Brexit'])/votes[2019][k]['Total'] - 100.0*(votes[2017][k]['Con']+votes[2017][k]['Brexit'])/votes[2017][k]['Total'] for k in rate.keys()])
+    elif party=='SwingGreen':
+        x=np.array([100.0*votes[2019][k]['Green']/votes[2019][k]['Total'] - 100.0*votes[2017][k]['Green']/votes[2017][k]['Total'] for k in rate.keys()])        
+    else:
+        x=np.array([100.0*votes[2019][k][party]/votes[2019][k]['Total'] for k in rate.keys()])
+
     y=np.array([100.0*rate[k] for k in rate.keys()])
-    x=np.array([100.0*votes[k][party]/votes[k]['Total'] for k in rate.keys()])
-    w=np.array([votes[k]['Total'] for k in rate.keys()])
+    w=np.array([votes[2019][k]['Total'] for k in rate.keys()])
     s=np.sqrt(w/100.0)
     
     plt.scatter(x,y,s=s)
@@ -168,6 +193,30 @@ for party in ['Con','Lab','LibDem','Brexit','Green']:
     qy=coef[2]+coef[1]*rx+coef[0]*rx**2
     plt.plot(rx,qy,color='tab:green',label='Quadratic best fit (weighted)')
 
-    plt.title('Case-count growth rate vs. {} vote share'.format(party))
+    ax=plt.gca()
+    vals=ax.get_yticks()
+    ax.set_yticklabels(['{:,.1f}%'.format(x) for x in vals])
+    vals=ax.get_xticks()
+    ax.set_xticklabels(['{:,.1f}%'.format(x) for x in vals])
+
+    plt.ylabel('Daily % growth rate {} to {}'.format(dates[-1-window],dates[-1]))
+    if party[:5]!='Swing':
+        plt.xlabel('{} % of vote'.format(party))
+    else:
+        plt.xlabel('Percentage swing')
     
+    if party[:5]!='Swing':
+        plt.title('Case-count growth rate vs. {} vote share.\nRegression lines: weighted (red) r={:.3f}, unweighted (orange) r={:.3f}'.format(party,r_value,rw))
+    elif party=='SwingCon':
+        plt.title('Case-count growth rate vs. 2017-2019 Conservative swing\nRegression lines: weighted (red) r={:.3f}, unweighted (orange) r={:.3f}'.format(r_value,rw))
+    elif party=='SwingBrexit':
+        plt.title('Case-count growth rate vs. 2017-2019 UKIP-Brexit swing\nRegression lines: weighted (red) r={:.3f}, unweighted (orange) r={:.3f}'.format(r_value,rw))
+    elif party=='SwingConBrexit':
+        plt.title('Case-count growth rate vs. 2017-2019 Conservative+Brexit swing\nRegression lines: weighted (red) r={:.3f}, unweighted (orange) r={:.3f}'.format(r_value,rw))
+    elif party=='SwingGreen':
+        plt.title('Case-count growth rate vs. 2017-2019 Green swing\nRegression lines: weighted (red) r={:.3f}, unweighted (orange) r={:.3f}'.format(r_value,rw))
+
+    distutils.dir_util.mkpath('output')
+    plt.savefig('output/election-{}.png'.format(party),dpi=96)
+        
 plt.show()
