@@ -120,7 +120,7 @@ which seems all the more surprising considering that there is actually a rather 
 
 ### Elections
 
-Perhaps unsurprisingly given the previous section's results, the highest correlation I can find with 2017-2018 election data (England only) is the swing from the Conservative+UKIP vote share in 2017 to the Conservative+Brexit party vote share in 2019:
+Unsurprisingly, given the previous section's results, the highest correlation I can find with 2017-2018 election data (England only) is the swing from the Conservative+UKIP vote share in 2017 to the Conservative+Brexit party vote share in 2019:
 
 [![England case count growth rate vs. swing to Con+Brexit](img/uk/small/election-SwingConBrexit.png)](img/uk/election-SwingConBrexit.png)
 
