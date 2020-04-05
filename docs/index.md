@@ -19,14 +19,18 @@ Case-count growth rates by country (China split Hubei/non-Hubei).  Day-to-day in
 
 [![Country's growth](img/global/small/growth.png)](img/global/growth.png)
 
+A couple of aligned plots of the cumulative case and death count curves.
+
+[![Aligned cases](img/global/small/aligned-cases.png)](img/global/aligned-cases.png)
+[![Aligned deaths](img/global/small/aligned-deaths.png)](img/global/aligned-deaths.png)
+
 "Active cases", assuming a model where newly identified cases become "active" for 2-3 weeks (uniformly distributed; eventual outcome doesn't matter).  This is an alternative to using JHU's "recovered" counts as there seems to be some doubt about how reliable they are in many countries.
 
 [![Active cases](img/global/small/active-log.png)](img/global/active-log.png)
 
-A couple of aligned plots of cumulative case and death count curves.
+And an alternative view of the same "active cases" but plotting the number as a proportion of a country's population (although splitting China between Hubei and all other provinces).
 
-[![Aligned cases](img/global/small/aligned-cases.png)](img/global/aligned-cases.png)
-[![Aligned deaths](img/global/small/aligned-deaths.png)](img/global/aligned-deaths.png)
+[![Active cases](img/global/small/active-prop-log.png)](img/global/active-log.png)
 
 Projections
 -----------
