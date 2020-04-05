@@ -207,3 +207,40 @@ def getUKRegions():
         regions[k]='South West'
 
     return regions
+
+
+regions=None
+
+def whichRegion(code):
+
+    global regions
+    
+    if regions==None:
+        regions=getUKRegions()
+    
+    if code[0]=='E':
+        return regions[code]
+    elif code[0]=='W':
+        return 'Wales'
+    elif code[0]=='S':
+        return 'Scotland'
+    elif code[0]=='N':
+        return 'Northern Ireland'
+    else:
+        assert False
+        return '???'
+
+colorsByRegion={
+    'East Midlands'            :'tab:olive',
+    'East of England'          :'tab:pink',
+    'London'                   :'black',
+    'North East'               :'tab:cyan',
+    'North West'               :'tab:purple',
+    'South East'               :'tab:gray',
+    'South West'               :'tab:orange',
+    'West Midlands'            :'tab:green',
+    'Yorkshire and The Humber' :'tab:brown',
+    'Wales'                    :'tab:red',
+    'Scotland'                 :'tab:blue',
+    'Northern Ireland'         :'purple'
+}

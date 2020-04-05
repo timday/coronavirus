@@ -11,36 +11,6 @@ import numpy as np
 
 import UKCovid19Data
 
-regions=UKCovid19Data.getUKRegions()
-
-def whichRegion(code):
-    if code[0]=='E':
-        return regions[code]
-    elif code[0]=='W':
-        return 'Wales'
-    elif code[0]=='S':
-        return 'Scotland'
-    elif code[0]=='N':
-        return 'Northern Ireland'
-    else:
-        assert False
-        return '???'
-
-colorsByRegion={
-    'East Midlands'            :'tab:olive',
-    'East of England'          :'tab:pink',
-    'London'                   :'black',
-    'North East'               :'tab:cyan',
-    'North West'               :'tab:purple',
-    'South East'               :'tab:gray',
-    'South West'               :'tab:orange',
-    'West Midlands'            :'tab:green',
-    'Yorkshire and The Humber' :'tab:brown',
-    'Wales'                    :'tab:red',
-    'Scotland'                 :'tab:blue',
-    'Northern Ireland'         :'purple'
-}
-
 extrapolationWindow=7
 
 # Compute shift in days to align data on common
@@ -105,7 +75,7 @@ for chart in [0,1,2]:
             if chart>=1:
                 cases[cases<10.0]=np.nan
 
-            region=whichRegion(k)
+            region=UKCovid19Data.whichRegion(k)
 
             if mdayslo==None:
                 mdayslo=mdays[0]-base
@@ -117,11 +87,11 @@ for chart in [0,1,2]:
             else:
                 mdayshi=max(mdayshi,mdays[-1]-base)
             
-            plt.plot([d-base for d in mdays],cases,color=colorsByRegion[region],alpha=0.8,linewidth=3.0,zorder=z)
+            plt.plot([d-base for d in mdays],cases,color=UKCovid19Data.colorsByRegion[region],alpha=0.8,linewidth=3.0,zorder=z)
             if not np.isnan(cases[-1]):
                 totalbase+=base
                 numbase+=1
-                texts.append((cases[-1],codes[k],base,colorsByRegion[region],z))  # TODO: include timeshift on chart 2.
+                texts.append((cases[-1],codes[k],base,UKCovid19Data.colorsByRegion[region],z))  # TODO: include timeshift on chart 2.
             z+=1
 
     averagebase=totalbase/numbase
@@ -133,7 +103,7 @@ for chart in [0,1,2]:
             print '{:6d} '.format(int(txt[0]))+msg
         plt.text(mdayshi+0.1,txt[0],msg,horizontalalignment='left',verticalalignment='center',fontdict={'size':8,'alpha':0.8,'weight':'bold','color':txt[3]},zorder=txt[4]) 
             
-    legends=[matplotlib.patches.Patch(color=colorsByRegion[k],label=k.replace('Wales','Wales (from 2020-03-21)')) for k in sorted(colorsByRegion.keys())]
+    legends=[matplotlib.patches.Patch(color=UKCovid19Data.colorsByRegion[k],label=k.replace('Wales','Wales (from 2020-03-21)')) for k in sorted(UKCovid19Data.colorsByRegion.keys())]
     plt.legend(handles=legends,loc='upper left')
             
     plt.subplots_adjust(right=0.8)
