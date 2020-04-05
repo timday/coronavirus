@@ -111,14 +111,19 @@ def probe(filename,column,what,lowerTierPopulation):
     print '  Lowest'
     for k in sorted(rate.keys(),key=lambda k: income[k],reverse=False)[:10]:
         print '    {:32s}: {:.2f}'.format(codes[k],income[k])
+
+    interesting=sorted(rate.keys(),key=lambda k: population[k],reverse=True)
     
-    y=np.array([100.0*rate[k] for k in rate.keys()])
-    x=np.array([income[k] for k in rate.keys()])
-    w=np.array([population[k] for k in rate.keys()])
-    s=np.sqrt(w/100.0)
+    y=np.array([100.0*rate[k] for k in interesting])
+    x=np.array([income[k] for k in interesting])
+
+    c=[UKCovid19Data.colorsByRegion[UKCovid19Data.whichRegion(k)] for k in interesting]
+
+    w=np.array([population[k] for k in interesting])
+    s=np.sqrt(w/50.0)
     
     fig=plt.figure(figsize=(8,6))
-    plt.scatter(x,y,color='tab:blue',alpha=0.5,label='UTLAs',s=s)
+    plt.scatter(x,y,color=c,alpha=0.8,s=s)
     r=scipy.stats.linregress(x,y)
     gradient,intercept,r_value,p_value,std_err=r
     
@@ -144,7 +149,10 @@ def probe(filename,column,what,lowerTierPopulation):
 
     # plt.xscale('symlog') # Meh.
 
-    plt.legend(loc='upper right')
+    regionsUsed=sorted(list(set([UKCovid19Data.whichRegion(k) for k in interesting])))
+    handles,labels = ax.get_legend_handles_labels()
+    handles.extend([matplotlib.patches.Patch(color=UKCovid19Data.colorsByRegion[k],label=k) for k in regionsUsed])
+    plt.legend(handles=handles,loc='upper right',prop={'size':6})
 
     plt.title('England, Scotland and Wales UTLAs: {}\nr={:.3f} (weighted), r={:.3f} (unweighted),'.format(filename,rw,r_value))
 
