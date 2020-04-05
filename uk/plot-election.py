@@ -155,22 +155,27 @@ for party in ['Con','Lab','LibDem','Brexit','Green','SwingCon','SwingBrexit','Sw
 
     print 'Top 5 for',party,sorted([(100.0*votes[year][k][party]/votes[year][k]['Total'],k) for k in rate.keys()],key=lambda it: it[0],reverse=True)[:5]
 
-    if party=='SwingCon':
-        x=np.array([100.0*votes[2019][k]['Con']/votes[2019][k]['Total'] - 100.0*votes[2017][k]['Con']/votes[2017][k]['Total'] for k in rate.keys()])
-    elif party=='SwingBrexit':
-        x=np.array([100.0*votes[2019][k]['Brexit']/votes[2019][k]['Total'] - 100.0*votes[2017][k]['Brexit']/votes[2017][k]['Total'] for k in rate.keys()])
-    elif party=='SwingConBrexit':
-        x=np.array([100.0*(votes[2019][k]['Con']+votes[2019][k]['Brexit'])/votes[2019][k]['Total'] - 100.0*(votes[2017][k]['Con']+votes[2017][k]['Brexit'])/votes[2017][k]['Total'] for k in rate.keys()])
-    elif party=='SwingGreen':
-        x=np.array([100.0*votes[2019][k]['Green']/votes[2019][k]['Total'] - 100.0*votes[2017][k]['Green']/votes[2017][k]['Total'] for k in rate.keys()])        
-    else:
-        x=np.array([100.0*votes[2019][k][party]/votes[2019][k]['Total'] for k in rate.keys()])
+    interesting=sorted(rate.keys(),key=lambda k: votes[2019][k]['Total'],reverse=True)
 
-    y=np.array([100.0*rate[k] for k in rate.keys()])
-    w=np.array([votes[2019][k]['Total'] for k in rate.keys()])
+    if party=='SwingCon':
+        x=np.array([100.0*votes[2019][k]['Con']/votes[2019][k]['Total'] - 100.0*votes[2017][k]['Con']/votes[2017][k]['Total'] for k in interesting])
+    elif party=='SwingBrexit':
+        x=np.array([100.0*votes[2019][k]['Brexit']/votes[2019][k]['Total'] - 100.0*votes[2017][k]['Brexit']/votes[2017][k]['Total'] for k in interesting])
+    elif party=='SwingConBrexit':
+        x=np.array([100.0*(votes[2019][k]['Con']+votes[2019][k]['Brexit'])/votes[2019][k]['Total'] - 100.0*(votes[2017][k]['Con']+votes[2017][k]['Brexit'])/votes[2017][k]['Total'] for k in interesting])
+    elif party=='SwingGreen':
+        x=np.array([100.0*votes[2019][k]['Green']/votes[2019][k]['Total'] - 100.0*votes[2017][k]['Green']/votes[2017][k]['Total'] for k in interesting])        
+    else:
+        x=np.array([100.0*votes[2019][k][party]/votes[2019][k]['Total'] for k in interesting])
+
+    y=np.array([100.0*rate[k] for k in interesting])
+
+    c=[UKCovid19Data.colorsByRegion[UKCovid19Data.whichRegion(k)] for k in interesting]
+
+    w=np.array([votes[2019][k]['Total'] for k in interesting])
     s=np.sqrt(w/100.0)
     
-    plt.scatter(x,y,s=s)
+    plt.scatter(x,y,c=c,s=s)
 
     # Unweighted regression line
     r=scipy.stats.linregress(x,y)
@@ -204,7 +209,12 @@ for party in ['Con','Lab','LibDem','Brexit','Green','SwingCon','SwingBrexit','Sw
         plt.xlabel('{} % of vote'.format(party))
     else:
         plt.xlabel('Percentage swing')
-    
+
+    regionsUsed=sorted(list(set([UKCovid19Data.whichRegion(k) for k in interesting])))
+    handles,labels = ax.get_legend_handles_labels()
+    handles.extend([matplotlib.patches.Patch(color=UKCovid19Data.colorsByRegion[k],label=k) for k in regionsUsed])
+    plt.legend(handles=handles,loc='upper right',prop={'size':6})
+
     if party[:5]!='Swing':
         plt.title('Case-count growth rate vs. {} vote share.\nRegression lines: weighted (red) r={:.3f}, unweighted (orange) r={:.3f}'.format(party,r_value,rw))
     elif party=='SwingCon':
