@@ -103,11 +103,9 @@ def probe(column,what,desc):
 
     correlation[desc]=r_value
 
-    handles,labels = ax.get_legend_handles_labels()
-    
     regionsUsed=sorted(list(set([UKCovid19Data.whichRegion(k) for k in rate.keys()])))
+    handles,labels = ax.get_legend_handles_labels()
     handles.extend([matplotlib.patches.Patch(color=UKCovid19Data.colorsByRegion[k],label=k) for k in regionsUsed])
-
     plt.legend(handles=handles,loc='upper left',prop={'size':6})
 
     distutils.dir_util.mkpath('output')
