@@ -30,7 +30,7 @@ A couple of aligned plots of the cumulative case and death count curves.
 
 And an alternative view of the same "active cases" but plotting the number as a proportion of a country's population (although splitting China between Hubei and all other provinces).
 
-[![Active cases](img/global/small/active-prop-log.png)](img/global/active-log.png)
+[![Active cases](img/global/small/active-prop-log.png)](img/global/active-prop-log.png)
 
 Projections
 -----------
