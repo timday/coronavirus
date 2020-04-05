@@ -159,3 +159,5 @@ Links
     * [Worldometer's large collection of data.](https://www.worldometers.info/coronavirus/)
     * [PHE's UK page.](https://www.arcgis.com/apps/opsdashboard/index.html#/f94c3c90da5b4e9f9a0b19484dd4bb14)
     * [A page tracking Scotland.](https://www.travellingtabby.com/scotland-coronavirus-tracker/)
+* Interesting read on why pandemic modelling is hard: <https://fivethirtyeight.com/features/why-its-so-freaking-hard-to-make-a-good-covid-19-model/>
+* ...and another one on all the problems with case-counts: <https://fivethirtyeight.com/features/coronavirus-case-counts-are-meaningless/>
