@@ -164,7 +164,7 @@ for p in range(3):
     plt.scatter(x,y,s=s,color='tab:blue')
     
     for i in xrange(len(x)):
-        plt.text(x[i]+0.5,y[i]+0.5,rate.keys()[i])
+        plt.text(x[i]+0.125,y[i]+0.125,rate.keys()[i])
     
     # Unweighted regression line
     r=scipy.stats.linregress(x,y)
