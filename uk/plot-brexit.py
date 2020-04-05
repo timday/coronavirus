@@ -99,11 +99,11 @@ def getDemographics(codeRewrites,interesting):
 matplotlib.rcParams['font.sans-serif'] = "Comic Sans MS"
 matplotlib.rcParams['font.family'] = "sans-serif"
 
-def plot(x,y,w,s):
+def plot(x,y,c,w,s,interesting):
 
     fig=plt.figure(figsize=(8,6))
 
-    plt.scatter(x,y,s=s,color='tab:blue',alpha=0.5,label='UTLAs')
+    plt.scatter(x,y,s=s,color=c,alpha=0.8)
     
     # Unweighted regression line
     r=scipy.stats.linregress(x,y)
@@ -127,8 +127,11 @@ def plot(x,y,w,s):
     vals=ax.get_xticks()
     ax.set_xticklabels(['{:,.1f}%'.format(x) for x in vals])
 
-    plt.legend(loc='upper left')
-    
+    regionsUsed=sorted(list(set([UKCovid19Data.whichRegion(k) for k in interesting])))
+    handles,labels = ax.get_legend_handles_labels()
+    handles.extend([matplotlib.patches.Patch(color=UKCovid19Data.colorsByRegion[k],label=k) for k in regionsUsed])
+    plt.legend(handles=handles,loc='upper left',prop={'size':6})
+
     return r.rvalue,rw
 
 plots=[('England',7,'England'),(None,7,'England, Scotland and Wales')]   #,('Scotland',7,'Scotland'),('Wales',5,'Wales')
@@ -177,13 +180,18 @@ for p in range(len(plots)):
     for k in rate.keys():
         if rate[k]<0.0:
             print 'Negative rate:',k,codes[k],rate[k]
+
+    interesting=sorted(rate.keys(),key=lambda k: votesTotal[k],reverse=True)
     
-    x=np.array([100.0*votesLeave[k]/votesTotal[k] for k in rate.keys()])
-    y=np.array([100.0*rate[k] for k in rate.keys()])
-    w=np.array([votesTotal[k] for k in rate.keys()])
+    x=np.array([100.0*votesLeave[k]/votesTotal[k] for k in interesting])
+    y=np.array([100.0*rate[k] for k in interesting])
+
+    c=[UKCovid19Data.colorsByRegion[UKCovid19Data.whichRegion(k)] for k in interesting]
+
+    w=np.array([votesTotal[k] for k in interesting])
     s=np.sqrt(w/10.0)
 
-    r,rw=plot(x,y,w,s)
+    r,rw=plot(x,y,c,w,s,interesting)
 
     plt.xlabel('Leave vote')
     plt.ylabel('Daily % increase rate')
@@ -196,11 +204,11 @@ for p in range(len(plots)):
     distutils.dir_util.mkpath('output')
     plt.savefig(outputfile,dpi=96)
 
-    x=np.array([100.0*oldies[k] for k in rate.keys()])
-    w=np.array([populationTotal[k] for k in rate.keys()])
+    x=np.array([100.0*oldies[k] for k in interesting])
+    w=np.array([populationTotal[k] for k in interesting])
     s=np.sqrt(w/50.0)
 
-    r,rw=plot(x,y,w,s)
+    r,rw=plot(x,y,c,w,s,interesting)
 
     plt.xlabel('% Population >=50 in 2011 census')
     plt.ylabel('Daily % increase rate')
@@ -212,9 +220,9 @@ for p in range(len(plots)):
         outputfile='output/oldies-{}.png'.format(what[0])
     plt.savefig(outputfile,dpi=96)
 
-    y=np.array([100.0*votesLeave[k]/votesTotal[k] for k in rate.keys()])
+    y=np.array([100.0*votesLeave[k]/votesTotal[k] for k in interesting])
     
-    r,rw=plot(x,y,w,s)
+    r,rw=plot(x,y,c,w,s,interesting)
 
     plt.xlabel('% Population >=50 in 2011 census')
     plt.ylabel('Leave vote')
