@@ -73,12 +73,14 @@ def probe(column,what,desc):
     print '  Lowest'
     for k in sorted(rate.keys(),key=lambda k: health[k],reverse=False)[:10]:
         print '    {:32s}: {:.2f}'.format(codes[k],health[k])
-    
+
     y=np.array([100.0*rate[k] for k in rate.keys()])
     x=np.array([health[k] for k in rate.keys()])
+
+    c=[UKCovid19Data.colorsByRegion[UKCovid19Data.whichRegion(k)] for k in rate.keys()]
     
     fig=plt.figure(figsize=(8,6))
-    plt.scatter(x,y,color='tab:blue',alpha=0.5,label='UTLAs')
+    plt.scatter(x,y,color=c,alpha=0.8)
     r=scipy.stats.linregress(x,y)
     gradient,intercept,r_value,p_value,std_err=r
     
@@ -90,8 +92,6 @@ def probe(column,what,desc):
     qy=coef[2]+coef[1]*rx+coef[0]*rx**2
     plt.plot(rx,qy,color='tab:green',label='Quadratic best fit')
 
-    plt.legend(loc='upper left')
-    
     ax=plt.gca()
     vals=ax.get_yticks()
     ax.set_yticklabels(['{:,.1f}%'.format(x) for x in vals])
@@ -101,10 +101,17 @@ def probe(column,what,desc):
 
     plt.title("England UTLAs: Virus case-count growth rate vs. {}\nr={:.3f}".format(desc,r_value))
 
+    correlation[desc]=r_value
+
+    handles,labels = ax.get_legend_handles_labels()
+    
+    regionsUsed=sorted(list(set([UKCovid19Data.whichRegion(k) for k in rate.keys()])))
+    handles.extend([matplotlib.patches.Patch(color=UKCovid19Data.colorsByRegion[k],label=k) for k in regionsUsed])
+
+    plt.legend(handles=handles,loc='upper left',prop={'size':6})
+
     distutils.dir_util.mkpath('output')
     plt.savefig('output/health-{}.png'.format(desc.replace('(%)','percentage')),dpi=96)
-
-    correlation[desc]=r_value
 
 probe(2,'ILO employment rate (%)1','Employment rate (%)')
 probe(3,'ILO unemployment rate (%)2','Unemployment rate (%)')
