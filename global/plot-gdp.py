@@ -116,7 +116,9 @@ gdp=getGDPPerHead(True)
 population=getPopulation()
 timeseries=getJHUData(False)
 
-print timeseries['China']
+pyBasedate=datetime.datetime(2020,1,22)  # csv file starts 2020-01-22
+basedate=mdates.date2num(pyBasedate)
+datestr=mdates.num2date(basedate+len(timeseries['Italy'])-1).strftime('%Y-%m-%d')
 
 window=7
 
@@ -164,6 +166,8 @@ coef=np.polyfit(x,y,2,w=w)
 print coef
 qy=coef[2]+coef[1]*rx+coef[0]*rx**2
 plt.plot(rx,qy,color='tab:green',label='Quadratic best fit')
+
+plt.title('Case-count growth rate vs. log10(GDP/head).  PPP used.  Data to {}.'.format(datestr))
 
 plt.legend(loc='upper right')
 

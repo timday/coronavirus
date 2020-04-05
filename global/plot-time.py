@@ -50,6 +50,7 @@ for chart in range(2):
     what={0:'Total confirmed cases',1:'Total deaths'}[chart]
 
     whenItaly=computeWhen(timeseries['Italy'],common)
+    datestr=mdates.num2date(basedate+len(timeseries['Italy'])-1).strftime('%Y-%m-%d')
     
     for k in timeseriesKeys:
     
@@ -87,7 +88,7 @@ for chart in range(2):
     else:
         plt.legend(loc='lower right',framealpha=0.9)
         
-    plt.title('{} aligned on {:d}.\nTimes +/- ahead/behind Italy.\nLines from $\geq{}$'.format(what,int(common),int(ignore)))
+    plt.title('{} aligned on {:d}.  Times +/- ahead/behind Italy.  Data to {}'.format(what,int(common),datestr))
 
     distutils.dir_util.mkpath('output')
     plt.savefig(

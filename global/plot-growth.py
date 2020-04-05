@@ -62,7 +62,7 @@ plt.yticks(fontsize=10)
 plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=mdates.MO))
 plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
 plt.legend(loc='lower left',framealpha=0.9,fontsize='medium',bbox_to_anchor=(0.01,0.01)).set_zorder(200)   # Was xx-small, but that's too small.
-plt.title('Daily % increase rate and 1-week window\nStarts when >=30 cases')
+plt.title('Daily % increase rate and 1-week window.  Data to {}.\nStarts when >=30 cases'.format(mdates.num2date(basedate+len(data)-1).strftime('%Y-%m-%d')))
 
 vals = ax.get_yticks()
 ax.set_yticklabels(['{:,.1f}%'.format(x) for x in vals])

@@ -18,10 +18,8 @@ def sweep(cases,window):
     return cases-np.concatenate([np.zeros((window,)),cases[:-window]])
 
 def active(k):
-
     casesTotal=timeseries[k]
     casesActive=sum([sweep(casesTotal,w) for w in xrange(activeWindowLo,activeWindowHi+1)])/(1+activeWindowHi-activeWindowLo)
-
     return casesActive
     
 for p in range(4):
@@ -29,6 +27,8 @@ for p in range(4):
     fig=plt.figure(figsize=(16,9))
 
     for k in timeseriesKeys:
+
+        datestr=mdates.num2date(basedate+len(timeseries[k])-1).strftime('%Y-%m-%d')
 
         if p==1 and k=='Total':  # Skip global total on linear plot
             continue
@@ -62,14 +62,14 @@ for p in range(4):
     plt.gca().set_xlim(left=basedate,right=x[-1])
     plt.gca().xaxis.set_major_locator(mdates.WeekdayLocator(byweekday=mdates.MO))
     plt.gca().xaxis.set_major_formatter(mdates.DateFormatter('%Y-%m-%d'))
-    
+
     plt.title(
         {
-            0: 'Active cases ({}-{} day window).  Log-scale.',
-            1: 'Active cases ({}-{} day window).  Omits global total.',
-            2: 'Active cases ({}-{} day window).  Proportion of population, log-scale.',
-            3: 'Active cases ({}-{} day window).  Proportion of population.'
-        }[p].format(activeWindowLo,activeWindowHi)
+            0: 'Active cases ({}-{} day duration).  Log-scale.  Data to {}.',
+            1: 'Active cases ({}-{} day duration).  Omits global total.  Data to {}',
+            2: 'Active cases ({}-{} day duration).  Proportion of population, log-scale.  Data to {}',
+            3: 'Active cases ({}-{} day duration).  Proportion of population.  Data to {}'
+        }[p].format(activeWindowLo,activeWindowHi,datestr)
     )
 
     plt.legend(loc='upper left',fontsize='medium')
