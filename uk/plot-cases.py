@@ -158,11 +158,11 @@ for chart in [0,1,2]:
         plt.yscale('symlog')
 
     if chart==0:
-        plt.title('Cases by UTLA')
+        plt.title('Cases by UTLA.  Data to {}.'.format(days[-1]))
     elif chart==1:
-        plt.title('Cases by UTLA (log scale) from $\geq10$')
+        plt.title('Cases by UTLA (log scale) from $\geq10$  Data to {}.'.format(days[-1]))
     else:
-        plt.title('Cases by UTLA (log scale) from $\geq10$ aligned on {} cases\nTimes +/- ahead/behind average'.format(common))
+        plt.title('Cases by UTLA (log scale) from $\geq10$ aligned on {} cases\nTimes +/- ahead/behind average  Data to {}.'.format(common,days[-1]))
 
     distutils.dir_util.mkpath('output')
     plt.savefig(
