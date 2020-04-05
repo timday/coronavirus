@@ -1,11 +1,11 @@
 #!/bin/sh
 
 ./plot-growth.py &
-sleep 1
+sleep 2
 ./plot-active.py &
-sleep 1
+sleep 2
 ./plot-time.py &
-sleep 1
+sleep 2
 ./plot-gdp.py &
-sleep 1
+sleep 2
 ./plot-projections.py &
