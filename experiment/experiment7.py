@@ -10,7 +10,6 @@ import matplotlib.pyplot as plt
 # Growth rate proportional to active cases.
 # Maybe with herd immunity or suppression factor too but keep it simple. 
 
-
 # This is the initially infectious source
 def impulse(t,d):
     if t<=0.0:
