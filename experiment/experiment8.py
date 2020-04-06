@@ -11,12 +11,12 @@ import matplotlib.pyplot as plt
 # Maybe with herd immunity or suppression factor too but keep it simple. 
 
 x0=10.0
-k=0.2
+k=0.3
 T0=14.0  # Active window
 
 T1=21.0   
 P=1e8
-a=0.1
+a=0.01
 b=0.01
 
 def values_before_zero(t):
@@ -31,17 +31,16 @@ def model0(Y,t):
 
     active=ynow[0]-Y(t-T0)[0]
 
-    pactive1=Y(t-T1)[0]-Y(t-T1-T0)[0]
-    pactive0=Y(t-T1-7.0)[0]-Y(t-T1-T0-7.0)[0]
+    pactive=Y(t-T1)[0]-Y(t-T1-T0)[0]
 
-    g=max(0.0,(pactive1/pactive0)**(1.0/7.0)-1.0)  # Growth rate in active cases over week to T1 ago
+    g=math.log(1.0+pactive)
     
-    dcases=(k*active*np.exp(-ynow[1]))*(1.0-ynow[0]/P)
+    dcases=(k*active/(1.0+ynow[1]))*(1.0-ynow[0]/P)
     dpolicy=a*g-b*ynow[1]
 
     return np.array([dcases,dpolicy])
 
-ts=np.linspace(0.0,210.0,2401)
+ts=np.linspace(0.0,1800.0,5*1800+1)
 ys=ddeint(model0,values_before_zero,ts)
 
 # Considered multiple channels for various periods of incubation... but seems to get monstrously complicated quickly.
