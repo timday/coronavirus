@@ -1,36 +1,22 @@
-WIP
-===
-Under construction.  Wanted to use github pages.  Needs tidying up.
+Messing around charting coronavirus data (mainly global and UK case counts) and some other things.
+
+Selected output at <https://timday.github.io/coronavirus/>, updated most days.
 
 Contents
-========
-
-Selected output at <https://timday.github.io/coronavirus/>
-
-Focus on different regions:
+--------
+Processing relevant to each area:
 
 * global
 * uk
 * usa
 
+In each folder, `./fetch.sh` updates daily-updated data (see code for the origins of other static csv files also in the repo), `./plot-*.py` generate various charts (saved to `./output/` as well as displayed), `./publish.sh` updates them to the GitHub Pages' `docs` directory.
+
 * docs - content for GitHub Pages website at <https://timday.github.io/coronavirus/>
-* experiments - Mainly playing around with DDEs for model-fitting projections.
 
-Data sources
+* experiments - Mainly playing around with DDEs for (largely abandoned) model-fitting projections.
+
+Note to self
 ============
-Out of date/incomplete.  See code and various `fetch.sh` scripts for for details.
 
-* JHU tracker <https://gisanddata.maps.arcgis.com/apps/opsdashboard/index.html#/bda7594740fd40299423467b48e9ecf6>
-
-* JHU github <https://github.com/CSSEGISandData/COVID-19>
-
-* JHU time series data <https://github.com/CSSEGISandData/COVID-19/tree/master/csse_covid_19_data/csse_covid_19_time_series>.
-    * Fetched with `./fetch.sh` here.
-
-* JHU tracker data change issue
-    * Recovered/active cases workround issue <https://github.com/CSSEGISandData/COVID-19/issues/1250#issuecomment-603255860>
-
-Notes
-=====
-
-https repo access: Avoid username prompt with `git remote set-url origin https://<username>@github.com/timday/coronavirus.git`
+https repo access: Avoid username prompt on pushes with `git remote set-url origin https://<username>@github.com/timday/coronavirus.git`
