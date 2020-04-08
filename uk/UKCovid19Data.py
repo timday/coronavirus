@@ -3,6 +3,7 @@
 
 import csv
 import datetime
+import numpy as np
 
 def value(s):
     if s=='1 to 4':
@@ -77,6 +78,12 @@ def getUKCovid19Data(nation,window,startdate):
     timeseries={a:timeseries[a] for a in timeseries.keys() if len(timeseries[a])==len(days)}
 
     codes={c:codes[c] for c in timeseries.keys()}
+
+    for k in timeseries.keys():
+        for i in xrange(1,len(timeseries[k])):
+            if np.isnan(timeseries[k][i]):
+                timeseries[k][i]=timeseries[k][i-1]
+                print 'Replacing NaN in {} at day {}'.format(k,i)
     
     return timeseries,days,codes
 
