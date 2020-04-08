@@ -120,7 +120,7 @@ for chart in [0,1,2]:
     plt.xticks(rotation=75,fontsize=10)
         
     if chart==2:
-        mdayslo+=14 # Fudge, as most of it's not interesting
+        mdayslo+=35 # Fudge, as most of it's not interesting
     plt.xlim(left=mdayslo,right=mdayshi)
     plt.ylim(bottom={0:0.0,1:10.0,2:10.0}[chart])
     plt.gca().set_ylabel('Cumulative cases')
