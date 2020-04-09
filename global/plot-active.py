@@ -41,14 +41,16 @@ for p in range(4):
         x=[t+basedate for t in range(len(casesActive))]
         plt.plot(x,casesActive,label=descriptions[k],color=colors[k],linewidth=3.0*widthScale[k])
 
-        plt.text(
-            x[-1]+0.25,
-            casesActive[-1],
-            descriptions[k],
-            horizontalalignment='left',
-            verticalalignment='center',
-            fontdict={'size':8,'alpha':0.8,'weight':'bold','color':colors[k]}
-        )
+        # TODO: Also label/annotate active case peaks?
+        if p<=1 or casesActive[-1]>=1e-7:  # Don't label lines once they've dropped off the bottom
+            plt.text(
+                x[-1]+0.25,
+                casesActive[-1],
+                descriptions[k],
+                horizontalalignment='left',
+                verticalalignment='center',
+                fontdict={'size':8,'alpha':0.8,'weight':'bold','color':colors[k]}
+            )
 
     if p==0 or p==2:
        plt.yscale('log')
