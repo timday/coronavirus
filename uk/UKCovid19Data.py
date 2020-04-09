@@ -82,8 +82,8 @@ def getUKCovid19Data(nation,window,startdate):
     for k in timeseries.keys():
         for i in xrange(1,len(timeseries[k])):
             if np.isnan(timeseries[k][i]):
-                timeseries[k][i]=timeseries[k][i-1]
                 print 'Replacing NaN in {} at day {}'.format(k,i)
+                timeseries[k][i]=2.5  # NaN means 1-4.  So, use average.  
     
     return timeseries,days,codes
 
