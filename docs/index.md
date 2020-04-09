@@ -157,7 +157,7 @@ Unsurprisingly, the chart is pretty much flipped left-right for the 2012 & 2008 
 [![Case growth rate vs. 2012 vote](img/usa/small/president-2012.png)](img/usa/president-2012.png)
 [![Case growth rate vs. 2008 vote](img/usa/small/president-2008.png)](img/usa/president-2008.png)
 
-Not particularly convincing looking trend-lines though.
+Not particularly convincing looking trend-lines though.  California and Texas possibly dominate the weighted regression line.
 
 Links
 =====
