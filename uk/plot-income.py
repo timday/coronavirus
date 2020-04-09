@@ -35,6 +35,8 @@ window=7
 
 timeseries,dates,codes=UKCovid19Data.getUKCovid19Data(None,window+1,None)   # Need 8 days to get 7 growth rates.
 
+print '***',dates
+
 interesting=frozenset(timeseries.keys())
 codeRewrites=UKCovid19Data.getUKCodeRewrites(interesting)
     
