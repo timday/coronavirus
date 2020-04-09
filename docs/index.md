@@ -68,7 +68,7 @@ From the ONS, there is some UTLA-level data available (for England) for various 
 
 From the health data (from <https://www.ons.gov.uk/peoplepopulationandcommunity/healthandsocialcare/healthinequalities/datasets/indicatorsoflifestylesandwidercharacteristicslinkedtohealthylifeexpectancyinengland>, a 2017 release of 2015 data?), the score most correlated with the virus case-count growth rate appears to be the area's obesity rate:
 
-[!England case count growth rate vs. Education deprivation](img/uk/small/health-Obesity rate percentage.png)](img/uk/health-Obesity rate percentage.png)
+[![England case count growth rate vs. obesity rate](img/uk/small/health-Obesity rate percentage.png)](img/uk/health-Obesity rate percentage.png)
 
 A snapshot of the correlations with all the various health metrics (using case-count growth rates over the week prior to the date shown, sorted by the magnitude of the latest figures):
 ```
