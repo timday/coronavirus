@@ -68,42 +68,51 @@ From the ONS, there is some UTLA-level data available (for England) for various 
 
 From the health data (from <https://www.ons.gov.uk/peoplepopulationandcommunity/healthandsocialcare/healthinequalities/datasets/indicatorsoflifestylesandwidercharacteristicslinkedtohealthylifeexpectancyinengland>, a 2017 release of 2015 data?), the score most correlated with the virus case-count growth rate appears to be the area's obesity rate:
 
-[![UK case counts vs. Education deprivation](img/uk/small/health-Obesity rate percentage.png)](img/uk/health-Obesity rate percentage.png)
+[!England case count growth rate vs. Education deprivation](img/uk/small/health-Obesity rate percentage.png)](img/uk/health-Obesity rate percentage.png)
 
-A snapshot of the correlations with all the various health metrics (using last week's case-count growth rates as of 1st April 2020):
+A snapshot of the correlations with all the various health metrics (using case-count growth rates over the week prior to the date shown, sorted by the magnitude of the latest figures):
 ```
-  Obesity rate (%)                                  :  0.421
-  Physically active adults (%)                      : -0.272
-  Preventable Mortality (deaths per 100,000)        :  0.232
-  Smoking prevalence (%)                            :  0.230
-  Alcohol-related admissions (per 100,000)          :  0.221
-  Employment rate (%)                               : -0.128
-  Economically inactive (%)                         :  0.121
-  Unemployment rate (%)                             :  0.107
-  Adults eating 5-a-day (%)                         : -0.091
+                                               Week to     Week to
+                                              01/04/2020  01/04/2020
+  Obesity rate (%)                           :  0.421       0.505
+  Alcohol-related admissions (per 100,000)   :  0.221       0.470 
+  Preventable Mortality (deaths per 100,000) :  0.232       0.429
+  Smoking prevalence (%)                     :  0.230       0.318
+  Physically active adults (%)               : -0.272      -0.266
+  Economically inactive (%)                  :  0.121       0.161
+  Employment rate (%)                        : -0.128      -0.157
+  Adults eating 5-a-day (%)                  : -0.091      -0.145
+  Unemployment rate (%)                      :  0.107       0.101
 ```
 
 So - probably unsurprisingly - a general picture of unhealthy things being associated with faster case-count growth, and more health-positive things like physical activity, employment and even "5-a-day" being weakly linked with slower growth.
 
 ### Deprivation
 
-From the "deprivation index" data (from <https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019>, the score most correlated with the virus case-count growth rate appears to be "Education, Skills and Training" (higher score = worse!):
+From the "deprivation index" data (from <https://www.gov.uk/government/statistics/english-indices-of-deprivation-2019>, the score most correlated with the virus case-count growth rate initially appeared to be "Education, Skills and Training" (higher score = worse!), but other deprivation indices have since taken over:
 
-[![UK case counts vs. Education deprivation](img/uk/small/deprivation-Education.png)](img/uk/deprivation-Education.png)
+[![England case count growth rate vs. Barriers to Housing and Services deprivation](img/uk/small/deprivation-Barriers.png)](img/uk/deprivation-Barriers.png)
+[![England case count growth rate vs. Health deprivation](img/uk/small/deprivation-Health.png)](img/uk/deprivation-Health.png)
+[![England case count growth rate vs. Employment deprivation](img/uk/small/deprivation-Employment.png)](img/uk/deprivation-Employment.png)
+[![England case count growth rate vs. Education deprivation](img/uk/small/deprivation-Education.png)](img/uk/deprivation-Education.png)
 
-A snapshot of the correlations with all the various deprivation metrics (using last week's case-count growth rates as of 1st April 2020):
+A snapshot of the correlations with all the various deprivation metrics (using case-count growth rates over the week prior to the date shown, sorted by the magnitude of the latest figures):
 ```
-  Education, Skills and Training          :  0.395
-  Barriers to Housing and Services        : -0.332
-  Living Environment                      : -0.308
-  Employment                              :  0.300
-  Health Deprivation and Disability       :  0.282
-  IMD                                     :  0.205  - "Index of Multiple Deprivations" (an aggregate score?)
-  Income                                  :  0.183
-  IDACI                                   :  0.162  - Income Deprivation Affecting Children Index
-  Crime                                   :  0.087
-  IDAOPI                                  : -0.061  - Income Deprivation Affecting Older People Index
+                                       Week to     Week to
+                                      01/04/2020  08/04/2020
+  Barriers to Housing and Services  :  -0.332     -0.552   
+  Health Deprivation and Disability :   0.282      0.512
+  Employment                        :   0.300      0.498
+  Education, Skills and Training    :   0.395      0.463
+  IMD                               :   0.205      0.322  
+  Income                            :   0.183      0.293  
+  Living Environment                :  -0.308     -0.256   
+  IDACI                             :   0.162      0.242  
+  Crime                             :   0.087      0.090  
+  IDAOPI                            :  -0.061     -0.073   
 ```
+(IMD - "Index of Multiple Deprivations", an aggregate score; IDACI - "Income Deprivation Affecting Children Index"; IDAOPI - "Income Deprivation Affecting Older People Index")
+
 Note that while for most of these "deprivation index" numbers a higher score implies more deprivation, that appears to be reversed for the "Living Environment" score.  I'm not sure of the interpretation of the "Barriers to Housing and Services" score either, but a high number seems to be frequently associated with wealthy ( and therefore unaffordable) areas.
 
 ### Brexit and demographics
