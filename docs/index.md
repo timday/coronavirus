@@ -73,7 +73,7 @@ From the health data (from <https://www.ons.gov.uk/peoplepopulationandcommunity/
 A snapshot of the correlations with all the various health metrics (using case-count growth rates over the week prior to the date shown, sorted by the magnitude of the latest figures):
 ```
                                                Week to     Week to
-                                              01/04/2020  01/04/2020
+                                              01/04/2020  08/04/2020
   Obesity rate (%)                           :  0.421       0.505
   Alcohol-related admissions (per 100,000)   :  0.221       0.470 
   Preventable Mortality (deaths per 100,000) :  0.232       0.429
