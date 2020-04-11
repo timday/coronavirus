@@ -79,7 +79,7 @@ def getIncome(filename,column,what,lowerTierPopulation):
         if rowCount<2:
             pass
         elif rowCount==2:
-            assert row[column].strip()==what
+            assert row[column].strip()=='2016'  # Might be different in other tables.
         else:
             ltcode=row[1]
             code=row[1]
@@ -167,7 +167,7 @@ lowerTierPopulation=getLowerTierPopulation()
     
 # probe('Gross disposable income',22,'2016',lowerTierPopulation)  # Not sure what this is.
 
-probe('GDHI per head',22,'2016',lowerTierPopulation)
+probe('GDHI per head',22,'GDHI per head (2016 data)',lowerTierPopulation)
 
 print
 
