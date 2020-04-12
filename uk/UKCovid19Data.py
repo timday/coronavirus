@@ -9,7 +9,7 @@ def value(s):
     if s=='1 to 4':
         return 2.5
     else:
-        return float(s)
+        return float(s.replace(',',''))
 
 # NB Due to messing around in Wales switching between Local Authority and Health Board, probably can only trust stuff from the 21st March for Wales.
 # See https://github.com/tomwhite/covid-19-uk-data/blob/master/README.md
