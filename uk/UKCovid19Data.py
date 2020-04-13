@@ -8,6 +8,8 @@ import numpy as np
 def value(s):
     if s=='1 to 4':
         return 2.5
+    elif s=='':
+        return 0.0
     else:
         return float(s.replace(',',''))
 
