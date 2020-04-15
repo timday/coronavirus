@@ -16,6 +16,12 @@ In each folder, `./fetch.sh` updates daily-updated data (see code for the origin
 
 * experiments - Mainly playing around with DDEs for (largely abandoned) model-fitting projections.
 
+TODO
+====
+
+* Move "active cases" to a front-loaded sawtooth distribution, 14-28 days duration.
+* "Active cases" for UK UTLAs.
+
 Note to self
 ============
 

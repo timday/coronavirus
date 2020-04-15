@@ -52,7 +52,7 @@ Note: Model parameters are constrained to only allow growth rates to fall, becau
 UK
 ==
 
-Data from the [PHE tracker](https://www.arcgis.com/apps/opsdashboard/index.html#/f94c3c90da5b4e9f9a0b19484dd4bb14) as curated into `.csv` file timeseries by <https://github.com/tomwhite/covid-19-uk-data>.
+Data from the gov.uk tracker at <https://coronavirus.data.gov.uk/> as curated into `.csv` file timeseries by <https://github.com/tomwhite/covid-19-uk-data>.
 
 A messy plot of all the individual UTLAs/health-boards case counts:
 
