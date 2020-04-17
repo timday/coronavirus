@@ -125,11 +125,11 @@ Plotting case-count growth against the 2016 Leave vote also shows some correlati
 
 Reminder: correlation is not causation! And calling COVID-19 "The Brexit Disease" or "Leave Fever" would just be silly.
 
-However, perhaps surprisingly, plotting case-count growth against demographics from the 2011 census there seems to be very little connection:
+Initially, plotting case-count growth against demographics from the 2011 census showed very little correlation, but it seems to have become more correlated over the weeks I've been plotting this:
 
 [![UK case count growth rate vs. demographics](img/uk/small/oldies-England.png)](img/uk/oldies-England.png)
 
-which seems all the more surprising considering that there is actually a rather large correlation between the same demographic measure and the Leave vote:
+There is actually a rather large correlation between the same demographic measure and the Leave vote (so the initial lack of correlation was quite surprising).
 
 [![Leave vote vs. demographics](img/uk/small/oldies-vote-England.png)](img/uk/oldies-vote-England.png)
 
