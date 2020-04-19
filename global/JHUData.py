@@ -42,7 +42,8 @@ descriptions={
     'Ireland'    :'Ireland'    ,
     'Singapore'  :'Singapore'  ,
     'Russia'     :'Russia'     ,
-    'Chile'      :'Chile'
+    'Chile'      :'Chile'      ,
+    'India'      :'India'
 }
 
 news={
@@ -95,7 +96,8 @@ news={
         ((2020,2,21),'Emergency measures')
     ],
     'Japan':[
-        ((2020,2,25),'Basic Policies')
+        ((2020,2,25),'Basic Policies'),
+        ((2020,4,16),'State of Emergency')
     ],
     'Iran':[
         ((2020,3,13),'Closures')
@@ -144,6 +146,9 @@ news={
     ],
     'Chile':[
         ((2020,03,26),'School closures, Santiago lockdown')
+    ],
+    'India':[
+        ((2020,03,24),'National lockdown')
     ]
 }
 
@@ -180,6 +185,7 @@ populations={
     'Russia'     :1.45e8,
     'Chile'      :1.8e7,
     'Singapore'  :5.6e6,
+    'India'      :1.4e9,
     }
 
 def rgb(r,g,b):
@@ -201,10 +207,13 @@ colors={
     
     'France'     :rgb(140, 86, 75),
     'Ireland'    :rgb(140, 86, 75),  # Same as France
+    
     'Germany'    :rgb(196,156,148),
     'Chile'      :rgb(196,156,148),  # Same as Germany
+    
     'Spain'      :rgb(152,223,138),
     'Portugal'   :rgb(152,223,138),  # Same as Spain
+    
     'Italy'      :rgb( 44,160, 44),
     'Brazil'     :rgb( 44,160, 44),  # Same as Italy
 
@@ -213,15 +222,21 @@ colors={
     'Denmark'    :rgb(219,219,141),
     'Netherlands':rgb(188,189, 34),
     'Belgium'    :rgb(247,182,210),
+
     'Austria'    :rgb(225,187,120),
     'Czechia'    :rgb(225,187,120), # Same as Austria
+
     'Switzerland':rgb(197,176,213),
     'Israel'     :rgb(197,176,213), # Same as Switzerland
 
     'South Korea':rgb(255,127, 14),
+    'India'      :rgb(255,127, 14), # Same as South Korea
+
     'Japan'      :rgb(227,119,194),
+
     'Iran'       :rgb(148,103,189),
     'Turkey'     :rgb(148,103,189), # Same as Iran
+
     'Malaysia'   :rgb(255,152,150),
     'Singapore'  :rgb(255,152,150), # Same as Malaysia
 
@@ -240,6 +255,7 @@ widthScale['Czechia']=0.5
 widthScale['Ireland']=0.5
 widthScale['Singapore']=0.5
 widthScale['Chile']=0.5
+widthScale['India']=0.5
 
 # Recursive in case error spans more than one day
 def clean(a,where):
@@ -266,7 +282,7 @@ def getJHUData(all,splitChina):
     results=[]
 
     # Actual list
-    timeseriesKeys=['Total','Iran','South Korea','Italy','France','Spain','Portugal','Germany','US','Canada','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore','Russia','Chile']
+    timeseriesKeys=['Total','Iran','South Korea','Italy','France','Spain','Portugal','Germany','US','Canada','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore','Russia','Chile','India']
     if splitChina:
         timeseriesKeys.append('China:Hubei')
         timeseriesKeys.append('China:Other')
@@ -274,7 +290,7 @@ def getJHUData(all,splitChina):
         timeseriesKeys.append('China')            
 
     # Names from the CSV file
-    interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Canada','Iran','France','Germany','Spain','Portugal','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore','Russia','Chile'])
+    interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Canada','Iran','France','Germany','Spain','Portugal','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore','Russia','Chile','India'])
 
     for what in {False:range(1),True:range(2)}[all]:
 
