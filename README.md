@@ -21,6 +21,7 @@ TODO
 
 * Move "active cases" to a front-loaded sawtooth distribution, 14-28 days duration.
 * "Active cases" for UK UTLAs.
+* Do something with Oxford stringency index data (CSV timeseries available)?  Interested in e.g impact on death rate, time from onset to peak active cases.
 
 Note to self
 ============
