@@ -74,7 +74,7 @@ for p in range(4):
         }[p].format(activeWindowLo,activeWindowHi,datestr)
     )
 
-    plt.legend(loc='upper left',fontsize='medium')
+    plt.legend(loc='upper left',fontsize='small')
 
     plt.subplots_adjust(right=0.9)
     
