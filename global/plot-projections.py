@@ -228,7 +228,7 @@ def probe(data,P,where):
     r1=min(r1s,key=lambda r: r.fun)
 
     print 'Model 2'
-    x2s=[np.array([data[0],k,a]),np.array([data[0],k,0.0]),np.array([data[0],0.25*k,a]),np.array([data[0],0.25*k,0.0]),np.array([data[0],4.0*k,a]),np.array([data[0],4.0*k,0.0])]
+    x2s=[np.array([data[0],k,a]),np.array([data[0],k,0.0]),np.array([data[0],0.25*k,a]),np.array([data[0],0.25*k,0.0]),np.array([data[0],2.0*k,a]),np.array([data[0],2.0*k,0.0])]
     r2s=map(lambda x2: scipy.optimize.minimize(error2,x2,method='SLSQP',options={'ftol':tolerance,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x2s)
     r2=min(r2s,key=lambda r: r.fun)
 
