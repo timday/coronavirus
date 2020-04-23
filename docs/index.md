@@ -74,17 +74,17 @@ From the health data (from <https://www.ons.gov.uk/peoplepopulationandcommunity/
 
 A snapshot of the correlations with all the various health metrics (using case-count growth rates over the week prior to the date shown, sorted by the magnitude of the latest figures):
 ```
-                                               Week to     Week to     Week to
-                                              01/04/2020  08/04/2020  15/04/2020
-  Obesity rate (%)                           :  0.421       0.505       0.376
-  Alcohol-related admissions (per 100,000)   :  0.221       0.470       0.304
-  Preventable Mortality (deaths per 100,000) :  0.232       0.429       0.221
-  Smoking prevalence (%)                     :  0.230       0.318       0.211
-  Physically active adults (%)               : -0.272      -0.266      -0.120
-  Unemployment rate (%)                      :  0.107       0.101      -0.060
-  Economically inactive (%)                  :  0.121       0.161       0.048
-  Employment rate (%)                        : -0.128      -0.157      -0.017
-  Adults eating 5-a-day (%)                  : -0.091      -0.145       0.000
+                                               Week to     Week to     Week to     Week to
+                                              01/04/2020  08/04/2020  15/04/2020  22/04/2020
+  Obesity rate (%)                           :  0.421       0.505       0.376      0.320
+  Alcohol-related admissions (per 100,000)   :  0.221       0.470       0.304      0.250
+  Adults eating 5-a-day (%)                  : -0.091      -0.145       0.000      0.156
+  Unemployment rate (%)                      :  0.107       0.101      -0.060     -0.145
+  Preventable Mortality (deaths per 100,000) :  0.232       0.429       0.221      0.118
+  Smoking prevalence (%)                     :  0.230       0.318       0.211      0.110
+  Employment rate (%)                        : -0.128      -0.157      -0.017      0.096
+  Economically inactive (%)                  :  0.121       0.161       0.048     -0.065
+  Physically active adults (%)               : -0.272      -0.266      -0.120     -0.053
 ```
 
 So - probably unsurprisingly - a general picture of unhealthy things being associated with faster case-count growth, and more health-positive things like physical activity, employment and even "5-a-day" being weakly linked with slower growth.
@@ -100,18 +100,18 @@ From the "deprivation index" data (from <https://www.gov.uk/government/statistic
 
 A snapshot of the correlations with all the various deprivation metrics (using case-count growth rates over the week prior to the date shown, sorted by the magnitude of the latest figures):
 ```
-                                       Week to     Week to     Week to
-                                      01/04/2020  08/04/2020  15/04/2020
-  Barriers to Housing and Services  :  -0.332      -0.552      -0.455
-  Education, Skills and Training    :   0.395       0.463       0.356
-  Health Deprivation and Disability :   0.282       0.512       0.297
-  Living Environment                :  -0.308      -0.256      -0.240
-  Employment                        :   0.300       0.498       0.236
-  IDAOPI                            :  -0.061      -0.073      -0.226
-  IMD                               :   0.205       0.322       0.122
-  Income                            :   0.183       0.293       0.060
-  IDACI                             :   0.162       0.242       0.036
-  Crime                             :   0.087       0.090      -0.023
+                                       Week to     Week to     Week to     Week to
+                                      01/04/2020  08/04/2020  15/04/2020  22/04/2020
+  Barriers to Housing and Services  :  -0.332      -0.552      -0.455      -0.356
+  Education, Skills and Training    :   0.395       0.463       0.356       0.315
+  IDAOPI                            :  -0.061      -0.073      -0.226      -0.284
+  Living Environment                :  -0.308      -0.256      -0.240      -0.269
+  Health Deprivation and Disability :   0.282       0.512       0.297       0.203
+  Employment                        :   0.300       0.498       0.236       0.186
+  Crime                             :   0.087       0.090      -0.023      -0.106
+  IMD                               :   0.205       0.322       0.122       0.054
+  IDACI                             :   0.162       0.242       0.036      -0.015
+  Income                            :   0.183       0.293       0.060       0.003
 ```
 (IMD - "Index of Multiple Deprivations", an aggregate score; IDACI - "Income Deprivation Affecting Children Index"; IDAOPI - "Income Deprivation Affecting Older People Index")
 

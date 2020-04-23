@@ -66,6 +66,12 @@ def getUKCovid19Data(nation,window,startdate):
     
             days.add(date)
 
+    # Fold City of London into Hackney (is split out later, but small)
+    if 'E09000001' in timeseries:
+        for d in timeseries['E09000001']:
+            timeseries['E09000012'][d]+=timeseries['E09000001'][d]
+        del timeseries['E09000001']
+            
     days=sorted(list(days))
     if window!=None:
         assert len(days)>=window
@@ -86,7 +92,7 @@ def getUKCovid19Data(nation,window,startdate):
             if np.isnan(timeseries[k][i]):
                 print 'Replacing NaN in {} at day {}'.format(k,i)
                 timeseries[k][i]=2.5  # NaN means 1-4.  So, use average.  
-    
+                
     return timeseries,days,codes
 
 def getUKCodeRewrites(interesting):
