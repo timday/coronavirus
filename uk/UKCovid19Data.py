@@ -25,7 +25,7 @@ def value(s):
 #  W11000024 Powys
 #  W11000031 Swansea Bay
 
-def getUKCovid19Data(nation,window,startdate):
+def getUKCovid19Data(nation,window,startdate,**kwargs):
 
     csvfile=open('data/covid-19-cases-uk.csv')  # Update from https://raw.githubusercontent.com/tomwhite/covid-19-uk-data/master/data/covid-19-cases-uk.csv
     reader=csv.reader(csvfile)
@@ -41,14 +41,17 @@ def getUKCovid19Data(nation,window,startdate):
             continue
         
         where=row[1]
-        
+
         if where!=nation and nation!=None:
             continue
 
         code=row[2]
         if code=='':
             continue
-
+        
+        if 'skip' in kwargs and code in kwargs['skip']:
+            continue
+        
         ymd=map(int,row[0].split('-'))
         date=datetime.date(*ymd)
 

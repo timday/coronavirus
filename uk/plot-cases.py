@@ -55,7 +55,7 @@ for chart in [0,1,2]:
     
     for what in [('England',None,datetime.date(2020,3,7)),('Scotland',None,datetime.date(2020,3,7)),('Wales',None,datetime.date(2020,3,21))]:   # TODO: Northern Ireland data starts 26th March... but gappy 28th&29th?
         
-        timeseries,days,codes=UKCovid19Data.getUKCovid19Data(*what)
+        timeseries,days,codes=UKCovid19Data.getUKCovid19Data(*what,skip=set(['E06000017']))
 
         mdays=[mdates.date2num(d) for d in days]
         
@@ -120,7 +120,7 @@ for chart in [0,1,2]:
     plt.xticks(rotation=75,fontsize=10)
         
     if chart==2:
-        mdayslo+=35 # Fudge, as most of it's not interesting
+        mdayslo+=14 # Fudge, as most of it's not interesting.  May need edit if adjust skip parameter.
     plt.xlim(left=mdayslo,right=mdayshi)
     plt.ylim(bottom={0:0.0,1:10.0,2:10.0}[chart])
     plt.gca().set_ylabel('Cumulative cases')
