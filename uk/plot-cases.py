@@ -80,6 +80,10 @@ for chart in [0,1,2,3,4,5]:  # 0,1 cases, 2,3 cases aligned 4,5 active cases
 
             if chart==2 or chart==3:
                 base=computeWhen(cases,common)
+                print k,base,np.isnan(base)
+                if np.isnan(base) or base>50.0:
+                    print 'Too big alignment adjustment {:.1f}, skipping'.format(base,k)
+                    continue
                 if what[0]=='Wales':
                     base+=14.0  # Starts 14 days after England and Scotland
             else:
@@ -99,7 +103,7 @@ for chart in [0,1,2,3,4,5]:  # 0,1 cases, 2,3 cases aligned 4,5 active cases
                 mdayshi=mdays[-1]-base
             else:
                 mdayshi=max(mdayshi,mdays[-1]-base)
-            
+
             plt.plot([d-base for d in mdays],cases,color=UKCovid19Data.colorsByRegion[region],alpha=0.8,linewidth=3.0,zorder=z)
             if not np.isnan(cases[-1]):
                 totalbase+=base
