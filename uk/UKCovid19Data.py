@@ -55,6 +55,9 @@ def getUKCovid19Data(nation,window,startdate,**kwargs):
         ymd=map(int,row[0].split('-'))
         date=datetime.date(*ymd)
 
+        if where=='England':  # See https://github.com/tomwhite/covid-19-uk-data/issues/45
+            date=date+datetime.timedelta(days=1)
+
         if startdate==None or date>=startdate:
         
             area=row[3]
@@ -80,13 +83,18 @@ def getUKCovid19Data(nation,window,startdate,**kwargs):
         assert len(days)>=window
         days=days[-window:]
         assert len(days)==window
+
+    def before(ts,d):
+        v=0.0
+        for t in days:
+            if t in ts and t<=d:
+                v=ts[t]
+        return v
         
-    def trim(ts):
-        return [ts[d] for d in days if d in ts]
+    def fixup(ts):
+        return map(lambda d: before(ts,d),days)
 
-    timeseries={a:trim(timeseries[a]) for a in timeseries.keys()}
-
-    timeseries={a:timeseries[a] for a in timeseries.keys() if len(timeseries[a])==len(days)}
+    timeseries={a:fixup(timeseries[a]) for a in timeseries.keys()}
 
     codes={c:codes[c] for c in timeseries.keys()}
 
@@ -97,7 +105,7 @@ def getUKCovid19Data(nation,window,startdate,**kwargs):
         else:
             for i in xrange(1,len(timeseries[k])):
                 if np.isnan(timeseries[k][i]):
-                    print 'Replacing NaN in {} at day {}'.format(k,i)
+                    # print 'Replacing NaN in {} at day {}'.format(k,i)
                     timeseries[k][i]=2.5  # NaN means 1-4.  So, use average.  
                 
     return timeseries,days,codes

@@ -63,7 +63,7 @@ for chart in [0,1,2,3,4,5]:  # 0,1 cases, 2,3 cases aligned 4,5 active cases
     totalbase=0.0
     numbase=0
     
-    for what in [('England',None,datetime.date(2020,3,7)),('Scotland',None,datetime.date(2020,3,7)),('Wales',None,datetime.date(2020,3,21))]:   # TODO: Northern Ireland data starts 26th March... but gappy 28th&29th?
+    for what in [('England',None,datetime.date(2020,3,8)),('Scotland',None,datetime.date(2020,3,8)),('Wales',None,datetime.date(2020,3,21))]:   # TODO: Northern Ireland data starts 26th March... but gappy 28th&29th?
         
         timeseries,days,codes=UKCovid19Data.getUKCovid19Data(*what,skip=set(['E06000017']))
 
@@ -80,7 +80,6 @@ for chart in [0,1,2,3,4,5]:  # 0,1 cases, 2,3 cases aligned 4,5 active cases
 
             if chart==2 or chart==3:
                 base=computeWhen(cases,common)
-                print k,base,np.isnan(base)
                 if np.isnan(base) or base>50.0:
                     print 'Too big alignment adjustment {:.1f}, skipping'.format(base,k)
                     continue
