@@ -62,6 +62,10 @@ Aligning all those on a constant number of cases:
 
 [![UK case counts aligned](img/uk/small/cases-aligned-log.png)](img/uk/cases-aligned-log.png)
 
+The "active cases" assuming new cases are active for 2-3 weeks (uniform distribution):
+
+[![UK active cases](img/uk/small/cases-active-log.png)](img/uk/cases-active-log.png)
+
 Correlations
 ------------
 From the ONS, there is some UTLA-level data available (for England) for various health and deprivation metrics.  Is there some correlation between these measures and the rate that virus case-counts are growing at?

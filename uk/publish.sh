@@ -9,7 +9,7 @@ mkdir -p ${DST}/small
 # see https://imagemagick.org/discourse-server/viewtopic.php?t=21711
 CP="convert -define png:exclude-chunks=date"
 
-for f in cases-log.png cases-aligned-log.png "health-Obesity rate percentage.png" deprivation-Education.png deprivation-Barriers.png deprivation-Health.png deprivation-Employment.png "income-GDHI per head.png" brexit-England.png oldies-England.png oldies-vote-England.png election-SwingConBrexit.png ; do
+for f in cases-log.png cases-active-log.png cases-aligned-log.png "health-Obesity rate percentage.png" deprivation-Education.png deprivation-Barriers.png deprivation-Health.png deprivation-Employment.png "income-GDHI per head.png" brexit-England.png oldies-England.png oldies-vote-England.png election-SwingConBrexit.png ; do
     ${CP}               "output/${f}" "${DST}/${f}"
     ${CP} -geometry 50% "output/${f}" "${DST}/small/${f}"
 done
