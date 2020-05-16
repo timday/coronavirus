@@ -71,12 +71,6 @@ def getUKCovid19Data(nation,window,startdate,**kwargs):
             timeseries[code][date]=cases
     
             days.add(date)
-
-    # Fold City of London into Hackney (is split out later, but small)
-    if 'E09000001' in timeseries:
-        for d in timeseries['E09000001']:
-            timeseries['E09000012'][d]+=timeseries['E09000001'][d]
-        del timeseries['E09000001']
             
     days=sorted(list(days))
     if window!=None:
