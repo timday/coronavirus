@@ -309,6 +309,7 @@ for p in range(len(timeseriesKeys)):
     ok[5]=ok[5] and math.fabs(k[5][1])>=0.005 and math.fabs(k[5][2])>=0.005
     ok[7]=ok[7] and math.fabs(k[7][1])>=0.005 and math.fabs(k[7][2])>=0.005
 
+    # List of successful model numbers, with scores, sorted best (lowest) score first
     scores=sorted([(i,results[i].fun) for i in range(len(results)) if ok[i]],key=lambda x: x[1])
 
     for chart in range(2):
@@ -317,9 +318,9 @@ for p in range(len(timeseriesKeys)):
 
         def tickmarks(i):
             n=0
-            if scores[0][0]==i: n=3
-            elif scores[1][0]==i: n=2
-            elif scores[2][0]==i: n=1
+            if len(scores)>=1 and scores[0][0]==i: n=3
+            elif len(scores)>=2 and scores[1][0]==i: n=2
+            elif len(scores)>=3 and scores[2][0]==i: n=1
             return n*u'\u2714'
 
         def priority(i):
