@@ -86,7 +86,7 @@ for chart in range(2):
     if chart==0:
         plt.legend(loc='lower left',framealpha=0.9,fontsize='small')
     else:
-        plt.legend(loc='lower right',framealpha=0.9,fontsize='small')
+        plt.legend(loc='lower left',framealpha=0.9,fontsize='small')
         
     plt.title('{} aligned on {:d}.  Times +/- ahead/behind Italy.  Data to {}'.format(what,int(common),datestr))
 
