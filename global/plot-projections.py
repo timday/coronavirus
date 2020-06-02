@@ -184,7 +184,7 @@ class model8minfn:
             lambda x: model8error(x,self._days,self._P,self._data),
             x8,
             method='SLSQP',
-            options={'eps':0.01,'ftol':0.001,'maxiter':1000},
+            options={'eps':0.01,'ftol':0.001,'maxiter':10000},
             bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(1.0,np.inf)]   # Large (unlimited) j (&i?) causes problems?
         )
     
@@ -213,48 +213,58 @@ def probe(data,P,where):
     # BFGS and COBYLA also seem useful/relatively stable (may not take bounds though).  SLSQP seems to be default when there are bounds.
 
     # Initial values to guess for k and a
-    k=1.0/4.0
-    a=0.1
+    k=0.25
+    a=0.05
     T=len(data)
-    tolerance=0.0001
+    tolerance=0.001
 
     print 'Model 0'
     x0=np.array([data[0],k])
-    r0=scipy.optimize.minimize(error0,x0,method='SLSQP',options={'ftol':tolerance,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf)])
+    r0=scipy.optimize.minimize(error0,x0,method='SLSQP',options={'eps':0.01,'ftol':tolerance,'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf)])
 
     print 'Model 1'
     x1s=[np.array([data[0],k,a]),np.array([data[0],k,0.0])]
-    r1s=map(lambda x1: scipy.optimize.minimize(error1,x1,method='SLSQP',options={'ftol':tolerance,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x1s)
+    r1s=map(lambda x1: scipy.optimize.minimize(error1,x1,method='SLSQP',options={'eps':0.01,'ftol':tolerance,'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x1s)
     r1=min(r1s,key=lambda r: r.fun)
 
     print 'Model 2'
-    x2s=[np.array([data[0],k,a]),np.array([data[0],k,0.0]),np.array([data[0],0.25*k,a]),np.array([data[0],0.25*k,0.0]),np.array([data[0],2.0*k,a]),np.array([data[0],2.0*k,0.0])]
-    r2s=map(lambda x2: scipy.optimize.minimize(error2,x2,method='SLSQP',options={'ftol':tolerance,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x2s)
+    x2s=[
+        np.array([data[0],    k,    a]),
+        np.array([data[0],    k,0.2*a]),
+        np.array([data[0],    k,5.0*a]),
+        np.array([data[0],0.2*k,    a]),
+        np.array([data[0],0.2*k,0.2*a]),
+        np.array([data[0],0.2*k,5.0*a]),
+        np.array([data[0],5.0*k,    a]),
+        np.array([data[0],5.0*k,0.2*a]),
+        np.array([data[0],5.0*k,5.0*a])
+    ]
+    r2s=map(lambda x2: scipy.optimize.minimize(error2,x2,method='SLSQP',options={'eps':0.01,'ftol':tolerance,'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x2s)
     r2=min(r2s,key=lambda r: r.fun)
 
     print 'Model 3'
     x3s=[np.array([data[0],k,pv]) for pv in [0.000000001*P,0.00000001*P,0.0000001*P,0.000001*P,0.00001*P,0.0001*P,0.001*P,0.01*P,0.1*P,P]]
-    r3s=map(lambda x3: scipy.optimize.minimize(error3,x3,method='SLSQP',options={'ftol':tolerance,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,P)]),x3s)
+    r3s=map(lambda x3: scipy.optimize.minimize(error3,x3,method='SLSQP',options={'eps':0.01,'ftol':tolerance,'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,P)]),x3s)
     r3=min(r3s,key=lambda r: r.fun)
 
     print 'Model 4'
     x4s=[np.array([data[0],jkv[0],jkv[1],a]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)]]
-    r4s=map(lambda x4: scipy.optimize.minimize(error4,x4,method='SLSQP',options={'ftol':tolerance,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)]),x4s)
+    r4s=map(lambda x4: scipy.optimize.minimize(error4,x4,method='SLSQP',options={'eps':0.01,'ftol':tolerance,'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)]),x4s)
     r4=min(r4s,key=lambda r: r.fun)
 
     print 'Model 5'
     x5s=[np.array([data[0],jkv[0],jkv[1],a]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)]]
-    r5s=map(lambda x5: scipy.optimize.minimize(error5,x5,method='SLSQP',options={'ftol':tolerance,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)]),x5s)
+    r5s=map(lambda x5: scipy.optimize.minimize(error5,x5,method='SLSQP',options={'eps':0.01,'ftol':tolerance,'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0001,np.inf)]),x5s)
     r5=min(r5s,key=lambda r: r.fun)
 
     print 'Model 6'
     x6s=[np.array([data[0],k,tv]) for tv in [0.5*T,0.75*T,T,1.5*T,2.0*T]]
-    r6s=map(lambda x6: scipy.optimize.minimize(error6,x6,method='SLSQP',options={'ftol':tolerance,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x6s)
+    r6s=map(lambda x6: scipy.optimize.minimize(error6,x6,method='SLSQP',options={'eps':0.01,'ftol':tolerance,'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x6s)
     r6=min(r6s,key=lambda r: r.fun)
     
     print 'Model 7'
     x7s=[np.array([data[0],jkv[0],jkv[1],tv]) for jkv in [(k,0.0),(k/2.0,k/2.0),(0.0,k)] for tv in [0.5*T,0.75*T,T,1.5*T,2.0*T]]
-    r7s=map(lambda x7: scipy.optimize.minimize(error7,x7,method='SLSQP',options={'ftol':tolerance,'maxiter':1000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x7s)
+    r7s=map(lambda x7: scipy.optimize.minimize(error7,x7,method='SLSQP',options={'eps':0.01,'ftol':tolerance,'maxiter':10000},bounds=[(0.0,np.inf),(0.0,np.inf),(0.0,np.inf),(0.0,np.inf)]),x7s)
     r7=min(r7s,key=lambda r: r.fun)
 
     if args.dde:
