@@ -32,7 +32,13 @@ for p in range(len(timeseriesKeys)):
     day_dates=date(np.arange(len(gain_daily))+0.5)
     plt.scatter(day_dates,gain_daily,s=9.0*widthScale[timeseriesKeys[p]],color=colors[timeseriesKeys[p]])
     week_dates=date(np.arange(len(gain_weekly))+7.0/2.0)
-    plt.plot(week_dates,gain_weekly,color=colors[timeseriesKeys[p]],linewidth=3.0*widthScale[timeseriesKeys[p]],label=descriptions[timeseriesKeys[p]])
+    plt.plot(
+        week_dates,
+        gain_weekly,
+        color=colors[timeseriesKeys[p]],
+        linewidth=3.0*widthScale[timeseriesKeys[p]],
+        label=descriptions[timeseriesKeys[p]]
+    )
 
     plt.text(day_dates[-1]+1.0,gain_weekly[-1],descriptions[timeseriesKeys[p]],horizontalalignment='left',verticalalignment='center',fontdict={'size':8,'alpha':0.75,'weight':'bold','color':colors[timeseriesKeys[p]]})
 

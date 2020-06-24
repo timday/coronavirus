@@ -46,6 +46,9 @@ descriptions={
     'India'      :'India'      ,
     'Peru'       :'Peru'       ,
     'Ecuador'    :'Ecuador'    ,
+    'Mexico'     :'Mexico'     ,
+    'Pakistan'  :'Pakistan'   ,
+    'Saudi Arabia':'Saudi Arabia',
 }
 
 news={
@@ -158,6 +161,13 @@ news={
     'Ecuador':[
         ((2020,03,15),'Borders closed')
     ],
+    'Mexico':[
+        ((2020,03,20),'National Health Emergency')
+    ],
+    'Pakistan':[ # Regional responses
+    ],
+    'Saudi Arabia':[ # Moderate response?
+    ]
 }
 
 populations={
@@ -196,6 +206,9 @@ populations={
     'India'      :1.4e9,
     'Peru'       :3.2e7,
     'Ecuador'    :1.7e7,
+    'Mexico'     :1.3e8,
+    'Pakistan'   :2.1e8,
+    'Saudi Arabia':3.4e7,
     }
 
 def rgb(r,g,b):
@@ -228,7 +241,9 @@ colors={
     'Brazil'     :rgb( 44,160, 44),  # Same as Italy
 
     'Sweden'     :rgb(158,218,229),
-    'Norway'     :rgb(174,199,232),
+    'Mexico'     :rgb(158,218,229),  # Same as Sweden
+    
+    'Norway'     :rgb(174,199,232),    
     'Denmark'    :rgb(219,219,141),
 
     'Netherlands':rgb(188,189, 34),
@@ -247,6 +262,7 @@ colors={
     'India'      :rgb(255,127, 14), # Same as South Korea
 
     'Japan'      :rgb(227,119,194),
+    'Pakistan'   :rgb(227,119,194), # Same as Japan
 
     'Iran'       :rgb(148,103,189),
     'Turkey'     :rgb(148,103,189), # Same as Iran
@@ -254,7 +270,8 @@ colors={
     'Malaysia'   :rgb(255,152,150),
     'Singapore'  :rgb(255,152,150), # Same as Malaysia
 
-    'Russia'     :rgb(127,127,127)
+    'Russia'     :rgb(127,127,127),
+    'Saudi Arabia':rgb(127,127,127), # Same as Russia
     }
 
 widthScale=defaultdict(lambda: 1.0)
@@ -272,6 +289,9 @@ widthScale['Chile']=0.5
 widthScale['India']=0.5
 widthScale['Peru']=0.5
 widthScale['Ecuador']=0.5
+widthScale['Mexico']=0.5
+widthScale['Pakistan']=0.5
+widthScale['Saudi Arabia']=0.5
 
 # Recursive in case error spans more than one day
 def clean(a,where):
@@ -298,7 +318,7 @@ def getJHUData(all,splitChina):
     results=[]
 
     # Actual list
-    timeseriesKeys=['Total','Iran','South Korea','Italy','France','Spain','Portugal','Germany','US','Canada','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore','Russia','Chile','India','Peru','Ecuador']
+    timeseriesKeys=['Total','Iran','South Korea','Italy','France','Spain','Portugal','Germany','US','Canada','Japan','Netherlands','Switzerland','UK','Sweden','Norway','Belgium','Denmark','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore','Russia','Chile','India','Peru','Ecuador','Mexico','Pakistan','Saudi Arabia']
     if splitChina:
         timeseriesKeys.append('China:Hubei')
         timeseriesKeys.append('China:Other')
@@ -306,7 +326,7 @@ def getJHUData(all,splitChina):
         timeseriesKeys.append('China')            
 
     # Names from the CSV file
-    interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Canada','Iran','France','Germany','Spain','Portugal','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore','Russia','Chile','India','Peru','Ecuador'])
+    interesting=frozenset(['China','China:Hubei','China:Other','UK','Italy','South Korea','US','Canada','Iran','France','Germany','Spain','Portugal','Japan','Switzerland','Netherlands','Sweden','Norway','Denmark','Belgium','Austria','Malaysia','Brazil','Australia','Israel','Turkey','Czechia','Ireland','Singapore','Russia','Chile','India','Peru','Ecuador','Mexico','Pakistan','Saudi Arabia'])
 
     for what in {False:range(1),True:range(2)}[all]:
 
@@ -360,6 +380,6 @@ def getJHUData(all,splitChina):
 
     if not all:
         results=results[0]
-    
+        
     return timeseriesKeys,results
     
