@@ -105,7 +105,7 @@ def getCases():
     
                 timeseries[where]+=np.array(map(lambda x: value(x),row[2:]),dtype=np.float64)
     
-    assert len(timeseries)==51  # Should be 5
+    assert len(timeseries)==51  
 
     return timeseries
 
